@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 // Tests player class
-import Player from '../main/player';
+import Player from '../domain/player';
 
 // Individual player fields to import
 const name = 'Jeff Magalhaes (fakeland, usa)';
@@ -91,7 +91,7 @@ test('Valid Info Creates Player', () => {
 
   expect(testPlayer['avpa#']).toBe('100231');
   // eslint-disable-next-line prettier/prettier
-  let newPlayer = new Player(testPlayer);
+  const newPlayer = new Player(testPlayer);
   expect(newPlayer.firstName).toBe('Jeff');
   expect(newPlayer.lastName).toBe('Magalhaes');
   expect(newPlayer.email).toBe('fake@gmail.com');
@@ -99,10 +99,12 @@ test('Valid Info Creates Player', () => {
   expect(newPlayer.avpa).toBe(100231);
   expect(newPlayer.ranking).toBe(100.5);
   expect(newPlayer.membershipValid).toBe(false);
+});
 
+test('Name is Correctly Extracted', () => {
   // Name with an '
   testPlayer.name = "Kyle O'Neil (Fake land, usa)";
-  newPlayer = new Player(testPlayer);
+  let newPlayer = new Player(testPlayer);
   expect(newPlayer.firstName).toBe('Kyle');
   expect(newPlayer.lastName).toBe("O'Neil");
   // Name with an -

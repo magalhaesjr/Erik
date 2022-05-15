@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
-import extractEntries from './avpamerica';
+import extractEntries from '../domain/avpamerica';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 

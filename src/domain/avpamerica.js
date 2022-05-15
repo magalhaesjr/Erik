@@ -1,5 +1,6 @@
 // Functions for the avp america website
 import Player from './player';
+import Team from './team';
 
 // Find columns indices for each category
 function findCategoryCols(header) {
@@ -44,9 +45,9 @@ function findDataCols(header, columns) {
 }
 
 // Extracts all team info from the table
-function extractTeam(data, headerMap) {
+function extractTeam(data, headerMap, division) {
   // Initialize a team
-  const team = {};
+  let team = {};
   // Cycle through each entry category
   Object.keys(headerMap).forEach((type) => {
     // Cycle through each data column
@@ -62,17 +63,18 @@ function extractTeam(data, headerMap) {
       }
     });
 
-    if (type.includes('Player')) {
-      team[type] = new Player(category);
-    } else {
-      team[type] = category;
+    if (type === 'Entry') {
+      category.division = division;
+      team = new Team(category);
+    } else if (type.includes('Player')) {
+      team.addPlayer(new Player(category));
     }
   });
   return team;
 }
 
 // Pulls all entries for a division from the input sheet
-function extractDivision(table) {
+function extractDivision(table, division) {
   // Headers for tables
   let columns = {};
   const entries = [];
@@ -92,7 +94,7 @@ function extractDivision(table) {
       // Get all data columns for this team
       const data = row.querySelectorAll('td');
       // Add team to entries
-      entries.push(extractTeam(data, headerMap));
+      entries.push(extractTeam(data, headerMap, division));
     }
   });
   return entries;
@@ -118,8 +120,9 @@ export default function extractEntries(dom) {
       division = node.textContent;
       divisionEntries = {};
     } else if (node.nodeName === 'TABLE') {
-      divisionEntries = extractDivision(node);
+      divisionEntries = extractDivision(node, division);
     }
   });
+  // eslint-disable-next-line no-console
   console.log(entries);
 }
