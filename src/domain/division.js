@@ -1,39 +1,15 @@
 // Implements the Division class for organizing tournaments
 import Team from './team';
 // Default rules if none provided
-import DIVISION_RULES from './rules';
+import { DIVISION_RULES, validateRules } from './rules';
 
-// Required rules and their associated types
-const RULE_FIELDS = {
-  minTeams: 'number',
-  maxTeams: 'number',
-  poolFormat: 'object',
-};
-
-// Validates that all required inputs are available
-function validateInput(name, rules) {
+export function validateDivision(name) {
   /* Check division input */
   if (typeof name !== 'string') {
     throw new Error('Division name must be a string');
   } else if (name.length === 0 || name === undefined) {
     throw new Error('Division name must not be empty');
   }
-
-  /* Check Rules */
-  if (typeof rules !== 'object' || rules === null) {
-    throw new Error('Rules must be an Object');
-  }
-  // Check required rule parameters and types
-  Object.keys(RULE_FIELDS).forEach((ruleField) => {
-    if (!Object.prototype.hasOwnProperty.call(rules, ruleField)) {
-      throw new Error(`Rules are missing definition for ${ruleField}`);
-      // eslint-disable-next-line valid-typeof
-    } else if (typeof rules[ruleField] !== RULE_FIELDS[ruleField]) {
-      throw new Error(
-        `Rules for ${ruleField} is not ${RULE_FIELDS[ruleField]}`
-      );
-    }
-  });
 }
 
 // Number of playoff teams from a pool
@@ -43,7 +19,7 @@ function getPlayoffTeams(numTeams, totalTeams) {
 
   // Special cases
   if (numTeams === 7) {
-    // Break 50% rule for pool of 7 (usually only 1 pool)
+    // Break 50% rule for pool of 7 (usually only pool)
     playoffTeams = 4;
   } else if (numTeams === totalTeams) {
     // 1 pool. Add team for playoff work team
@@ -68,10 +44,12 @@ function setDivisionRules(allRules, division) {
 }
 
 // Represents a division in a tournament
-export default class Division {
+export class Division {
   constructor(name, rules = DIVISION_RULES) {
     // Validate division name
-    validateInput(name, rules);
+    validateDivision(name);
+    // validate rules
+    validateRules(rules);
     this.division = name;
     this.nets = 0;
     this.teams = [];

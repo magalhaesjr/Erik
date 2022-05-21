@@ -2,7 +2,7 @@
 // Team dependency
 import Team from '../domain/team';
 // Tested: Division
-import Division from '../domain/division';
+import { Division, validateDivision } from '../domain/division';
 // Mock Team
 jest.mock('../domain/team.js');
 
@@ -20,48 +20,17 @@ function generateTeams(numTeams) {
 
 test('Invalid Inputs Throw', () => {
   // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division(undefined);}).toThrow(new Error("Division name must be a string"));
+  expect(()=>{validateDivision(undefined);}).toThrow(new Error("Division name must be a string"));
   // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division(1);}).toThrow(new Error("Division name must be a string"));
+  expect(()=>{validateDivision(1);}).toThrow(new Error("Division name must be a string"));
   // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division({name: 'test'});}).toThrow(new Error("Division name must be a string"));
+  expect(()=>{validateDivision({name: 'test'});}).toThrow(new Error("Division name must be a string"));
   // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division(null);}).toThrow(new Error("Division name must be a string"));
+  expect(()=>{validateDivision(null);}).toThrow(new Error("Division name must be a string"));
   // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division([]);}).toThrow(new Error("Division name must be a string"));
+  expect(()=>{validateDivision([]);}).toThrow(new Error("Division name must be a string"));
   // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division('');}).toThrow(new Error("Division name must not be empty"));
-  /** Invalid Rules */
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", 1);}).toThrow(new Error("Rules must be an Object"));
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", '');}).toThrow(new Error("Rules must be an Object"));
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", null);}).toThrow(new Error("Rules must be an Object"));
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", 1);}).toThrow(new Error("Rules must be an Object"));
-  /** Missing Rules */
-  const rules = {};
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", rules);}).toThrow(new Error("Rules are missing definition for minTeams"));
-  // Set to invalid
-  rules.minTeams = '1';
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", rules);}).toThrow(new Error("Rules for minTeams is not number"));
-  rules.minTeams = 4;
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", rules);}).toThrow(new Error("Rules are missing definition for maxTeams"));
-  // Set to invalid
-  rules.maxTeams = '1';
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", rules);}).toThrow(new Error("Rules for maxTeams is not number"));
-  rules.maxTeams = 5;
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", rules);}).toThrow(new Error("Rules are missing definition for poolFormat"));
-  // Set to invalid
-  rules.poolFormat = '1';
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Division("Men's Open", rules);}).toThrow(new Error("Rules for poolFormat is not object"));
+  expect(()=>{validateDivision('');}).toThrow(new Error("Division name must not be empty"));
 });
 
 test('Valid input creates division', () => {

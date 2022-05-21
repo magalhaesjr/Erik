@@ -1,6 +1,32 @@
 // Defines rules for running tournaments. Rules can be division based
 
-const DIVISION_RULES = {
+// Required rules and their associated types
+const RULE_FIELDS = {
+  minTeams: 'number',
+  maxTeams: 'number',
+  poolFormat: 'object',
+};
+
+// Validates that all required inputs are available
+export function validateRules(rules) {
+  /* Check Rules */
+  if (typeof rules !== 'object' || rules === null) {
+    throw new Error('Rules must be an Object');
+  }
+  // Check required rule parameters and types
+  Object.keys(RULE_FIELDS).forEach((ruleField) => {
+    if (!Object.prototype.hasOwnProperty.call(rules, ruleField)) {
+      throw new Error(`Rules are missing definition for ${ruleField}`);
+      // eslint-disable-next-line valid-typeof
+    } else if (typeof rules[ruleField] !== RULE_FIELDS[ruleField]) {
+      throw new Error(
+        `Rules for ${ruleField} is not ${RULE_FIELDS[ruleField]}`
+      );
+    }
+  });
+}
+
+export const DIVISION_RULES = {
   /* Global rules */
   // Minimum number of teams per net
   minTeams: 4,
@@ -54,5 +80,3 @@ const DIVISION_RULES = {
     maxTeams: 7,
   },
 };
-
-export default DIVISION_RULES;
