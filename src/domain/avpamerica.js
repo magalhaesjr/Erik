@@ -130,7 +130,6 @@ export default function extractEntries(dom) {
     } else if (node.className === 'LargeRedTitle') {
       // Add division to tournament
       if (division instanceof Division) {
-        console.log(division);
         tourny.addDivision(division);
       }
       divisionName = node.textContent;

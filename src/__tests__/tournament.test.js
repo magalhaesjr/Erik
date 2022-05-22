@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 // Import Division for dependency
 import { Division } from '../domain/division';
+import Day from '../domain/day';
 // Tests Tournament class
 import Tournament from '../domain/tournament';
 // Mocks
@@ -44,4 +45,27 @@ test('addDivision adds division to correct day', () => {
   testTourny.addDivision(coedDiv);
   // eslint-disable-next-line prettier/prettier
   expect(Object.prototype.hasOwnProperty.call(testTourny.sunday.divisions, "Coed 2's Open")).toBeTruthy();
+});
+
+test('import restores division object', () => {
+  // Create a test tourney
+  const testTourny = new Tournament();
+  // create a test division
+  const testDiv = new Division();
+  testDiv.division = "Men's A";
+  // Add division
+  testTourny.addDivision(testDiv);
+  // new division
+  const coedDiv = new Division();
+  coedDiv.division = "Coed 2's Open";
+  testTourny.addDivision(coedDiv);
+  // Export day using stringify
+  const exported = JSON.stringify(testTourny);
+  // Create a new tourny via import
+  const importedTourny = new Tournament(JSON.parse(exported));
+  // Division is mocked, so the constructor won't work correctly.
+  // eslint-disable-next-line prettier/prettier
+  expect(importedTourny.saturday.divisions.undefined instanceof Division).toBeTruthy();
+  // eslint-disable-next-line prettier/prettier
+  expect(importedTourny.sunday.divisions.undefined instanceof Division).toBeTruthy();
 });

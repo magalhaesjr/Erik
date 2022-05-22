@@ -2,6 +2,7 @@
 import Team from './team';
 // Default rules if none provided
 import { DIVISION_RULES, validateRules } from './rules';
+import { isObject, validateObject } from './validate';
 // Schedules
 import { retrieveTemplate } from './schedules';
 // Pool only imports the validation function, so no circular dependency here
@@ -51,20 +52,61 @@ function setDivisionRules(allRules, division) {
 
 // Represents a division in a tournament
 export class Division {
-  constructor(name, rules = DIVISION_RULES) {
-    // Validate division name
-    validateDivision(name);
-    // validate rules
-    validateRules(rules);
+  constructor(input, rules = DIVISION_RULES) {
+    // Initialize
     this.courts = [];
-    this.division = name;
+    this.division = '';
     this.nets = 0;
+    this.pools = [];
+    this.rules = {};
     this.teams = [];
     this.waitList = [];
-    this.pools = [];
 
-    // Set the rules for the division
-    this.rules = setDivisionRules(rules, this.division);
+    // Override defaults
+    if (isObject(input)) {
+      // Import object
+      this.import(input);
+    } else {
+      // Validate division name
+      validateDivision(input);
+      // validate rules
+      validateRules(rules);
+      this.division = input;
+      // Set the rules for the division
+      this.rules = setDivisionRules(rules, this.division);
+    }
+  }
+
+  /* ** IMPORT ** */
+  import(input) {
+    // Validate input object
+    validateObject(input);
+
+    // Loop through all fields in class and import as needed
+    Object.keys(this).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(input, key)) {
+        if (key === 'teams' || key === 'waitList') {
+          // Re-create team objects and add them to the team
+          input[key].forEach((team) => {
+            this.addTeam(new Team(team));
+          });
+        } else if (key !== 'pools') {
+          // Just assign the property
+          this[key] = input[key];
+        }
+      }
+    });
+    // Update seeding is up to date
+    this.updateSeeding();
+
+    // If pools were saved, re-create them now
+    if (
+      Object.prototype.hasOwnProperty.call(input, 'pools') &&
+      input.pools.length > 0
+    ) {
+      // Recreate the pools instead of loading them, which wouldn't properly link the teams
+      this.createPools();
+    }
   }
 
   /* ** REGISTRATION MANAGEMENT ** */
@@ -161,7 +203,7 @@ export class Division {
   // Create all pools
   createPools() {
     // Validate that you have enough courts for all the nets you need
-    if (this.courts.length < this.nets) {
+    if (this.courts.length < this.nets || this.nets === 0) {
       throw new Error('There are not enough courts assigned to this division');
     }
 

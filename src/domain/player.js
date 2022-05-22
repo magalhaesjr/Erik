@@ -1,4 +1,5 @@
 // Defines the player class for individual players in the tournament
+import { isObject, validateObject } from './validate';
 
 // Fields required for player construction
 const PLAYER_FIELDS = [
@@ -12,6 +13,8 @@ const PLAYER_FIELDS = [
 
 // Validates that all required inputs are available
 function validateInput(info) {
+  // Validate it's an object
+  validateObject(info);
   PLAYER_FIELDS.forEach((key) => {
     if (!Object.prototype.hasOwnProperty.call(info, key)) {
       throw new Error(`Player input is missing ${key}`);
@@ -32,12 +35,36 @@ function validatePlayer(player) {
 
 // Class representing a player in the tournament
 export default class Player {
-  constructor(playerInfo) {
+  constructor(playerIn) {
+    this.firstName = '';
+    this.lastName = '';
+    this.avpa = 0;
+    this.email = '';
+    this.org = '';
+    this.ranking = 0.0;
+    this.membershipValid = false;
+    this.staff = false;
+
+    // If more data was input
+    if (
+      isObject(playerIn) &&
+      Object.prototype.hasOwnProperty.call(playerIn, 'name')
+    ) {
+      // Import from a parsed avpamerica html table
+      this.importFromSheet(playerIn);
+    } else if (isObject(playerIn)) {
+      // Import from exported object
+      this.import(playerIn);
+    }
+  }
+
+  // Import info from a parsed HTML
+  importFromSheet(playerInfo) {
     // Verify that the input object has all required fields
     validateInput(playerInfo);
 
     // Fill in properties of player
-    this.importName(playerInfo.name);
+    this.parseName(playerInfo.name);
     this.avpa = parseInt(playerInfo['avpa#'], 10);
     this.email = playerInfo.email;
     this.org = playerInfo.org;
@@ -49,12 +76,31 @@ export default class Player {
   }
 
   // imports a player string from AVPAmerica into first and last name
-  importName(inputName) {
+  parseName(inputName) {
     // Remove location
     const fullName = inputName.split('(');
     const splitNames = fullName[0].trim().split(' ');
     // Pull out first and last
     this.firstName = splitNames[0].trim();
     this.lastName = splitNames.slice(1).join(' ');
+  }
+
+  // Export player info for saving
+  export() {
+    return JSON.stringify(this);
+  }
+
+  // Import player from a save
+  import(player) {
+    // Validate input object
+    validateObject(player);
+    // Loop through all fields in class and import as needed
+    Object.keys(this).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(player, key)) {
+        this[key] = player[key];
+      }
+    });
+    // Validate player
+    validatePlayer(this);
   }
 }

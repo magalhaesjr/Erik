@@ -3,8 +3,6 @@
 import Team from '../domain/team';
 // Tested: Division
 import { Division, validateDivision } from '../domain/division';
-// Mock Team
-jest.mock('../domain/team.js');
 
 // Create 5 test teams
 function generateTeams(numTeams) {
@@ -75,7 +73,7 @@ test('addTeam Adds Team to Waitlist', () => {
 
 test('Division implements custom rules', () => {
   // Custom rules
-  const rules = { minTeams: 1, maxTeams: 1, poolFormat: {} };
+  const rules = { minTeams: 1, maxTeams: 1, maxCourts: 1, poolFormat: {} };
   const testDiv = new Division('Test', rules);
   Object.keys(rules).forEach((key) => {
     expect(testDiv.rules[key]).toStrictEqual(rules[key]);
@@ -106,6 +104,7 @@ test('Division rules override default rules', () => {
   const rules = {
     minTeams: 1,
     maxTeams: 1,
+    maxCourts: 1,
     poolFormat: {},
     Test: { minTeams: 4 },
   };
@@ -287,4 +286,25 @@ test('createPools with single B pool works', () => {
   testDiv.createPools();
   // Check expected assignment
   expect(testDiv.pools[0].teams).toEqual(testDiv.teams);
+});
+
+test('import restores division object', () => {
+  // Create a test division
+  const testDiv = new Division('Test');
+  // create 4 pools of teams
+  const testTeams = generateTeams(18);
+  // Assign them
+  testTeams.forEach((team) => {
+    testDiv.addTeam(team);
+  });
+  // Assign courts
+  testDiv.assignCourts([1, 2, 3, 4]);
+  // Assign pools and check outcomes
+  testDiv.createPools();
+  // Export division using stringify
+  const exported = JSON.stringify(testDiv);
+  // Create a new division via import
+  const importedDiv = new Division(JSON.parse(exported));
+  // Verify they are the same
+  expect(importedDiv).toStrictEqual(testDiv);
 });
