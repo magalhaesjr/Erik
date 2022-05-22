@@ -9,9 +9,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import fs from 'fs';
+import { JSDOM } from 'jsdom';
+import extractEntries from '../domain/avpamerica';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -109,9 +112,38 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  //new AppUpdater();
 };
 
+ipcMain.handle('tournament:importFile', () => {
+  const filename = dialog.showOpenDialogSync({
+    properties: ['openFile'],
+    filters: [
+      {
+        name: 'Sheet',
+        extensions: ['xls', 'xlsx', 'csv'],
+      },
+    ],
+  });
+
+  if (filename === null || filename === undefined) {
+    return;
+  }
+
+  // The file is actually html tables... why call it an excel file?????
+  let htmlString = fs.readFileSync(filename[0], {
+    encoding: 'utf-8',
+  });
+  if (htmlString === null || htmlString === undefined) {
+    return;
+  }
+
+  // Add to string
+  htmlString = `<div id="container"'>${htmlString}</div>`;
+  const dom = new JSDOM(htmlString);
+  const tourny = extractEntries(dom.window.document);
+  console.log(tourny);
+});
 /**
  * Add event listeners...
  */

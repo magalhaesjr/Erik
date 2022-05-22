@@ -151,6 +151,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.0",
     "@types/jest": "^27.4.1",
+    "@types/jsdom": "^16.2.14",
     "@types/node": "17.0.23",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
@@ -221,7 +222,8 @@
     "history": "^5.3.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "xlsx": "^0.18.5"
   },
   "devEngines": {
     "node": ">=14.x",
