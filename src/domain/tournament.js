@@ -1,14 +1,33 @@
 // Implements the Tournament class for organizing tournament weeekend
 import Day from './day';
 import { Division } from './division';
+import { isObject, validateObject } from './validate';
 
 // Team class for tournament entries
 export default class Tournament {
-  constructor() {
+  constructor(input) {
     // Saturday tournament
     this.saturday = new Day();
     // Sunday Tournament
     this.sunday = new Day();
+
+    // If input, import
+    if (isObject(input)) {
+      this.import(input);
+    }
+  }
+
+  // Import tournament
+  import(input) {
+    validateObject(input);
+    // Import days
+    Object.keys(input).forEach((key) => {
+      if (key === 'saturday' || key === 'sunday') {
+        this[key] = new Day(input[key]);
+      } else {
+        this[key] = input[key];
+      }
+    });
   }
 
   // Add a new division to the tournament

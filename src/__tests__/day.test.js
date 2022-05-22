@@ -97,3 +97,22 @@ test('Day accurately counts required nets', () => {
   testDay.addDivision(newDiv);
   expect(testDay.requiredNets()).toBe(10);
 });
+
+test('import restores division object', () => {
+  // Create a test day
+  const testDay = new Day();
+  // Create a test division
+  const testDiv = new Division();
+  testDiv.division = 'Test';
+  // Add division
+  testDay.addDivision(testDiv);
+  // Export day using stringify
+  const exported = JSON.stringify(testDay);
+  // Create a new division via import
+  const importedDay = new Day(JSON.parse(exported));
+  // Division is mocked, so the constructor won't work correctly. Fix it here for comparisons
+  expect(importedDay.divisions.undefined instanceof Division).toBeTruthy();
+  importedDay.divisions = { Test: testDiv };
+  // Verify they are the same
+  expect(importedDay).toStrictEqual(testDay);
+});

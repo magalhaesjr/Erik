@@ -3,8 +3,6 @@
 import Player from '../domain/player';
 // Tests player class
 import Team from '../domain/team';
-// Mock Player
-jest.mock('../domain/player.js');
 
 // Individual team fields to import
 const SEED = '1';
@@ -22,13 +20,11 @@ const testTeam = {
 
 test('Missing Inputs Throw', () => {
   const info = {};
+  info['sign-up'] = SIGNUP;
   // empty input
   // eslint-disable-next-line prettier/prettier
   expect(()=>{new Team(info);}).toThrow(new Error("Team input is missing seed or waitlist"));
   info.seed = SEED;
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{new Team(info);}).toThrow(new Error("Team input is missing sign-up"));
-  info['sign-up'] = SIGNUP;
   // eslint-disable-next-line prettier/prettier
   expect(()=>{new Team(info);}).toThrow(new Error("Team input is missing paid"));
   info.paid = PAID;
@@ -126,4 +122,24 @@ test('addPlayer Adds Player to Team', () => {
   newTeam.addPlayer(partner);
   expect(newTeam.players.length).toBe(2);
   expect(newTeam.ranking).toBe(153.3);
+});
+
+test('import restores team object', () => {
+  // New team
+  const newTeam = new Team(testTeam);
+  // Create new players
+  const players = [new Player(), new Player()];
+  // Add ranking points
+  players[0].ranking = 100.0;
+  players[1].ranking = 50.0;
+  // add players to team
+  players.forEach((p) => {
+    newTeam.addPlayer(p);
+  });
+  // Export team using stringify
+  const exported = JSON.stringify(newTeam);
+  // Create a new team via import
+  const importedTeam = new Team(JSON.parse(exported));
+  // Verify they are the same
+  expect(importedTeam).toStrictEqual(newTeam);
 });

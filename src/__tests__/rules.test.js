@@ -1,16 +1,7 @@
 // Tests rules functions
 import { validateRules } from '../domain/rules';
 
-test('Invalid rules throw', () => {
-  /** Invalid Rules */
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{validateRules(1);}).toThrow(new Error("Rules must be an Object"));
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{validateRules('');}).toThrow(new Error("Rules must be an Object"));
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{validateRules(null);}).toThrow(new Error("Rules must be an Object"));
-  // eslint-disable-next-line prettier/prettier
-  expect(()=>{validateRules(1);}).toThrow(new Error("Rules must be an Object"));
+test('missing rules throw', () => {
   /** Missing Rules */
   const rules = {};
   // eslint-disable-next-line prettier/prettier
@@ -27,6 +18,13 @@ test('Invalid rules throw', () => {
   // eslint-disable-next-line prettier/prettier
   expect(()=>{validateRules(rules);}).toThrow(new Error("Rules for maxTeams is not number"));
   rules.maxTeams = 5;
+  // eslint-disable-next-line prettier/prettier
+  expect(()=>{validateRules(rules);}).toThrow(new Error("Rules are missing definition for maxCourts"));
+  // Set to invalid
+  rules.maxCourts = '1';
+  // eslint-disable-next-line prettier/prettier
+  expect(()=>{validateRules(rules);}).toThrow(new Error("Rules for maxCourts is not number"));
+  rules.maxCourts = 4;
   // eslint-disable-next-line prettier/prettier
   expect(()=>{validateRules(rules);}).toThrow(new Error("Rules are missing definition for poolFormat"));
   // Set to invalid

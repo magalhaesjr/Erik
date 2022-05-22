@@ -1,18 +1,18 @@
 // Defines rules for running tournaments. Rules can be division based
+import { validateObject } from './validate';
 
 // Required rules and their associated types
 const RULE_FIELDS = {
   minTeams: 'number',
   maxTeams: 'number',
+  maxCourts: 'number',
   poolFormat: 'object',
 };
 
 // Validates that all required inputs are available
 export function validateRules(rules) {
   /* Check Rules */
-  if (typeof rules !== 'object' || rules === null) {
-    throw new Error('Rules must be an Object');
-  }
+  validateObject(rules);
   // Check required rule parameters and types
   Object.keys(RULE_FIELDS).forEach((ruleField) => {
     if (!Object.prototype.hasOwnProperty.call(rules, ruleField)) {

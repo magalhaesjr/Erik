@@ -1,11 +1,14 @@
 // Implements the Team class for organizing tournaments
 import Player from './player';
+import { isObject, validateObject } from './validate';
 
 // Fields required for player construction
 const TEAM_FIELDS = ['sign-up', 'paid', 'division'];
 
 // Validates that all required inputs are available
 function validateInput(info) {
+  // Validate object
+  validateObject(info);
   // Verify that you have either seed or wait-list
   if (
     !Object.prototype.hasOwnProperty.call(info, 'seed') &&
@@ -35,6 +38,29 @@ function extractTime(regString) {
 // Team class for tournament entries
 export default class Team {
   constructor(teamInput) {
+    // Build object
+    this.seed = null;
+    this.paid = false;
+    this.isWaitListed = false;
+    this.registrationTime = null;
+    this.players = [];
+    this.ranking = 0.0;
+    this.court = 0;
+    this.division = '';
+
+    // if extra inputs, import
+    if (
+      isObject(teamInput) &&
+      Object.prototype.hasOwnProperty.call(teamInput, 'sign-up')
+    ) {
+      this.importFromSheet(teamInput);
+    } else if (isObject(teamInput)) {
+      this.import(teamInput);
+    }
+  }
+
+  // import parsed HTML table
+  importFromSheet(teamInput) {
     // Verify inputs
     validateInput(teamInput);
 
@@ -50,7 +76,6 @@ export default class Team {
     this.ranking = 0.0;
     this.court = 0;
     this.division = teamInput.division;
-    this.pool = 0;
   }
 
   // Add a new player to the team
@@ -71,6 +96,33 @@ export default class Team {
     this.ranking = 0.0;
     this.players.forEach((player) => {
       this.ranking += player.ranking;
+    });
+  }
+
+  // Export
+  export() {
+    return JSON.stringify(this);
+  }
+
+  // Import
+  import(input) {
+    // Validate input object
+    validateObject(input);
+    // Loop through all fields in class and import as needed
+    Object.keys(this).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(input, key)) {
+        if (key === 'players') {
+          // Re-create player objects and add them to the team
+          input[key].forEach((player) => {
+            this.addPlayer(new Player(player));
+          });
+          // Ensure ranking is up to date
+          this.updateRanking();
+        } else {
+          // Just assign the property
+          this[key] = input[key];
+        }
+      }
     });
   }
 }
