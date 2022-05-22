@@ -28,6 +28,8 @@ export function validateRules(rules) {
 
 export const DIVISION_RULES = {
   /* Global rules */
+  // Maximum number of courts allowed on the beach
+  maxCourts: 22,
   // Minimum number of teams per net
   minTeams: 4,
   maxTeams: 5,
@@ -75,6 +77,14 @@ export const DIVISION_RULES = {
   },
   "Women's B": {
     maxTeams: 7,
+  },
+  "Coed 2's Open": {
+    // Preferred center court
+    centerCourt: 9,
+  },
+  "Coed 2's AA": {
+    // Preferred center court
+    centerCourt: 10,
   },
   "Coed 2's B": {
     maxTeams: 7,

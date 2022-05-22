@@ -1,6 +1,8 @@
 // Functions for the avp america website
 import Player from './player';
 import Team from './team';
+import { Division } from './division';
+import Tournament from './tournament';
 
 // Find columns indices for each category
 function findCategoryCols(header) {
@@ -58,15 +60,22 @@ function extractTeam(data, headerMap, division) {
       // Check for valid membership
       if (field.toLowerCase() === 'name') {
         // Valid membership is determined by color of name
-        category.membershipValid =
-          data[headerMap[type][field]].querySelector('font').color === 'green';
+        const membership = data[headerMap[type][field]].querySelector('font');
+        if (membership === null) {
+          // Not a valid player
+          category.valid = false;
+          return;
+        }
+        category.valid = true;
+        // Get validity of membership
+        category.membershipValid = membership.color === 'green';
       }
     });
 
     if (type === 'Entry') {
       category.division = division;
       team = new Team(category);
-    } else if (type.includes('Player')) {
+    } else if (type.includes('Player') && category.valid) {
       team.addPlayer(new Player(category));
     }
   });
@@ -74,10 +83,10 @@ function extractTeam(data, headerMap, division) {
 }
 
 // Pulls all entries for a division from the input sheet
-function extractDivision(table, division) {
+function extractDivision(table, name) {
   // Headers for tables
   let columns = {};
-  const entries = [];
+  const division = new Division(name);
   // Initialize a header Map
   let headerMap = {};
 
@@ -94,10 +103,13 @@ function extractDivision(table, division) {
       // Get all data columns for this team
       const data = row.querySelectorAll('td');
       // Add team to entries
-      entries.push(extractTeam(data, headerMap, division));
+      const newTeam = extractTeam(data, headerMap, name);
+      if (newTeam instanceof Team) {
+        division.addTeam(newTeam);
+      }
     }
   });
-  return entries;
+  return division;
 }
 
 // Extracts all teams for the tournament
@@ -105,24 +117,29 @@ export default function extractEntries(dom) {
   // Cycle through the dom objects to build an output JSON object with all tournament entries
 
   // Entries
-  const entries = {};
-  let division = null;
-  let divisionEntries = {};
+  // Create a new tournament
+  const tourny = new Tournament();
+  let divisionName = null;
+  let division = {};
 
   // Cycle through nodes until you find a division node
   dom.body.querySelectorAll('*').forEach((node) => {
     // If this is a division class, then set the current division
-    if (node.className === 'LargeRedTitle' && division === null) {
-      division = node.textContent;
+    if (node.className === 'LargeRedTitle' && divisionName === null) {
+      divisionName = node.textContent;
     } else if (node.className === 'LargeRedTitle') {
-      // Save previous object
-      entries[division] = divisionEntries;
-      division = node.textContent;
-      divisionEntries = {};
+      // Add division to tournament
+      if (division instanceof Division) {
+        console.log(division);
+        tourny.addDivision(division);
+      }
+      divisionName = node.textContent;
+      // reset division
+      division = {};
     } else if (node.nodeName === 'TABLE') {
-      divisionEntries = extractDivision(node, division);
+      division = extractDivision(node, divisionName);
     }
   });
-  // eslint-disable-next-line no-console
-  console.log(entries);
+  // Return tournament
+  return tourny;
 }

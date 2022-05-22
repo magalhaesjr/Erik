@@ -1,6 +1,9 @@
 // Implements the Pool class for pool play in a tournament
 import Team from './team';
 import { validateRules } from './rules';
+// This is not a dependency cycle. Division object depends on Pools, but pools
+// Only need the validation function
+// eslint-disable-next-line import/no-cycle
 import { validateDivision } from './division';
 import { validateSchedule } from './schedules';
 
@@ -45,6 +48,7 @@ export default class Pool {
     this.numGames = format.numGames;
     this.points = format.points;
     this.playoffTeams = playoffTeams;
-    this.schedule = schedule;
+    // Deep copy schedule into pool
+    this.schedule = JSON.parse(JSON.stringify(schedule));
   }
 }

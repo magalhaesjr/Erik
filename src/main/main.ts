@@ -112,7 +112,7 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  //new AppUpdater();
 };
 
 ipcMain.handle('tournament:importFile', () => {
@@ -141,7 +141,8 @@ ipcMain.handle('tournament:importFile', () => {
   // Add to string
   htmlString = `<div id="container"'>${htmlString}</div>`;
   const dom = new JSDOM(htmlString);
-  extractEntries(dom.window.document);
+  const tourny = extractEntries(dom.window.document);
+  console.log(tourny);
 });
 /**
  * Add event listeners...

@@ -2,6 +2,11 @@
 import Team from './team';
 // Default rules if none provided
 import { DIVISION_RULES, validateRules } from './rules';
+// Schedules
+import { retrieveTemplate } from './schedules';
+// Pool only imports the validation function, so no circular dependency here
+// eslint-disable-next-line import/no-cycle
+import Pool from './pool';
 
 export function validateDivision(name) {
   /* Check division input */
@@ -33,7 +38,8 @@ function getPlayoffTeams(numTeams, totalTeams) {
 
 // Set division rules
 function setDivisionRules(allRules, division) {
-  const rules = allRules;
+  // Creates a nested copy of the simple rules object
+  const rules = JSON.parse(JSON.stringify(allRules));
   // If there are division specific rules, apply them here
   if (Object.prototype.hasOwnProperty.call(allRules, division)) {
     Object.keys(allRules[division]).forEach((rule) => {
@@ -50,6 +56,7 @@ export class Division {
     validateDivision(name);
     // validate rules
     validateRules(rules);
+    this.courts = [];
     this.division = name;
     this.nets = 0;
     this.teams = [];
@@ -60,6 +67,7 @@ export class Division {
     this.rules = setDivisionRules(rules, this.division);
   }
 
+  /* ** REGISTRATION MANAGEMENT ** */
   // Add a team to the division
   addTeam(team) {
     if (team instanceof Team) {
@@ -102,5 +110,104 @@ export class Division {
         team.seed = index + 1;
       });
     }
+  }
+
+  /* ** POOL MANAGEMENT ** */
+  // Assign courts numbers to division
+  assignCourts(courts) {
+    // Validate input
+    if (!Array.isArray(courts) && typeof courts !== 'number') {
+      throw new Error('Courts must be an array of numbers');
+    } else if (!Array.isArray(courts)) {
+      // If the input is just a single number, force it into an array
+      // eslint-disable-next-line no-param-reassign
+      courts = [courts];
+    }
+
+    // Check court numbers to ensure they are valid on the beach
+    if (Math.max(...courts) > this.rules.maxCourts || Math.min(...courts) < 1) {
+      throw new Error(
+        `Court numbers must be >= 1 && <= ${this.rules.maxCourts}`
+      );
+    }
+    // Remove previous courts
+    this.courts = [];
+    // Assign new courts
+    this.courts = courts;
+
+    // Check for center court and ensure it will be the first one out
+    this.setCenterCourt();
+  }
+
+  setCenterCourt() {
+    // If center court is in the rules, make sure seed 1 gets it
+    if (
+      Object.prototype.hasOwnProperty.call(this.rules, 'centerCourt') &&
+      this.courts.includes(this.rules.centerCourt)
+    ) {
+      // Find center court
+      const centerIndex = this.courts.findIndex((el) => {
+        return el === this.rules.centerCourt;
+      });
+      // Remove center court and push it to the front of the array (it gets popped out first)
+      const swap = (arr, index1, index2) => {
+        [arr[index2], arr[index1]] = [arr[index1], arr[index2]];
+      };
+      // Swap first element with center court
+      swap(this.courts, 0, centerIndex);
+    }
+  }
+
+  // Create all pools
+  createPools() {
+    // Validate that you have enough courts for all the nets you need
+    if (this.courts.length < this.nets) {
+      throw new Error('There are not enough courts assigned to this division');
+    }
+
+    // Remove previous pools
+    this.pools = [];
+    // Create new pools with court assignment
+    for (let court = 0; court < this.nets; court += 1) {
+      // Create new pool
+      const newPool = new Pool(this.division);
+      // Assign court number to pool
+      newPool.courts = this.courts[court];
+      // Save pool in division
+      this.pools.push(new Pool(this.division));
+    }
+
+    // Pool index
+    let poolIndex = 0;
+    let direction = 1;
+    // Number of teams to do regular assignment in snake
+    const teamCutoff =
+      this.rules.maxTeams * Math.floor(this.numTeams() / this.rules.maxTeams);
+
+    // Do a snake style assignment of teams to pools
+    this.teams.forEach((team, index) => {
+      // Assign team to pool
+      this.pools[poolIndex].addTeam(team);
+      // Increment pool Index
+      poolIndex += direction;
+      // Check for time to switch snake direction
+      if (index === teamCutoff && this.numTeams() !== 11) {
+        // Force reverse snake for last round
+        direction = -1;
+        poolIndex = this.nets - 1;
+      } else if (poolIndex === this.nets || poolIndex < 0) {
+        direction *= -1;
+        poolIndex += direction;
+      }
+    });
+
+    // Assign format to each pool
+    this.pools.forEach((pool) => {
+      pool.setFormat(
+        this.rules,
+        retrieveTemplate(pool.teams.length),
+        getPlayoffTeams(pool.teams.length, this.numTeams())
+      );
+    });
   }
 }
