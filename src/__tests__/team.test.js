@@ -59,7 +59,6 @@ test('Valid Info Creates Team', () => {
 
   // eslint-disable-next-line prettier/prettier
   let newTeam = new Team(testTeam);
-  expect(newTeam.registrationTime).toBe(1565699040);
   expect(newTeam.division).toBe("Men's Open");
   expect(newTeam.paid).toBeTruthy();
 
