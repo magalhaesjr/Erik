@@ -127,7 +127,7 @@ ipcMain.handle('tournament:importFile', () => {
   });
 
   if (filename === null || filename === undefined) {
-    return;
+    return null;
   }
 
   // The file is actually html tables... why call it an excel file?????
@@ -135,14 +135,19 @@ ipcMain.handle('tournament:importFile', () => {
     encoding: 'utf-8',
   });
   if (htmlString === null || htmlString === undefined) {
-    return;
+    return null;
   }
 
   // Add to string
   htmlString = `<div id="container"'>${htmlString}</div>`;
   const dom = new JSDOM(htmlString);
   const tourny = extractEntries(dom.window.document);
-  console.log(tourny);
+
+  return JSON.parse(JSON.stringify(tourny));
+});
+
+ipcMain.handle('tournament:showContents', () => {
+  console.log("I don't do anything");
 });
 /**
  * Add event listeners...

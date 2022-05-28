@@ -115,6 +115,7 @@ export class Division {
     if (team instanceof Team) {
       // Check if it goes into the tournament or wait list
       if (team.isWaitListed) {
+        team.seed = this.waitList.length + 1;
         this.waitList.push(team);
       } else {
         this.teams.push(team);

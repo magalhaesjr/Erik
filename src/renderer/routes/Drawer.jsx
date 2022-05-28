@@ -14,7 +14,7 @@ const OutDrawer = () => {
       variant="permanent"
       sx={{
         position: 'relative',
-        width: '240px',
+        width: '180px',
         flexShrink: 0,
         display: 'block',
         anchor: 'left',
@@ -23,13 +23,19 @@ const OutDrawer = () => {
         sx: {
           backgroundColor: 'primary.main',
           color: 'rgba(225,249,27,1)',
-          width: '240px',
+          width: '180px',
           display: 'block',
         },
       }}
     >
       <MainDiv>
         <List>
+          <ListItem button component={Link} to="/">
+            <ListItemIcon>
+              <AppsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItem>
           <ListItem button component={Link} to="/dashboard">
             <ListItemIcon>
               <AppsIcon />

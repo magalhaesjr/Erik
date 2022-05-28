@@ -1,7 +1,7 @@
 declare global {
   interface Window {
     electron: {
-      importFile(): void;
+      importFile(): unknown;
       showContents(): void;
     };
   }

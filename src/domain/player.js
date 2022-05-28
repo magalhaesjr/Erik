@@ -68,7 +68,7 @@ export default class Player {
     this.avpa = parseInt(playerInfo['avpa#'], 10);
     this.email = playerInfo.email;
     this.org = playerInfo.org;
-    this.ranking = parseFloat(playerInfo.ranking);
+    this.ranking = parseFloat(playerInfo.ranking.replace(',', ''));
     this.membershipValid = playerInfo.membershipValid;
     this.staff = false;
     // Validate that player has all necessary fields

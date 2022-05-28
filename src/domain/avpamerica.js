@@ -79,6 +79,11 @@ function extractTeam(data, headerMap, division) {
       team.addPlayer(new Player(category));
     }
   });
+
+  // Check of team is valid. If not, it won't have any players
+  if (team.players.length === 0) {
+    return null;
+  }
   return team;
 }
 
