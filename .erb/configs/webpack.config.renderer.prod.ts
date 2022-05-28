@@ -104,6 +104,8 @@ const configuration: webpack.Configuration = {
       DEBUG_PROD: false,
     }),
 
+    new webpack.IgnorePlugin({ resourceRegExp: /canvas/ }),
+
     new MiniCssExtractPlugin({
       filename: 'style.css',
     }),

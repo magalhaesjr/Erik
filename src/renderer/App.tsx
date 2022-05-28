@@ -1,33 +1,27 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
-import './App.css';
-
-const Hello = () => {
-  return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>NVC Tournament Manager</h1>
-      <h2>Erik</h2>
-      <div className="Hello">
-        <button type="button" onClick={window.electron.importFile}>
-          New Tournament
-        </button>
-        <button type="button" onClick={window.electron.showContents}>
-          Show Contents
-        </button>
-      </div>
-    </div>
-  );
-};
+import { ThemeProvider } from '@mui/material';
+import theme from './theme';
+import Layout from './routes/Layout';
+import Dashboard from './routes/Dashboard';
+import CourtMap from './routes/CourtMap';
+import Main from './routes/Main';
+import Divisions from './routes/Divisions';
+import Financials from './routes/Financials';
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/courtmap" element={<CourtMap />} />
+            <Route path="/divisions" element={<Divisions />} />
+            <Route path="/financials" element={<Financials />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ThemeProvider>
   );
 }

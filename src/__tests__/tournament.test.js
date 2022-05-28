@@ -1,7 +1,6 @@
 /* eslint-disable no-new */
 // Import Division for dependency
 import { Division } from '../domain/division';
-import Day from '../domain/day';
 // Tests Tournament class
 import Tournament from '../domain/tournament';
 // Mocks
