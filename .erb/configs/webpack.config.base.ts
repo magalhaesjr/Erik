@@ -47,6 +47,7 @@ const configuration: webpack.Configuration = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
     }),
+    new webpack.IgnorePlugin({ resourceRegExp: /canvas/ }),
   ],
 };
 

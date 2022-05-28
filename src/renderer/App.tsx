@@ -1,6 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
-import { theme } from './theme';
+import theme from './theme';
 import Layout from './routes/Layout';
 import Dashboard from './routes/Dashboard';
 import CourtMap from './routes/CourtMap';
