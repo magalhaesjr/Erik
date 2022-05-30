@@ -54,11 +54,11 @@ const OutDrawer = () => {
             </ListItemIcon>
             <ListItemText primary="Divisions" />
           </ListItem>
-          <ListItem button component={Link} to="/financials">
+          <ListItem button component={Link} to="/registration">
             <ListItemIcon>
               <AppsIcon />
             </ListItemIcon>
-            <ListItemText primary="Financials" />
+            <ListItemText primary="Registration" />
           </ListItem>
         </List>
       </MainDiv>

@@ -116,13 +116,13 @@ export default class Team {
           input[key].forEach((player) => {
             this.addPlayer(new Player(player));
           });
-          // Ensure ranking is up to date
-          this.updateRanking();
         } else {
           // Just assign the property
           this[key] = input[key];
         }
       }
     });
+    // Ensure ranking is up to date
+    this.updateRanking();
   }
 }

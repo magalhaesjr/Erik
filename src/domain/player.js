@@ -100,6 +100,14 @@ export default class Player {
         this[key] = player[key];
       }
     });
+    // Check that numbers are numbers
+    if (typeof this.avpa !== 'number') {
+      this.avpa = parseInt(this.avpa, 10);
+    }
+    // Check that numbers are numbers
+    if (typeof this.ranking !== 'number') {
+      this.ranking = parseFloat(this.ranking, 10);
+    }
     // Validate player
     validatePlayer(this);
   }

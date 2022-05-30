@@ -130,6 +130,19 @@ export class Division {
     }
   }
 
+  removeTeam(team, waitList) {
+    // Remove input team index from teams
+    if (waitList) {
+      if (team < this.waitList.length) {
+        this.waitList = this.waitList.filter((_, ind) => ind !== team);
+        this.updatePosition();
+      }
+    } else if (team < this.teams.length) {
+      this.teams = this.teams.filter((_, ind) => ind !== team);
+      this.updateSeeding();
+    }
+  }
+
   // Number of teams in tournament
   numTeams() {
     return this.teams.length;
@@ -150,6 +163,21 @@ export class Division {
 
       // Set the seeds of the teams in the division
       this.teams.forEach((team, index) => {
+        team.seed = index + 1;
+      });
+    }
+  }
+
+  // Update seeds in the tournament
+  updatePosition() {
+    if (this.numWaitListed() > 0) {
+      // Sorts the teams in the waitlist by sign-up time
+      this.waitList.sort((a, b) => {
+        return b.registrationTime - a.registrationTime;
+      });
+
+      // Set the seeds of the teams in the division
+      this.waitList.forEach((team, index) => {
         team.seed = index + 1;
       });
     }

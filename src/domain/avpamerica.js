@@ -81,7 +81,7 @@ function extractTeam(data, headerMap, division) {
   });
 
   // Check of team is valid. If not, it won't have any players
-  if (team.players.length === 0) {
+  if (team.players.length < 2) {
     return null;
   }
   return team;

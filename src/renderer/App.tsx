@@ -6,7 +6,7 @@ import Dashboard from './routes/Dashboard';
 import CourtMap from './routes/CourtMap';
 import Main from './routes/Main';
 import Divisions from './routes/Divisions';
-import Financials from './routes/Financials';
+import Registration from './routes/Registration';
 
 export default function App() {
   return (
@@ -18,7 +18,7 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/courtmap" element={<CourtMap />} />
             <Route path="/divisions" element={<Divisions />} />
-            <Route path="/financials" element={<Financials />} />
+            <Route path="/registration" element={<Registration />} />
           </Routes>
         </Layout>
       </Router>
