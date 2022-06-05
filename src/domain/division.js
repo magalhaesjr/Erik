@@ -90,7 +90,7 @@ export class Division {
           input[key].forEach((team) => {
             this.addTeam(new Team(team));
           });
-        } else if (key !== 'pools') {
+        } else if (key !== 'pools' && key !== 'nets') {
           // Just assign the property
           this[key] = input[key];
         }

@@ -54,6 +54,12 @@ const OutDrawer = () => {
             </ListItemIcon>
             <ListItemText primary="Divisions" />
           </ListItem>
+          <ListItem button component={Link} to="/pools">
+            <ListItemIcon>
+              <AppsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Pools" />
+          </ListItem>
           <ListItem button component={Link} to="/registration">
             <ListItemIcon>
               <AppsIcon />

@@ -7,6 +7,7 @@ import CourtMap from './routes/CourtMap';
 import Main from './routes/Main';
 import Divisions from './routes/Divisions';
 import Registration from './routes/Registration';
+import Pools from './routes/Pools';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/courtmap" element={<CourtMap />} />
             <Route path="/divisions" element={<Divisions />} />
             <Route path="/registration" element={<Registration />} />
+            <Route path="/pools" element={<Pools />} />
           </Routes>
         </Layout>
       </Router>

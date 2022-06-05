@@ -152,6 +152,17 @@ const DivEntries = (props) => {
     });
   };
 
+  const genPools = () => {
+    if (entries.length > 0) {
+      dispatch({
+        type: 'generatePools',
+        payload: {
+          division,
+        },
+      });
+    }
+  };
+
   return (
     <TableContainer component={Paper}>
       <Typography variant="h6" align="left">
@@ -162,7 +173,8 @@ const DivEntries = (props) => {
         onEdit={handleEdit}
         onAdd={handleAdd}
         onSave={handleSave}
-        rows={entries.length}
+        onGenPools={genPools}
+        waitList={waitList}
       />
       <Table
         sx={{

@@ -23,6 +23,7 @@ const pageStyle = `
 const Registration = () => {
   // Declare state for this division component
   const [division, setDivision] = React.useState('');
+  const [mode, setMode] = React.useState('form');
   // Reference for printing
   const printRef = React.useRef();
 
@@ -66,7 +67,7 @@ const Registration = () => {
         <PrintIcon />
         PRINT
       </Button>
-      <RegSheet division={division} ref={printRef} />
+      <RegSheet division={division} ref={printRef} mode={mode} />
     </Box>
   );
 };

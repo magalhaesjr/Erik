@@ -37,7 +37,6 @@ export default function appReducer(state = initialState, action) {
       const newState = JSON.parse(JSON.stringify(state));
       // Find division in state
       const division = getDivision(newState, action.payload.division);
-      console.log(division);
       if (division !== null) {
         const { team, player, playerNum, waitList } = action.payload;
         // update player info
@@ -144,6 +143,47 @@ export default function appReducer(state = initialState, action) {
         const divObj = new Division(division);
         const { waitList, team } = action.payload;
         divObj.removeTeam(team, waitList);
+        const newState = setDivision(
+          JSON.parse(JSON.stringify(state)),
+          action.payload.division,
+          JSON.parse(JSON.stringify(divObj))
+        );
+        // Update stae
+        return newState;
+      }
+      return state;
+    }
+    case 'generatePools': {
+      // Find division
+      const division = getDivision(state, action.payload.division);
+      // Generate pools
+      if (division !== null) {
+        const divObj = new Division(division);
+        // Generate pools
+        divObj.assignCourts(Array(divObj.nets).fill(1));
+        divObj.createPools();
+        const newState = setDivision(
+          JSON.parse(JSON.stringify(state)),
+          action.payload.division,
+          JSON.parse(JSON.stringify(divObj))
+        );
+        console.log(divObj);
+        // Update stae
+        return newState;
+      }
+      return state;
+    }
+    case 'updatePaidStatus': {
+      // Get payload variables
+      const { team, playerInd, paid, staff } = action.payload;
+      // Find division
+      const division = getDivision(state, action.payload.division);
+      // Generate pools
+      if (division !== null) {
+        const divObj = new Division(division);
+        // Update player paid status in this division
+        divObj.teams[team].players[playerInd].paid = paid;
+        divObj.teams[team].players[playerInd].staff = staff;
         const newState = setDivision(
           JSON.parse(JSON.stringify(state)),
           action.payload.division,

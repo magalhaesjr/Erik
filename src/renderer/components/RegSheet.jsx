@@ -7,8 +7,12 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Button, Paper, Typography, styled } from '@mui/material';
+import { Paper, styled } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
+
+// Define pre-paid and unpaid values
+const PREPAID = '$30';
+const UNPAID = '$35';
 
 // Styles
 const RegPaper = styled(Paper)(({ theme }) => ({
@@ -17,7 +21,6 @@ const RegPaper = styled(Paper)(({ theme }) => ({
   margin: '0in',
   padding: '0px',
   background: '#ffffff',
-  width: '10.75in',
 }));
 
 const RegCell = styled(TableCell)(({ theme }) => ({
@@ -35,6 +38,15 @@ const RegCell = styled(TableCell)(({ theme }) => ({
   overflow: 'hidden',
   flexShrink: '0',
 }));
+
+const selectStyle = {
+  fontFamily: 'Calibri',
+  fontSize: '11pt',
+  padding: 0,
+  margin: 0,
+  display: 'inline',
+  borderStyle: 'none',
+};
 
 const HeadCell = styled(TableCell)(({ theme }) => ({
   component: 'th',
@@ -59,21 +71,23 @@ const addTeams = (division, teams) => {
   division.teams.forEach((team) => {
     teams.push(team);
   });
-  console.log(teams);
   return teams;
 };
 
-// Specifies the label for the table
-const label = (waitList) => {
-  if (waitList) {
-    return 'Wait List';
+// Returns paid status based on player
+const paidStatus = (player) => {
+  if (player.paid) {
+    return PREPAID;
   }
-  return 'Entries';
+  if (player.staff) {
+    return 'staff';
+  }
+  return UNPAID;
 };
 
 // Division entries table
 const RegSheet = React.forwardRef((props, ref) => {
-  const { division } = props;
+  const { division, mode } = props;
 
   // Grabs selector from redux
   const entries = useSelector((state) => {
@@ -88,13 +102,61 @@ const RegSheet = React.forwardRef((props, ref) => {
     });
     return teams;
   });
+
+  // Grab dispatch
+  const dispatch = useDispatch();
+
+  // Update paid status of a player
+  const handlePaid = (event, index, playerInd) => {
+    switch (event.target.value) {
+      case PREPAID: {
+        dispatch({
+          type: 'updatePaidStatus',
+          payload: {
+            division,
+            team: index,
+            playerInd,
+            paid: true,
+            staff: false,
+          },
+        });
+        break;
+      }
+      case UNPAID: {
+        dispatch({
+          type: 'updatePaidStatus',
+          payload: {
+            division,
+            team: index,
+            playerInd,
+            paid: false,
+            staff: false,
+          },
+        });
+        break;
+      }
+      default: {
+        dispatch({
+          type: 'updatePaidStatus',
+          payload: {
+            division,
+            team: index,
+            playerInd,
+            paid: false,
+            staff: true,
+          },
+        });
+      }
+    }
+  };
+
   return (
     <TableContainer ref={ref} component={RegPaper}>
       <Table
         sx={{
           tableLayout: 'auto',
-          width: '10.75in',
           overflow: 'hidden',
+          width: '10.8in',
           border: '1px solid black',
         }}
       >
@@ -135,22 +197,20 @@ const RegSheet = React.forwardRef((props, ref) => {
             </HeadCell>
           </TableRow>
           <TableRow>
-            <HeadCell width="2.29pt">#</HeadCell>
-            <HeadCell max-width="6.57pt" width="6.57pt">
-              Team Ranking
-            </HeadCell>
-            <HeadCell width="4.57pt">Paid</HeadCell>
-            <HeadCell width="5.57pt">Waiver</HeadCell>
-            <HeadCell width="7.29pt">ID</HeadCell>
-            <HeadCell width="20.57pt">Name</HeadCell>
-            <HeadCell width="6.57pt">Ranking</HeadCell>
-            <HeadCell width="2.43pt" />
-            <HeadCell width="4.57pt">Paid</HeadCell>
-            <HeadCell width="5.57pt">Waiver</HeadCell>
-            <HeadCell width="7.29pt">ID</HeadCell>
-            <HeadCell width="20.57pt">Name</HeadCell>
-            <HeadCell width="6.57pt">Ranking</HeadCell>
-            <HeadCell width="20.86pt">Comments</HeadCell>
+            <HeadCell width="1.89%">#</HeadCell>
+            <HeadCell width="5.417%">Team Ranking</HeadCell>
+            <HeadCell width="3.768%">Paid</HeadCell>
+            <HeadCell width="4.592%">Waiver</HeadCell>
+            <HeadCell width="6.01%">ID</HeadCell>
+            <HeadCell width="16.96%">Name</HeadCell>
+            <HeadCell width="5.417%">Ranking</HeadCell>
+            <HeadCell width="2.003%" />
+            <HeadCell width="3.768%">Paid</HeadCell>
+            <HeadCell width="4.592%">Waiver</HeadCell>
+            <HeadCell width="6.01%">ID</HeadCell>
+            <HeadCell width="16.96%">Name</HeadCell>
+            <HeadCell width="5.417%">Ranking</HeadCell>
+            <HeadCell width="17.198%">Comments</HeadCell>
           </TableRow>
         </TableHead>
         <TableBody
@@ -162,16 +222,20 @@ const RegSheet = React.forwardRef((props, ref) => {
             <TableRow key={team.seed}>
               <RegCell>{team.seed}</RegCell>
               <RegCell>{team.ranking}</RegCell>
-              {team.paid ? (
-                <RegCell>$30</RegCell>
-              ) : (
-                <RegCell
-                  sx={{
-                    color: 'red',
-                  }}
-                >
-                  $35
+              {mode === 'form' ? (
+                <RegCell>
+                  <select
+                    value={paidStatus(team.players[0])}
+                    onChange={(e) => handlePaid(e, index, 0)}
+                    style={selectStyle}
+                  >
+                    <option value={PREPAID}>{PREPAID}</option>
+                    <option value={UNPAID}>{UNPAID}</option>
+                    <option value="staff">staff</option>
+                  </select>
                 </RegCell>
+              ) : (
+                <RegCell>{paidStatus(team.players[0])}</RegCell>
               )}
               <RegCell />
               {team.players[0].membershipValid ? (
@@ -193,16 +257,20 @@ const RegSheet = React.forwardRef((props, ref) => {
               </RegCell>
               <RegCell>{team.players[0].ranking}</RegCell>
               <RegCell />
-              {team.paid ? (
-                <RegCell>$30</RegCell>
-              ) : (
-                <RegCell
-                  sx={{
-                    color: 'red',
-                  }}
-                >
-                  $35
+              {mode === 'form' ? (
+                <RegCell>
+                  <select
+                    value={paidStatus(team.players[1])}
+                    onChange={(e) => handlePaid(e, index, 1)}
+                    style={selectStyle}
+                  >
+                    <option value={PREPAID}>{PREPAID}</option>
+                    <option value={UNPAID}>{UNPAID}</option>
+                    <option value="staff">staff</option>
+                  </select>
                 </RegCell>
+              ) : (
+                <RegCell>{paidStatus(team.players[1])}</RegCell>
               )}
               <RegCell />
               {team.players[1].membershipValid ? (
@@ -235,6 +303,7 @@ const RegSheet = React.forwardRef((props, ref) => {
 
 RegSheet.propTypes = {
   division: PropTypes.string.isRequired,
+  mode: PropTypes.string.isRequired,
 };
 
 export default RegSheet;

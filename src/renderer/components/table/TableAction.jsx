@@ -4,11 +4,12 @@ import { Button } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import CreateIcon from '@mui/icons-material/Create';
 import DoneIcon from '@mui/icons-material/Done';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import PropTypes from 'prop-types';
 import MainDiv from '../MainDiv';
 
 const TableAction = (props) => {
-  const { activeEdit, onAdd, onEdit, onSave, rows } = props;
+  const { activeEdit, onAdd, onEdit, onSave, onGenPools, waitList } = props;
 
   // Handlers
   const handleEdit = (event) => {
@@ -19,6 +20,9 @@ const TableAction = (props) => {
   };
   const handleSave = (event) => {
     onSave(event.target.value);
+  };
+  const genPools = () => {
+    onGenPools();
   };
 
   if (activeEdit) {
@@ -37,6 +41,12 @@ const TableAction = (props) => {
             <DoneIcon />
             UPDATE RANKS
           </Button>
+          {!waitList && (
+            <Button onClick={genPools}>
+              <LibraryBooksIcon onClick={genPools} />
+              MAKE POOLS
+            </Button>
+          )}
         </MainDiv>
       </MainDiv>
     );
@@ -56,6 +66,12 @@ const TableAction = (props) => {
           <CreateIcon />
           EDIT
         </Button>
+        {!waitList && (
+          <Button onClick={genPools}>
+            <LibraryBooksIcon onClick={genPools} />
+            MAKE POOLS
+          </Button>
+        )}
       </MainDiv>
     </MainDiv>
   );
@@ -65,16 +81,18 @@ TableAction.propTypes = {
   onAdd: PropTypes.func,
   onSave: PropTypes.func,
   onEdit: PropTypes.func,
-  rows: PropTypes.number,
+  onGenPools: PropTypes.func,
   activeEdit: PropTypes.bool,
+  waitList: PropTypes.bool,
 };
 
 TableAction.defaultProps = {
   onAdd: () => {},
   onSave: () => {},
   onEdit: () => {},
-  rows: 0,
+  onGenPools: () => {},
   activeEdit: false,
+  waitList: false,
 };
 
 export default TableAction;

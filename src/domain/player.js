@@ -43,6 +43,7 @@ export default class Player {
     this.org = '';
     this.ranking = 0.0;
     this.membershipValid = false;
+    this.paid = false;
     this.staff = false;
 
     // If more data was input
