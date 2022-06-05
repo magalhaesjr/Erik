@@ -18,14 +18,16 @@ const PoolInfo = (props) => {
         variant="h4"
         width="50%"
         sx={{
+          color: 'black',
           display: 'inline-block',
         }}
       >
         {division}
       </Typography>
       <Typography
-        variant="h5"
+        variant="h4"
         sx={{
+          color: 'black',
           display: 'inline-block',
         }}
       >

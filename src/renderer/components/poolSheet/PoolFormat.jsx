@@ -13,6 +13,7 @@ const PoolFormat = (props) => {
           variant="h5"
           width="50%"
           sx={{
+            color: 'black',
             display: 'inline-block',
           }}
         >
@@ -23,6 +24,7 @@ const PoolFormat = (props) => {
           variant="h5"
           width="50%"
           sx={{
+            color: 'black',
             display: 'inline-block',
           }}
         >
@@ -33,6 +35,7 @@ const PoolFormat = (props) => {
         variant="h5"
         width="50%"
         sx={{
+          color: 'black',
           display: 'inline-block',
         }}
       >

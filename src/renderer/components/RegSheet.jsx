@@ -11,8 +11,10 @@ import { Paper, styled } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 
 // Define pre-paid and unpaid values
-const PREPAID = '$30';
-const UNPAID = '$35';
+const PREPAID = '$40';
+const UNPAID = '$45';
+const PREPAID_TEAM = '$80';
+const WALKON = '$90';
 
 // Styles
 const RegPaper = styled(Paper)(({ theme }) => ({
@@ -53,7 +55,7 @@ const HeadCell = styled(TableCell)(({ theme }) => ({
   font: 'Arial',
   fontSize: '8pt',
   fontWeight: 'bold',
-  height: '31.25pt',
+  height: '15.75pt',
   margin: '0px',
   padding: '0px',
   borderRadius: '0px',
@@ -167,10 +169,11 @@ const RegSheet = React.forwardRef((props, ref) => {
               sx={{
                 font: 'calibri',
                 fontSize: '12pt',
+                height: '22.5pt',
               }}
             >
               {' '}
-              {division}{' '}
+              {`${division} (${PREPAID_TEAM} pre-paid / ${WALKON} walk-on)`}{' '}
             </HeadCell>
           </TableRow>
           <TableRow>
