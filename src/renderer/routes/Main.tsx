@@ -2,6 +2,7 @@
 import { Typography, Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import MainDiv from '../components/MainDiv';
+import Tournament from '../../domain/tournament';
 
 const Main = () => {
   const dispatch = useDispatch();
@@ -12,10 +13,29 @@ const Main = () => {
       <Typography variant="h3">ERIK</Typography>
       <MainDiv>
         <Button
-          variant="primary"
+          variant="outlined"
           onClick={() => {
             window.electron
               .importFile()
+              .then((tourny: unknown) => {
+                if (tourny !== undefined && tourny !== null) {
+                  dispatch({ type: 'loadTournament', payload: tourny });
+                }
+                return 0;
+              })
+              .catch((errors: unknown) => {
+                // eslint-disable-next-line no-console
+                console.log(errors);
+              });
+          }}
+        >
+          New Tournament
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            window.electron
+              .loadTournament()
               .then((tourny) => {
                 if (tourny !== undefined && tourny !== null) {
                   dispatch({ type: 'loadTournament', payload: tourny });
@@ -28,9 +48,6 @@ const Main = () => {
               });
           }}
         >
-          New Tournament
-        </Button>
-        <Button variant="primary" onClick={window.electron.showContents}>
           Load Tournament
         </Button>
       </MainDiv>
