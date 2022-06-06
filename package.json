@@ -76,6 +76,10 @@
       ],
       "icon": "assets/icons/win/nvc.ico"
     },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
     "linux": {
       "target": [
         "AppImage"
