@@ -90,7 +90,7 @@ export class Division {
           input[key].forEach((team) => {
             this.addTeam(new Team(team));
           });
-        } else if (key !== 'pools') {
+        } else if (key !== 'pools' && key !== 'nets') {
           // Just assign the property
           this[key] = input[key];
         }
@@ -115,6 +115,7 @@ export class Division {
     if (team instanceof Team) {
       // Check if it goes into the tournament or wait list
       if (team.isWaitListed) {
+        team.seed = this.waitList.length + 1;
         this.waitList.push(team);
       } else {
         this.teams.push(team);
@@ -126,6 +127,19 @@ export class Division {
     } else {
       // Not a valid Team
       throw new Error('Input object is not a Team class');
+    }
+  }
+
+  removeTeam(team, waitList) {
+    // Remove input team index from teams
+    if (waitList) {
+      if (team < this.waitList.length) {
+        this.waitList = this.waitList.filter((_, ind) => ind !== team);
+        this.updatePosition();
+      }
+    } else if (team < this.teams.length) {
+      this.teams = this.teams.filter((_, ind) => ind !== team);
+      this.updateSeeding();
     }
   }
 
@@ -149,6 +163,21 @@ export class Division {
 
       // Set the seeds of the teams in the division
       this.teams.forEach((team, index) => {
+        team.seed = index + 1;
+      });
+    }
+  }
+
+  // Update seeds in the tournament
+  updatePosition() {
+    if (this.numWaitListed() > 0) {
+      // Sorts the teams in the waitlist by sign-up time
+      this.waitList.sort((a, b) => {
+        return b.registrationTime - a.registrationTime;
+      });
+
+      // Set the seeds of the teams in the division
+      this.waitList.forEach((team, index) => {
         team.seed = index + 1;
       });
     }

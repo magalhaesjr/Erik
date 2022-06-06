@@ -1,8 +1,11 @@
 declare global {
   interface Window {
     electron: {
-      importFile(): void;
-      showContents(): void;
+      importFile(): Promise<unknown>;
+      loadTournament(): Promise<unknown>;
+      requestLoad(func: (...args: unknown[]) => void): void;
+      requestSave(func: (...args: unknown[]) => void): void;
+      saveTournament(tourney: unknown): void;
     };
   }
 }

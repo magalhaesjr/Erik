@@ -1,22 +1,45 @@
 import * as React from 'react';
-import { Box, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
-import DivEntries from '../components/DivisionEntries';
+import { useReactToPrint } from 'react-to-print';
+import PrintIcon from '@mui/icons-material/Print';
+import RegSheet from '../components/RegSheet';
 
-// Divisions Page
-const Divisions = () => {
+const pageStyle = `
+  @page {
+    size: landscape;
+    margin: 0px 0px 0px 0px;
+  }
+
+  @media all {
+    .pagebreak {
+      overflow: hidden;
+      height: 0px;
+    }
+  }
+`;
+
+// Registration Page
+const Registration = () => {
   // Declare state for this division component
   const [division, setDivision] = React.useState('');
+  const [mode, setMode] = React.useState('form');
+  // Reference for printing
+  const printRef = React.useRef();
 
   // Callback
   const handleOnChange = (event) => {
     setDivision(event.target.value);
   };
 
+  const printSheet = useReactToPrint({
+    content: () => printRef.current,
+    pageStyle,
+  });
+
   // Grabs selector from redux
   const divisions = useSelector((state) => {
     const div = {};
-    // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
       Object.keys(state[day].divisions).forEach((name) => {
         div[name] = state[day].divisions[name];
@@ -40,10 +63,13 @@ const Divisions = () => {
           </MenuItem>
         ))}
       </Select>
-      <DivEntries division={division} waitList={false} />
-      <DivEntries division={division} waitList />
+      <Button onClick={printSheet}>
+        <PrintIcon />
+        PRINT
+      </Button>
+      <RegSheet division={division} ref={printRef} mode={mode} />
     </Box>
   );
 };
 
-export default Divisions;
+export default Registration;

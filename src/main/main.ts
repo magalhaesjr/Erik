@@ -127,7 +127,7 @@ ipcMain.handle('tournament:importFile', () => {
   });
 
   if (filename === null || filename === undefined) {
-    return;
+    return null;
   }
 
   // The file is actually html tables... why call it an excel file?????
@@ -135,15 +135,69 @@ ipcMain.handle('tournament:importFile', () => {
     encoding: 'utf-8',
   });
   if (htmlString === null || htmlString === undefined) {
-    return;
+    return null;
   }
 
   // Add to string
   htmlString = `<div id="container"'>${htmlString}</div>`;
   const dom = new JSDOM(htmlString);
   const tourny = extractEntries(dom.window.document);
-  console.log(tourny);
+
+  return JSON.parse(JSON.stringify(tourny));
 });
+
+ipcMain.handle('tournament:loadTournament', () => {
+  const filename = dialog.showOpenDialogSync({
+    properties: ['openFile'],
+    filters: [
+      {
+        name: 'Tournament',
+        extensions: ['json'],
+      },
+    ],
+  });
+
+  if (filename === null || filename === undefined) {
+    return null;
+  }
+
+  // Return the JSON object
+  return JSON.parse(
+    fs.readFileSync(filename[0], {
+      encoding: 'utf-8',
+    })
+  );
+});
+
+ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
+  // If empty tournament sent, just ignore it
+  if (Object.keys(tourney).length === 0) {
+    return;
+  }
+  console.log(tourney);
+  // Have the use select a save file
+  const filename = dialog.showSaveDialogSync({
+    filters: [
+      {
+        name: 'Tournament',
+        extensions: ['json'],
+      },
+    ],
+  });
+
+  // User selected cancel
+  if (filename === null || filename === undefined) {
+    return;
+  }
+
+  // Write out the JSON file
+  fs.writeFile(filename, JSON.stringify(tourney), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+});
+
 /**
  * Add event listeners...
  */

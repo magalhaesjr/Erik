@@ -32,7 +32,7 @@ const Layout: React.FC<Props> = ({ children }) => {
           sx={{
             flexGrow: 1,
             flex: 1,
-            marginLeft: '240px',
+            marginLeft: '180px',
             width: 'auto',
             p: 3,
           }}

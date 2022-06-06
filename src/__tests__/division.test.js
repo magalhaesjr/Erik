@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 // Team dependency
 import Team from '../domain/team';
+import Player from '../domain/player';
 // Tested: Division
 import { Division, validateDivision } from '../domain/division';
 
@@ -9,8 +10,13 @@ function generateTeams(numTeams) {
   const testTeams = [];
   for (let i = 0; i < numTeams; i += 1) {
     const newTeam = new Team();
-    // Add ranking points
-    newTeam.ranking = i * 10;
+    // Add ranking points via players
+    // eslint-disable-next-line array-callback-return
+    [...Array(2)].map((_, ind) => {
+      const player = new Player();
+      player.ranking = i * 10;
+      newTeam.addPlayer(player);
+    });
     testTeams.push(newTeam);
   }
   return testTeams;
