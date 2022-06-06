@@ -2,7 +2,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Paper, Typography, styled, Grid } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PoolHeader from './poolSheet/PoolHeader';
 import PoolSchedule from './poolSheet/PoolSchedule';
 import PoolMatch from './poolSheet/PoolMatch';

@@ -34,7 +34,6 @@ const teamWidth = (nTeams) => {
 
 const PoolResults = (props) => {
   const { teams } = props;
-  const cellWidth = React.useState(teamWidth(teams.length));
 
   return (
     <TableContainer
@@ -65,7 +64,7 @@ const PoolResults = (props) => {
               <PoolCell
                 rowSpan={2}
                 sx={{
-                  width: cellWidth,
+                  width: teamWidth(teams.length),
                 }}
               >
                 {index + 1}
@@ -90,7 +89,11 @@ const PoolResults = (props) => {
         </TableBody>
       </Table>
       {teams.map((_, index) => (
-        <TeamResults teams={teams} cellWidth={cellWidth} index={index} />
+        <TeamResults
+          teams={teams}
+          cellWidth={teamWidth(teams.length)}
+          index={index}
+        />
       ))}
     </TableContainer>
   );

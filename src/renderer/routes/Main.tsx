@@ -2,7 +2,6 @@
 import { Typography, Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import MainDiv from '../components/MainDiv';
-import Tournament from '../../domain/tournament';
 
 const Main = () => {
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 {
-  "name": "Erik",
+  "name": "erik",
   "description": "Application for managing NVC Tournaments",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -49,6 +49,7 @@
           "x64"
         ]
       },
+      "icon": "assets/icons/mac/nvc.icns",
       "type": "distribution",
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
@@ -72,13 +73,15 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "assets/icons/win/nvc.ico"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
-      "category": "Development"
+      "category": "Development",
+      "icon": "assets/icons/linux/nvc.png"
     },
     "directories": {
       "app": "release/app",

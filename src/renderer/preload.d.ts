@@ -1,5 +1,3 @@
-import Tournament from '../domain/tournament';
-
 declare global {
   interface Window {
     electron: {
