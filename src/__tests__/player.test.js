@@ -133,6 +133,8 @@ test('export saves all properties', () => {
   // Import info from sheet
   sheetInfo.name = 'Jeff Magalhaes';
   testPlayer.importFromSheet(sheetInfo);
+  // New player status is set when added to a team, just set it here
+  testPlayer.paid = false;
   // export player info (save into an object for testing
   const outObject = JSON.parse(testPlayer.export());
   // Compare exported properties to testPlayer properties
@@ -147,6 +149,7 @@ test('import initializes player', () => {
   // Improt info from sheet
   sheetInfo.name = 'Jeff Magalhaes';
   const testPlayer = new Player(sheetInfo);
+  testPlayer.paid = false;
   // Export the player info
   const playerInfo = testPlayer.export();
   // New player

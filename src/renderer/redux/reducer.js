@@ -167,7 +167,6 @@ export default function appReducer(state = initialState, action) {
           action.payload.division,
           JSON.parse(JSON.stringify(divObj))
         );
-        console.log(divObj);
         // Update stae
         return newState;
       }
@@ -181,6 +180,7 @@ export default function appReducer(state = initialState, action) {
       // Generate pools
       if (division !== null) {
         const divObj = new Division(division);
+        console.log(divObj);
         // Update player paid status in this division
         divObj.teams[team].players[playerInd].paid = paid;
         divObj.teams[team].players[playerInd].staff = staff;
