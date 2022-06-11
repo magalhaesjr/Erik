@@ -27,11 +27,13 @@ const PoolSheet = React.forwardRef((props, ref) => {
     // eslint-disable-next-line prettier/prettier
     let divPool = {};
     Object.keys(state).forEach((day) => {
-      // eslint-disable-next-line prettier/prettier
-      if (Object.prototype.hasOwnProperty.call(state[day].divisions, division)) {
-        // Get pool
-        if (poolId < state[day].divisions[division].pools.length) {
-          divPool = state[day].divisions[division].pools[poolId];
+      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+        // eslint-disable-next-line prettier/prettier
+        if (Object.prototype.hasOwnProperty.call(state[day].divisions, division)) {
+          // Get pool
+          if (poolId < state[day].divisions[division].pools.length) {
+            divPool = state[day].divisions[division].pools[poolId];
+          }
         }
       }
     });

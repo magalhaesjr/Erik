@@ -34,11 +34,13 @@ const Pools = () => {
   const divisions = useSelector((state) => {
     const div = {};
     Object.keys(state).forEach((day) => {
-      Object.keys(state[day].divisions).forEach((name) => {
-        if (state[day].divisions[name].pools.length > 0) {
-          div[name] = state[day].divisions[name];
-        }
-      });
+      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+        Object.keys(state[day].divisions).forEach((name) => {
+          if (state[day].divisions[name].pools.length > 0) {
+            div[name] = state[day].divisions[name];
+          }
+        });
+      }
     });
     return div;
   });
@@ -54,6 +56,8 @@ const Pools = () => {
       }
     );
     setAvailable(divPools);
+    // Default to first pool
+    setPool(1);
   };
   const handlePoolChange = (event) => {
     setPool(event.target.value);

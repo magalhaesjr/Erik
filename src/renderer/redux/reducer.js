@@ -8,8 +8,10 @@ import { Division } from '../../domain/division';
 const getDivision = (state, div) => {
   let division = {};
   Object.keys(state).forEach((day) => {
-    if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
-      division = state[day].divisions[div];
+    if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
+        division = state[day].divisions[div];
+      }
     }
   });
   return division;
@@ -17,8 +19,10 @@ const getDivision = (state, div) => {
 
 const setDivision = (state, div, newDiv) => {
   Object.keys(state).forEach((day) => {
-    if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
-      state[day].divisions[div] = newDiv;
+    if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
+        state[day].divisions[div] = newDiv;
+      }
     }
   });
   return state;
@@ -167,7 +171,6 @@ export default function appReducer(state = initialState, action) {
           action.payload.division,
           JSON.parse(JSON.stringify(divObj))
         );
-        console.log(divObj);
         // Update stae
         return newState;
       }

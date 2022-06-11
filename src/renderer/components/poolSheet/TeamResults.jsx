@@ -7,6 +7,9 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { styled } from '@mui/material';
 
+const validMatch = '#ffffff';
+const invalidMatch = '#555555';
+
 const PoolCell = styled(TableCell)(({ theme }) => ({
   fontSize: '8pt',
   fontWeight: 'bold',
@@ -16,7 +19,7 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   borderLeft: '1px solid black',
   borderBottom: '1px solid black',
   color: '#000000',
-  background: '#ffffff',
+  background: validMatch,
   verticalAlign: 'middle',
   textAlign: 'center',
   width: '0.2in',
@@ -55,6 +58,7 @@ const TeamResults = (props) => {
               rowSpan={2}
               sx={{
                 width: cellWidth,
+                background: index === i ? invalidMatch : validMatch,
               }}
             />
           ))}

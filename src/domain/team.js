@@ -82,8 +82,8 @@ export default class Team {
   addPlayer(player) {
     if (player instanceof Player) {
       // Update paid status
-      if (this.paid) {
-        player.paid = true;
+      if (player.paid === undefined) {
+        player.paid = this.paid;
       }
       // Add new player
       this.players.push(player);

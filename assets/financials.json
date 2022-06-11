@@ -1,0 +1,39 @@
+{
+  "prepaidCost": 80,
+  "walkOnCost": 90,
+  "payoutDivisions": {
+    "saturday":
+      [
+        {"main": "Men's Open",
+        "sub": "Men's AA"},
+        {"main": "Women's Open",
+          "sub": "Women's AA"}
+      ],
+    "sunday":
+      [
+        {"main": "Coed 2's Open",
+        "sub": "Coed 2's AA"}
+      ]
+  },
+  "payoutParams": {
+    "prizePool": 45,
+    "saturday": {
+      "main" : {
+        "1st": 0.34,
+        "2nd": 0.2,
+        "3rd": 0.13
+      }, "sub" : {
+        "1st": 0.12,
+        "2nd": 0.08
+      }
+    },
+    "sunday": {
+      "main" : {
+        "1st": 0.238,
+        "2nd": 0.14,
+        "3rd": 0.09,
+        "5th": 0.0546
+      }
+    }
+  }
+}

@@ -121,8 +121,8 @@ export class Division {
         this.teams.push(team);
         // Update ranking points
         this.updateSeeding();
-        // Update number of required nets
-        this.nets = Math.ceil(this.numTeams() / this.rules.maxTeams);
+        // Update nets
+        this.updateNets();
       }
     } else {
       // Not a valid Team
@@ -140,6 +140,7 @@ export class Division {
     } else if (team < this.teams.length) {
       this.teams = this.teams.filter((_, ind) => ind !== team);
       this.updateSeeding();
+      this.updateNets();
     }
   }
 
@@ -165,6 +166,18 @@ export class Division {
       this.teams.forEach((team, index) => {
         team.seed = index + 1;
       });
+    }
+  }
+
+  // Update number of required nets
+  updateNets() {
+    // Special cases
+    if (this.numTeams() === 11) {
+      this.nets = 2;
+    } else if (this.numTeams() <= 7) {
+      this.nets = 1;
+    } else {
+      this.nets = Math.ceil(this.numTeams() / this.rules.maxTeams);
     }
   }
 
@@ -251,10 +264,10 @@ export class Division {
     // Pool index
     let poolIndex = 0;
     let direction = 1;
-    // Number of teams to do regular assignment in snake
-    const teamCutoff =
-      this.rules.maxTeams * Math.floor(this.numTeams() / this.rules.maxTeams);
-
+    // Number of pools required
+    const numPools = Math.floor(this.numTeams() / this.rules.minTeams);
+    // Number of teams to do regular assignment in snake (-1 because index is 0 based)
+    const teamCutoff = Math.floor(this.numTeams() / numPools) * numPools - 1;
     // Do a snake style assignment of teams to pools
     this.teams.forEach((team, index) => {
       // Assign team to pool

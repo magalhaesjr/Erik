@@ -59,6 +59,11 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+// Path to financial json
+const FINANCIAL_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
+
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
@@ -142,6 +147,12 @@ ipcMain.handle('tournament:importFile', () => {
   htmlString = `<div id="container"'>${htmlString}</div>`;
   const dom = new JSDOM(htmlString);
   const tourny = extractEntries(dom.window.document);
+  // Set financial rules
+  tourny.financials = JSON.parse(
+    fs.readFileSync(path.join(FINANCIAL_PATH, 'financials.json'), {
+      encoding: 'utf-8',
+    })
+  );
 
   return JSON.parse(JSON.stringify(tourny));
 });
@@ -160,13 +171,27 @@ ipcMain.handle('tournament:loadTournament', () => {
   if (filename === null || filename === undefined) {
     return null;
   }
-
-  // Return the JSON object
-  return JSON.parse(
+  // Create a tournament
+  const tourny = JSON.parse(
     fs.readFileSync(filename[0], {
       encoding: 'utf-8',
     })
   );
+
+  // Set financial rules if not set
+  if (
+    tourny.financials === undefined ||
+    Object.keys(tourny.financials).length === 0
+  ) {
+    tourny.financials = JSON.parse(
+      fs.readFileSync(path.join(FINANCIAL_PATH, 'financials.json'), {
+        encoding: 'utf-8',
+      })
+    );
+  }
+
+  // Return the JSON object
+  return tourny;
 });
 
 ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {

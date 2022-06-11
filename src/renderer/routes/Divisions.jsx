@@ -18,9 +18,11 @@ const Divisions = () => {
     const div = {};
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
-      Object.keys(state[day].divisions).forEach((name) => {
-        div[name] = state[day].divisions[name];
-      });
+      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+        Object.keys(state[day].divisions).forEach((name) => {
+          div[name] = state[day].divisions[name];
+        });
+      }
     });
     return div;
   });
