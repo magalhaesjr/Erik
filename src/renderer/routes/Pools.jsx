@@ -56,6 +56,8 @@ const Pools = () => {
       }
     );
     setAvailable(divPools);
+    // Default to first pool
+    setPool(1);
   };
   const handlePoolChange = (event) => {
     setPool(event.target.value);

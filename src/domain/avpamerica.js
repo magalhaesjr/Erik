@@ -144,6 +144,12 @@ export default function extractEntries(dom) {
       division = extractDivision(node, divisionName);
     }
   });
+
+  // Check to add the last division
+  if (division instanceof Division) {
+    tourny.addDivision(division);
+  }
+
   // Return tournament
   return tourny;
 }
