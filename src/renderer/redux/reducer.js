@@ -8,8 +8,10 @@ import { Division } from '../../domain/division';
 const getDivision = (state, div) => {
   let division = {};
   Object.keys(state).forEach((day) => {
-    if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
-      division = state[day].divisions[div];
+    if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
+        division = state[day].divisions[div];
+      }
     }
   });
   return division;
@@ -17,8 +19,10 @@ const getDivision = (state, div) => {
 
 const setDivision = (state, div, newDiv) => {
   Object.keys(state).forEach((day) => {
-    if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
-      state[day].divisions[div] = newDiv;
+    if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
+        state[day].divisions[div] = newDiv;
+      }
     }
   });
   return state;
@@ -180,7 +184,6 @@ export default function appReducer(state = initialState, action) {
       // Generate pools
       if (division !== null) {
         const divObj = new Division(division);
-        console.log(divObj);
         // Update player paid status in this division
         divObj.teams[team].players[playerInd].paid = paid;
         divObj.teams[team].players[playerInd].staff = staff;

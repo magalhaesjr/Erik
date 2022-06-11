@@ -65,10 +65,12 @@ const DivEntries = (props) => {
     let teams = [];
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
-      if (
-        Object.prototype.hasOwnProperty.call(state[day].divisions, division)
-      ) {
-        teams = addTeams(state[day].divisions[division], teams, waitList);
+      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+        if (
+          Object.prototype.hasOwnProperty.call(state[day].divisions, division)
+        ) {
+          teams = addTeams(state[day].divisions[division], teams, waitList);
+        }
       }
     });
     return teams;

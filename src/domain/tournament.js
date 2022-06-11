@@ -10,6 +10,8 @@ export default class Tournament {
     this.saturday = new Day();
     // Sunday Tournament
     this.sunday = new Day();
+    // Financial rules
+    this.financials = {};
 
     // If input, import
     if (isObject(input)) {

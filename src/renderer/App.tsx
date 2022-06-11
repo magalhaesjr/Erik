@@ -9,6 +9,7 @@ import Main from './routes/Main';
 import Divisions from './routes/Divisions';
 import Registration from './routes/Registration';
 import Pools from './routes/Pools';
+import Payouts from './routes/Payouts';
 
 export default function App() {
   const store = useStore();
@@ -40,8 +41,9 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/courtmap" element={<CourtMap />} />
             <Route path="/divisions" element={<Divisions />} />
-            <Route path="/registration" element={<Registration />} />
+            <Route path="/payouts" element={<Payouts />} />
             <Route path="/pools" element={<Pools />} />
+            <Route path="/registration" element={<Registration />} />
           </Routes>
         </Layout>
       </Router>
