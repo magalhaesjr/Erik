@@ -61,8 +61,8 @@ const installExtensions = async () => {
 
 // Path to financial json
 const FINANCIAL_PATH = app.isPackaged
-  ? path.join(__dirname, 'assets')
-  : path.join(__dirname, '../../release/app/assets');
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
 
 const createWindow = async () => {
   if (isDebug) {
