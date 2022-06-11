@@ -193,6 +193,7 @@ test('createPools with full pools assigns teams correctly', () => {
   testDiv.assignCourts([1, 2, 3]);
   // Assign pools and check outcomes
   testDiv.createPools();
+  console.log(testDiv);
   // Check expected assignment
   expect(testDiv.pools[0].teams).toEqual([
     testDiv.teams[0],
@@ -214,6 +215,90 @@ test('createPools with full pools assigns teams correctly', () => {
     testDiv.teams[8],
     testDiv.teams[9],
     testDiv.teams[14],
+  ]);
+  // Check format
+  testDiv.pools.forEach((pool) => {
+    expect(pool.numGames).toBe(1);
+    expect(pool.points).toBe(28);
+    expect(pool.playoffTeams).toBe(2);
+  });
+});
+test('createPools with 11 teams assigns teams correctly', () => {
+  // Create a test division
+  const testDiv = new Division('Test');
+  // create 3 pools of teams
+  const testTeams = generateTeams(11);
+  // Assign them
+  testTeams.forEach((team) => {
+    testDiv.addTeam(team);
+  });
+  // Assign courts
+  testDiv.assignCourts([1, 2]);
+  // Assign pools and check outcomes
+  testDiv.createPools();
+  // Check expected assignment
+  expect(testDiv.pools[0].teams).toEqual([
+    testDiv.teams[0],
+    testDiv.teams[3],
+    testDiv.teams[4],
+    testDiv.teams[7],
+    testDiv.teams[8],
+  ]);
+  expect(testDiv.pools[1].teams).toEqual([
+    testDiv.teams[1],
+    testDiv.teams[2],
+    testDiv.teams[5],
+    testDiv.teams[6],
+    testDiv.teams[9],
+    testDiv.teams[10],
+  ]);
+  // Check format
+  expect(testDiv.pools[0].numGames).toBe(1);
+  expect(testDiv.pools[1].numGames).toBe(1);
+  expect(testDiv.pools[0].points).toBe(28);
+  expect(testDiv.pools[1].points).toBe(21);
+});
+test('createPools with full even pools assigns teams correctly', () => {
+  // Create a test division
+  const testDiv = new Division('Test');
+  // create 3 pools of teams
+  const testTeams = generateTeams(20);
+  // Assign them
+  testTeams.forEach((team) => {
+    testDiv.addTeam(team);
+  });
+  // Assign courts
+  testDiv.assignCourts([1, 2, 3, 4]);
+  // Assign pools and check outcomes
+  testDiv.createPools();
+  // Check expected assignment
+  expect(testDiv.pools[0].teams).toEqual([
+    testDiv.teams[0],
+    testDiv.teams[7],
+    testDiv.teams[8],
+    testDiv.teams[15],
+    testDiv.teams[16],
+  ]);
+  expect(testDiv.pools[1].teams).toEqual([
+    testDiv.teams[1],
+    testDiv.teams[6],
+    testDiv.teams[9],
+    testDiv.teams[14],
+    testDiv.teams[17],
+  ]);
+  expect(testDiv.pools[2].teams).toEqual([
+    testDiv.teams[2],
+    testDiv.teams[5],
+    testDiv.teams[10],
+    testDiv.teams[13],
+    testDiv.teams[18],
+  ]);
+  expect(testDiv.pools[3].teams).toEqual([
+    testDiv.teams[3],
+    testDiv.teams[4],
+    testDiv.teams[11],
+    testDiv.teams[12],
+    testDiv.teams[19],
   ]);
   // Check format
   testDiv.pools.forEach((pool) => {

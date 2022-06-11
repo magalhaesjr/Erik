@@ -264,11 +264,10 @@ export class Division {
     // Pool index
     let poolIndex = 0;
     let direction = 1;
+    // Number of pools required
+    const numPools = Math.floor(this.numTeams() / this.rules.minTeams);
     // Number of teams to do regular assignment in snake (-1 because index is 0 based)
-    const teamCutoff =
-      this.rules.minTeams * Math.floor(this.numTeams() / this.rules.minTeams) -
-      1;
-
+    const teamCutoff = Math.floor(this.numTeams() / numPools) * numPools - 1;
     // Do a snake style assignment of teams to pools
     this.teams.forEach((team, index) => {
       // Assign team to pool
