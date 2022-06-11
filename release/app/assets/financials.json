@@ -1,6 +1,6 @@
 {
-  "prepaidCost": 60,
-  "walkOnCost": 70,
+  "prepaidCost": 80,
+  "walkOnCost": 90,
   "payoutDivisions": {
     "saturday":
       [
@@ -16,7 +16,7 @@
       ]
   },
   "payoutParams": {
-    "prizePool": 35,
+    "prizePool": 45,
     "saturday": {
       "main" : {
         "1st": 0.34,
@@ -31,8 +31,8 @@
       "main" : {
         "1st": 0.238,
         "2nd": 0.14,
-        "3rd": 0.009,
-        "5th": 0.00546
+        "3rd": 0.09,
+        "5th": 0.0546
       }
     }
   }
