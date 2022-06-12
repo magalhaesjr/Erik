@@ -104,6 +104,10 @@ export class Division {
       Object.prototype.hasOwnProperty.call(input, 'pools') &&
       input.pools.length > 0
     ) {
+      // TODO fix kludge
+      if (this.courts.length < this.nets) {
+        this.courts = Array(this.nets).fill(1);
+      }
       // Recreate the pools instead of loading them, which wouldn't properly link the teams
       this.createPools();
     }

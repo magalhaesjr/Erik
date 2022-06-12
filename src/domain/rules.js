@@ -87,6 +87,7 @@ export const DIVISION_RULES = {
     centerCourt: 10,
   },
   "Coed 2's B": {
-    maxTeams: 7,
+    minTeams: 4,
+    maxTeams: 5,
   },
 };
