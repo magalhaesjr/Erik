@@ -42,7 +42,7 @@ const PoolMatch = (props) => {
         }}
       >
         <TableHead>
-          <TableRow>
+          <TableRow key="matchHeader">
             <PoolCell width="9%">Team</PoolCell>
             <PoolCell width="2%">W</PoolCell>
             <PoolCell width="84%" />
@@ -50,11 +50,21 @@ const PoolMatch = (props) => {
           </TableRow>
         </TableHead>
       </Table>
-      {pool.schedule.map((match) => (
-        <PoolScore numGames={pool.numGames} work={match.work} />
+      {pool.schedule.map((match, round) => (
+        <PoolScore
+          numGames={pool.numGames}
+          work={match.work}
+          // eslint-disable-next-line react/no-array-index-key
+          key={`roundScore_${round}`}
+        />
       ))}
-      {[...Array(20)].map(() => (
-        <PoolScore numGames={1} work="" />
+      {[...Array(20)].map((_, round) => (
+        <PoolScore
+          numGames={1}
+          work=""
+          // eslint-disable-next-line react/no-array-index-key
+          key={`extraScore_${round}`}
+        />
       ))}
     </TableContainer>
   );

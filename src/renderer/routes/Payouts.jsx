@@ -58,12 +58,13 @@ const Payouts = () => {
   return (
     <Box>
       {Object.keys(payouts).map((division) => (
-        <MainDiv>
+        <MainDiv key={division}>
           <Typography variant="h2">{division}</Typography>
           <>
             {Object.keys(payouts[division]).map((place, ind) => (
               <Card
                 variant="outlined"
+                key={place}
                 sx={{
                   width: `${
                     100 / (Object.keys(payouts[division]).length + 1)

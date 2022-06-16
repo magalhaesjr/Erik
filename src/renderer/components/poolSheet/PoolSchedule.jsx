@@ -7,6 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { styled, TableHead } from '@mui/material';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolCell = styled(TableCell)(({ theme }) => ({
   fontSize: '11pt',
   margin: '0px',
@@ -38,14 +39,15 @@ const PoolSchedule = (props) => {
         }}
       >
         <TableHead>
-          <TableRow>
+          <TableRow key="scheduleHeader">
             <PoolCell colSpan={3}>Play</PoolCell>
             <PoolCell>W</PoolCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {pool.schedule.map((match) => (
-            <TableRow>
+          {pool.schedule.map((match, round) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <TableRow key={`match_${round}`}>
               <PoolCell>{match.team1}</PoolCell>
               <PoolCell
                 sx={{

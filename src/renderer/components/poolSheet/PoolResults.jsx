@@ -9,6 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import { styled } from '@mui/material';
 import TeamResults from './TeamResults';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolCell = styled(TableCell)(({ theme }) => ({
   fontSize: '14pt',
   fontWeight: 'bold',
@@ -50,10 +51,11 @@ const PoolResults = (props) => {
         }}
       >
         <TableBody>
-          <TableRow>
+          <TableRow key="poolHeader">
             <PoolCell
               rowSpan={2}
               colSpan={7}
+              key="teamHeader"
               sx={{
                 borderLeft: '2px solid black',
               }}
@@ -63,6 +65,7 @@ const PoolResults = (props) => {
             {teams.map((_, index) => (
               <PoolCell
                 rowSpan={2}
+                key={`team_${index + 1}`}
                 sx={{
                   width: teamWidth(teams.length),
                 }}
@@ -70,15 +73,16 @@ const PoolResults = (props) => {
                 {index + 1}
               </PoolCell>
             ))}
-            <PoolCell rowSpan={2} colSpan={3}>
+            <PoolCell rowSpan={2} colSpan={3} key="win">
               Win
             </PoolCell>
-            <PoolCell rowSpan={2} colSpan={3}>
+            <PoolCell rowSpan={2} colSpan={3} key="loss">
               Loss
             </PoolCell>
             <PoolCell
               rowSpan={2}
               colSpan={7}
+              key="ptDiff"
               sx={{
                 borderRight: '2px solid black',
               }}
@@ -93,6 +97,8 @@ const PoolResults = (props) => {
           teams={teams}
           cellWidth={teamWidth(teams.length)}
           index={index}
+          // eslint-disable-next-line react/no-array-index-key
+          key={`teamResults_${index}`}
         />
       ))}
     </TableContainer>

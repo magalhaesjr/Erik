@@ -10,6 +10,7 @@ import { styled } from '@mui/material';
 const validMatch = '#ffffff';
 const invalidMatch = '#555555';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolCell = styled(TableCell)(({ theme }) => ({
   fontSize: '8pt',
   fontWeight: 'bold',
@@ -41,9 +42,12 @@ const TeamResults = (props) => {
       }}
     >
       <TableBody>
-        <TableRow>
-          <PoolCell rowSpan={2}>{index + 1}</PoolCell>
+        <TableRow key="player1">
+          <PoolCell rowSpan={2} key="player1Seed">
+            {index + 1}
+          </PoolCell>
           <PoolCell
+            key="player1Name"
             sx={{
               width: '21.875%',
             }}
@@ -56,6 +60,8 @@ const TeamResults = (props) => {
           {teams.map((_, i) => (
             <PoolCell
               rowSpan={2}
+              // eslint-disable-next-line react/no-array-index-key
+              key={`teamResult_${index}_${i}`}
               sx={{
                 width: cellWidth,
                 background: index === i ? invalidMatch : validMatch,
@@ -65,21 +71,24 @@ const TeamResults = (props) => {
           <PoolCell
             rowSpan={2}
             colSpan={3}
+            key="Win"
             sx={{
               borderLeft: '2px solid black',
             }}
           />
-          <PoolCell rowSpan={2} colSpan={3} />
+          <PoolCell rowSpan={2} colSpan={3} key="Loss" />
           <PoolCell
             rowSpan={2}
             colSpan={7}
+            key="Points"
             sx={{
               borderRight: '1px solid black',
             }}
           />
         </TableRow>
-        <TableRow>
+        <TableRow key="player2">
           <PoolCell
+            key="player2Name"
             sx={{
               width: '21.875%',
             }}
@@ -98,7 +107,7 @@ const TeamResults = (props) => {
 TeamResults.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   teams: PropTypes.array.isRequired,
-  cellWidth: PropTypes.number.isRequired,
+  cellWidth: PropTypes.string.isRequired,
   index: PropTypes.number.isRequired,
 };
 

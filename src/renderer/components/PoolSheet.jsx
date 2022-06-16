@@ -9,6 +9,7 @@ import PoolSchedule from './poolSheet/PoolSchedule';
 import PoolMatch from './poolSheet/PoolMatch';
 
 // Styles
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolPaper = styled(Paper)(({ theme }) => ({
   fontFamily: 'Calibri',
   fontSize: '8',
@@ -29,7 +30,6 @@ const PoolSheet = React.forwardRef((props, ref) => {
     let divPool = {};
     Object.keys(state).forEach((day) => {
       if (hasProp(state[day], 'divisions')) {
-        // eslint-disable-next-line prettier/prettier
         if (hasProp(state[day].divisions, division)) {
           // Get pool
           if (poolId < state[day].divisions[division].pools.length) {
