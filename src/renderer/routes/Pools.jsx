@@ -3,6 +3,7 @@ import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
+import { hasProp } from '../../domain/validate';
 import PoolSheet from '../components/PoolSheet';
 import MainDiv from '../components/MainDiv';
 
@@ -17,6 +18,9 @@ const pageStyle = `
       overflow: hidden;
       height: 0px;
     }
+  }
+  html {
+    -webkit-print-color-adjust: exact;
   }
 }
 `;
@@ -34,7 +38,7 @@ const Pools = () => {
   const divisions = useSelector((state) => {
     const div = {};
     Object.keys(state).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (hasProp(state[day], 'divisions')) {
         Object.keys(state[day].divisions).forEach((name) => {
           if (state[day].divisions[name].pools.length > 0) {
             div[name] = state[day].divisions[name];

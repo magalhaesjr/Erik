@@ -1,6 +1,6 @@
 // Implements the Team class for organizing tournaments
 import Player from './player';
-import { isObject, validateObject } from './validate';
+import { hasProp, isObject, validateObject } from './validate';
 
 // Fields required for player construction
 const TEAM_FIELDS = ['sign-up', 'paid', 'division'];
@@ -10,15 +10,12 @@ function validateInput(info) {
   // Validate object
   validateObject(info);
   // Verify that you have either seed or wait-list
-  if (
-    !Object.prototype.hasOwnProperty.call(info, 'seed') &&
-    !Object.prototype.hasOwnProperty.call(info, 'wait list')
-  ) {
+  if (!hasProp(info, 'seed') && !hasProp(info, 'wait list')) {
     throw new Error(`Team input is missing seed or waitlist`);
   }
   // Check remaining fields
   TEAM_FIELDS.forEach((key) => {
-    if (!Object.prototype.hasOwnProperty.call(info, key)) {
+    if (!hasProp(info, key)) {
       throw new Error(`Team input is missing ${key}`);
     } else if (info[key] === undefined || info[key] === null) {
       throw new Error(`Team input ${key} is undefined`);
@@ -49,10 +46,7 @@ export default class Team {
     this.division = '';
 
     // if extra inputs, import
-    if (
-      isObject(teamInput) &&
-      Object.prototype.hasOwnProperty.call(teamInput, 'sign-up')
-    ) {
+    if (isObject(teamInput) && hasProp(teamInput, 'sign-up')) {
       this.importFromSheet(teamInput);
     } else if (isObject(teamInput)) {
       this.import(teamInput);
@@ -67,10 +61,7 @@ export default class Team {
     // Fill in remaining data
     this.seed = null;
     this.paid = teamInput.paid.includes('Y');
-    this.isWaitListed = Object.prototype.hasOwnProperty.call(
-      teamInput,
-      'wait list'
-    );
+    this.isWaitListed = hasProp(teamInput, 'wait list');
     this.registrationTime = extractTime(teamInput['sign-up']);
     this.players = [];
     this.ranking = 0.0;
@@ -114,7 +105,7 @@ export default class Team {
     validateObject(input);
     // Loop through all fields in class and import as needed
     Object.keys(this).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(input, key)) {
+      if (hasProp(input, key)) {
         if (key === 'players') {
           // Re-create player objects and add them to the team
           input[key].forEach((player) => {

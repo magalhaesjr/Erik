@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
+import { isEmpty } from '../domain/validate';
 import extractEntries from '../domain/avpamerica';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -179,10 +180,7 @@ ipcMain.handle('tournament:loadTournament', () => {
   );
 
   // Set financial rules if not set
-  if (
-    tourny.financials === undefined ||
-    Object.keys(tourny.financials).length === 0
-  ) {
+  if (tourny.financials === undefined || isEmpty(tourny.financials)) {
     tourny.financials = JSON.parse(
       fs.readFileSync(path.join(FINANCIAL_PATH, 'financials.json'), {
         encoding: 'utf-8',
@@ -196,10 +194,9 @@ ipcMain.handle('tournament:loadTournament', () => {
 
 ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
   // If empty tournament sent, just ignore it
-  if (Object.keys(tourney).length === 0) {
+  if (isEmpty(tourney)) {
     return;
   }
-  console.log(tourney);
   // Have the use select a save file
   const filename = dialog.showSaveDialogSync({
     filters: [

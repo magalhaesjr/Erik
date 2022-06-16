@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box, InputLabel, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import DivEntries from '../components/DivisionEntries';
+import { hasProp } from '../../domain/validate';
 
 // Divisions Page
 const Divisions = () => {
@@ -18,7 +19,7 @@ const Divisions = () => {
     const div = {};
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (hasProp(state[day], 'divisions')) {
         Object.keys(state[day].divisions).forEach((name) => {
           div[name] = state[day].divisions[name];
         });

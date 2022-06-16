@@ -1,5 +1,5 @@
 // Defines the player class for individual players in the tournament
-import { isObject, validateObject } from './validate';
+import { hasProp, isObject, validateObject } from './validate';
 
 // Fields required for player construction
 const PLAYER_FIELDS = [
@@ -16,7 +16,7 @@ function validateInput(info) {
   // Validate it's an object
   validateObject(info);
   PLAYER_FIELDS.forEach((key) => {
-    if (!Object.prototype.hasOwnProperty.call(info, key)) {
+    if (!hasProp(info, key)) {
       throw new Error(`Player input is missing ${key}`);
     } else if (info[key] === undefined || info[key] === null) {
       throw new Error(`Player input ${key} is undefined`);
@@ -47,10 +47,7 @@ export default class Player {
     this.staff = false;
 
     // If more data was input
-    if (
-      isObject(playerIn) &&
-      Object.prototype.hasOwnProperty.call(playerIn, 'name')
-    ) {
+    if (isObject(playerIn) && hasProp(playerIn, 'name')) {
       // Import from a parsed avpamerica html table
       this.importFromSheet(playerIn);
     } else if (isObject(playerIn)) {
@@ -97,7 +94,7 @@ export default class Player {
     validateObject(player);
     // Loop through all fields in class and import as needed
     Object.keys(this).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(player, key)) {
+      if (hasProp(player, key)) {
         this[key] = player[key];
       }
     });

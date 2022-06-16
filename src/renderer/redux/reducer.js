@@ -1,4 +1,5 @@
 // Root reducer. Make this kind of global for now, until I get something going
+import { hasProp } from '../../domain/validate';
 import Player from '../../domain/player';
 import Team from '../../domain/team';
 import Tournament from '../../domain/tournament';
@@ -8,8 +9,8 @@ import { Division } from '../../domain/division';
 const getDivision = (state, div) => {
   let division = {};
   Object.keys(state).forEach((day) => {
-    if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
-      if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
+    if (hasProp(state[day], 'divisions')) {
+      if (hasProp(state[day].divisions, div)) {
         division = state[day].divisions[div];
       }
     }
@@ -19,8 +20,8 @@ const getDivision = (state, div) => {
 
 const setDivision = (state, div, newDiv) => {
   Object.keys(state).forEach((day) => {
-    if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
-      if (Object.prototype.hasOwnProperty.call(state[day].divisions, div)) {
+    if (hasProp(state[day], 'divisions')) {
+      if (hasProp(state[day].divisions, div)) {
         state[day].divisions[div] = newDiv;
       }
     }

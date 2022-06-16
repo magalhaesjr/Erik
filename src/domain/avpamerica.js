@@ -3,6 +3,7 @@ import Player from './player';
 import Team from './team';
 import { Division } from './division';
 import Tournament from './tournament';
+import { isEmpty } from './validate';
 
 // Find columns indices for each category
 function findCategoryCols(header) {
@@ -100,7 +101,7 @@ function extractDivision(table, name) {
     // Find if there are headers in this row
     const headers = row.querySelectorAll('th');
     // Decode table
-    if (headers.length > 0 && Object.keys(columns).length === 0) {
+    if (headers.length > 0 && isEmpty(columns)) {
       columns = findCategoryCols(headers);
     } else if (headers.length > 0) {
       headerMap = findDataCols(headers, columns);

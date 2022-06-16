@@ -2,7 +2,7 @@
 import Team from './team';
 // Default rules if none provided
 import { DIVISION_RULES, validateRules } from './rules';
-import { isObject, validateObject } from './validate';
+import { hasProp, isObject, validateObject } from './validate';
 // Schedules
 import { retrieveTemplate } from './schedules';
 // Pool only imports the validation function, so no circular dependency here
@@ -42,7 +42,7 @@ function setDivisionRules(allRules, division) {
   // Creates a nested copy of the simple rules object
   const rules = JSON.parse(JSON.stringify(allRules));
   // If there are division specific rules, apply them here
-  if (Object.prototype.hasOwnProperty.call(allRules, division)) {
+  if (hasProp(allRules, division)) {
     Object.keys(allRules[division]).forEach((rule) => {
       rules[rule] = allRules[division][rule];
     });
@@ -84,7 +84,7 @@ export class Division {
 
     // Loop through all fields in class and import as needed
     Object.keys(this).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(input, key)) {
+      if (hasProp(input, key)) {
         if (key === 'teams' || key === 'waitList') {
           // Re-create team objects and add them to the team
           input[key].forEach((team) => {
@@ -100,10 +100,7 @@ export class Division {
     this.updateSeeding();
 
     // If pools were saved, re-create them now
-    if (
-      Object.prototype.hasOwnProperty.call(input, 'pools') &&
-      input.pools.length > 0
-    ) {
+    if (hasProp(input, 'pools') && input.pools.length > 0) {
       // TODO fix kludge
       if (this.courts.length < this.nets) {
         this.courts = Array(this.nets).fill(1);
@@ -230,7 +227,7 @@ export class Division {
   setCenterCourt() {
     // If center court is in the rules, make sure seed 1 gets it
     if (
-      Object.prototype.hasOwnProperty.call(this.rules, 'centerCourt') &&
+      hasProp(this.rules, 'centerCourt') &&
       this.courts.includes(this.rules.centerCourt)
     ) {
       // Find center court

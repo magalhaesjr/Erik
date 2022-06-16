@@ -9,6 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Paper, styled } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
+import { hasProp } from '../../domain/validate';
 
 // Define pre-paid and unpaid values
 const PREPAID = '$40';
@@ -96,10 +97,8 @@ const RegSheet = React.forwardRef((props, ref) => {
     let teams = [];
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
-        if (
-          Object.prototype.hasOwnProperty.call(state[day].divisions, division)
-        ) {
+      if (hasProp(state[day], 'divisions')) {
+        if (hasProp(state[day].divisions, division)) {
           teams = addTeams(state[day].divisions[division], teams);
         }
       }

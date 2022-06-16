@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { hasProp } from 'domain/validate';
 import calcPayouts from '../../domain/payouts';
 import MainDiv from '../components/MainDiv';
 
@@ -23,28 +24,33 @@ const Payouts = () => {
     // Tournament payouts
     const tPayouts = {};
     // Attempt to pull out payouts for Men's, Women's, and Coed leagues
-    Object.keys(state.financials.payoutDivisions).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state, day)) {
-        state.financials.payoutDivisions[day].forEach((payout) => {
-          const totalTeams =
-            state[day].divisions[payout.main].teams.length +
-            state[day].divisions[payout.sub].teams.length;
+    if (
+      hasProp(state, 'financials') &&
+      hasProp(state.financials, 'payoutDivisions')
+    ) {
+      Object.keys(state.financials.payoutDivisions).forEach((day) => {
+        if (hasProp(state, day)) {
+          state.financials.payoutDivisions[day].forEach((payout) => {
+            const totalTeams =
+              state[day].divisions[payout.main].teams.length +
+              state[day].divisions[payout.sub].teams.length;
 
-          // Calculate payouts for this division
-          const divPayout = calcPayouts(
-            totalTeams,
-            state.financials.payoutParams.prizePool,
-            state.financials.payoutParams[day]
-          );
-          Object.keys(divPayout).forEach((div) => {
-            tPayouts[payout[div]] = {};
-            Object.keys(divPayout[div]).forEach((place) => {
-              tPayouts[payout[div]][place] = divPayout[div][place];
+            // Calculate payouts for this division
+            const divPayout = calcPayouts(
+              totalTeams,
+              state.financials.payoutParams.prizePool,
+              state.financials.payoutParams[day]
+            );
+            Object.keys(divPayout).forEach((div) => {
+              tPayouts[payout[div]] = {};
+              Object.keys(divPayout[div]).forEach((place) => {
+                tPayouts[payout[div]][place] = divPayout[div][place];
+              });
             });
           });
-        });
-      }
-    });
+        }
+      });
+    }
 
     return tPayouts;
   });
