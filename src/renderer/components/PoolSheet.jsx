@@ -43,7 +43,13 @@ const PoolSheet = React.forwardRef((props, ref) => {
 
   if (pool !== undefined && Object.keys(pool).length > 0) {
     return (
-      <PoolPaper ref={ref}>
+      <PoolPaper
+        ref={ref}
+        sx={{
+          maxHeight: pool.teams.length > 6 ? '21.8in' : '10.8in',
+          overflowY: 'hidden',
+        }}
+      >
         <Grid container spacing={1}>
           <Grid item xs={10}>
             <PoolHeader pool={pool} />
@@ -52,7 +58,7 @@ const PoolSheet = React.forwardRef((props, ref) => {
             <PoolSchedule pool={pool} />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h4" textAlign="center">
+            <Typography variant="h5" textAlign="center">
               Warm-Ups are Limited to 10 Minutes!
             </Typography>
           </Grid>

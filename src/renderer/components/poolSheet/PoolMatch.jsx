@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import { styled, TableHead } from '@mui/material';
 import PoolScore from './PoolScore';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolCell = styled(TableCell)(({ theme }) => ({
   fontSize: '8pt',
   fontWeight: 'bold',
@@ -22,12 +23,6 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   overflow: 'hidden',
   flexShrink: '0',
 }));
-
-const extraRows = (numMatches, numGames) => {
-  // Calculate the number of extra rows you need
-  const totalRounds = numMatches * numGames;
-  // Calculate the leftover space
-};
 
 const PoolMatch = (props) => {
   const { pool } = props;

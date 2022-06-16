@@ -61,7 +61,7 @@ const Payouts = () => {
         <MainDiv key={division}>
           <Typography variant="h2">{division}</Typography>
           <>
-            {Object.keys(payouts[division]).map((place, ind) => (
+            {Object.keys(payouts[division]).map((place) => (
               <Card
                 variant="outlined"
                 key={place}
