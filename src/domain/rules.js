@@ -1,5 +1,5 @@
 // Defines rules for running tournaments. Rules can be division based
-import { validateObject } from './validate';
+import { hasProp, validateObject } from './validate';
 
 // Required rules and their associated types
 const RULE_FIELDS = {
@@ -15,7 +15,7 @@ export function validateRules(rules) {
   validateObject(rules);
   // Check required rule parameters and types
   Object.keys(RULE_FIELDS).forEach((ruleField) => {
-    if (!Object.prototype.hasOwnProperty.call(rules, ruleField)) {
+    if (!hasProp(rules, ruleField)) {
       throw new Error(`Rules are missing definition for ${ruleField}`);
       // eslint-disable-next-line valid-typeof
     } else if (typeof rules[ruleField] !== RULE_FIELDS[ruleField]) {
@@ -72,12 +72,6 @@ export const DIVISION_RULES = {
   "Men's AA": {
     centerCourt: 10,
   },
-  "Men's B": {
-    maxTeams: 7,
-  },
-  "Women's B": {
-    maxTeams: 7,
-  },
   "Coed 2's Open": {
     // Preferred center court
     centerCourt: 9,
@@ -85,8 +79,5 @@ export const DIVISION_RULES = {
   "Coed 2's AA": {
     // Preferred center court
     centerCourt: 10,
-  },
-  "Coed 2's B": {
-    maxTeams: 7,
   },
 };

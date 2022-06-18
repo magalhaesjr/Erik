@@ -1,7 +1,7 @@
 // Organizes a tournament day for a tournament weekend
 import { Division } from './division';
 import { DIVISION_RULES } from './rules';
-import { isObject, validateObject } from './validate';
+import { hasProp, isObject, validateObject } from './validate';
 
 // Class for each tournament Day
 export default class Day {
@@ -23,7 +23,7 @@ export default class Day {
 
     // Loop through all fields in class and import as needed
     Object.keys(this).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(input, key)) {
+      if (hasProp(input, key)) {
         if (key === 'divisions') {
           // Re-create Division objects and add them to the day
           Object.keys(input.divisions).forEach((div) => {

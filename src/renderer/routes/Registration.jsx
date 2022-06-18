@@ -3,6 +3,7 @@ import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
+import { hasProp } from '../../domain/validate';
 import RegSheet from '../components/RegSheet';
 
 const pageStyle = `
@@ -41,7 +42,7 @@ const Registration = () => {
   const divisions = useSelector((state) => {
     const div = {};
     Object.keys(state).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
+      if (hasProp(state[day], 'divisions')) {
         Object.keys(state[day].divisions).forEach((name) => {
           div[name] = state[day].divisions[name];
         });

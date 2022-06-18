@@ -3,11 +3,13 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Paper, Typography, styled, Grid } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { hasProp } from '../../domain/validate';
 import PoolHeader from './poolSheet/PoolHeader';
 import PoolSchedule from './poolSheet/PoolSchedule';
 import PoolMatch from './poolSheet/PoolMatch';
 
 // Styles
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolPaper = styled(Paper)(({ theme }) => ({
   fontFamily: 'Calibri',
   fontSize: '8',
@@ -27,9 +29,8 @@ const PoolSheet = React.forwardRef((props, ref) => {
     // eslint-disable-next-line prettier/prettier
     let divPool = {};
     Object.keys(state).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
-        // eslint-disable-next-line prettier/prettier
-        if (Object.prototype.hasOwnProperty.call(state[day].divisions, division)) {
+      if (hasProp(state[day], 'divisions')) {
+        if (hasProp(state[day].divisions, division)) {
           // Get pool
           if (poolId < state[day].divisions[division].pools.length) {
             divPool = state[day].divisions[division].pools[poolId];
@@ -42,7 +43,13 @@ const PoolSheet = React.forwardRef((props, ref) => {
 
   if (pool !== undefined && Object.keys(pool).length > 0) {
     return (
-      <PoolPaper ref={ref}>
+      <PoolPaper
+        ref={ref}
+        sx={{
+          maxHeight: pool.teams.length > 6 ? '21.8in' : '10.8in',
+          overflowY: 'hidden',
+        }}
+      >
         <Grid container spacing={1}>
           <Grid item xs={10}>
             <PoolHeader pool={pool} />
@@ -51,7 +58,7 @@ const PoolSheet = React.forwardRef((props, ref) => {
             <PoolSchedule pool={pool} />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h4" textAlign="center">
+            <Typography variant="h5" textAlign="center">
               Warm-Ups are Limited to 10 Minutes!
             </Typography>
           </Grid>

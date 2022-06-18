@@ -13,10 +13,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { hasProp } from '../../domain/validate';
 import DataCell from './table/DataCell';
 import TableAction from './table/TableAction';
 
 // Style the inline buttons
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const InlineButton = styled(Button)(({ theme }) => ({
   fontSize: 'small',
   paddingLeft: '0px',
@@ -65,10 +67,8 @@ const DivEntries = (props) => {
     let teams = [];
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
-      if (Object.prototype.hasOwnProperty.call(state[day], 'divisions')) {
-        if (
-          Object.prototype.hasOwnProperty.call(state[day].divisions, division)
-        ) {
+      if (hasProp(state[day], 'divisions')) {
+        if (hasProp(state[day].divisions, division)) {
           teams = addTeams(state[day].divisions[division], teams, waitList);
         }
       }
@@ -82,7 +82,7 @@ const DivEntries = (props) => {
   // State
   const [activeEdit, setEdit] = React.useState(false);
   // Handlers
-  const handleEdit = (i) => {
+  const handleEdit = () => {
     setEdit(!activeEdit);
   };
 
@@ -117,7 +117,7 @@ const DivEntries = (props) => {
     });
   };
 
-  const handleSave = (i) => {
+  const handleSave = () => {
     setEdit(!activeEdit);
     // Send all entries to dispatch
     dispatch({
@@ -130,7 +130,7 @@ const DivEntries = (props) => {
     });
   };
 
-  const handleAdd = (i) => {
+  const handleAdd = () => {
     setEdit(true);
     // Create a new team
     dispatch({
