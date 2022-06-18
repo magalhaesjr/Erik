@@ -193,7 +193,6 @@ test('createPools with full pools assigns teams correctly', () => {
   testDiv.assignCourts([1, 2, 3]);
   // Assign pools and check outcomes
   testDiv.createPools();
-  console.log(testDiv);
   // Check expected assignment
   expect(testDiv.pools[0].teams).toEqual([
     testDiv.teams[0],

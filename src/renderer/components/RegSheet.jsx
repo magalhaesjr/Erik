@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Creates a React table for all entries into division
 import * as React from 'react';
 import PropTypes from 'prop-types';
