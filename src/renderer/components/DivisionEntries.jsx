@@ -63,25 +63,48 @@ const keyLabel = (waitList) => {
 const DivEntries = (props) => {
   const { division, waitList } = props;
 
+  // Edit state
+  const [activeEdit, setEdit] = React.useState(false);
+
   // Grabs selector from redux
-  const entries = useSelector((state) => {
-    let teams = [];
+  const { entries, poolsValid } = useSelector((state) => {
+    const out = {
+      entries: [],
+      poolsValid: false,
+    };
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
       if (hasProp(state[day], 'divisions')) {
         if (hasProp(state[day].divisions, division)) {
-          teams = addTeams(state[day].divisions[division], teams, waitList);
+          out.entries = addTeams(
+            state[day].divisions[division],
+            out.entries,
+            waitList
+          );
+          if (state[day].divisions[division].pools.length > 0) {
+            out.poolsValid = true;
+          }
         }
       }
     });
-    return teams;
+    return out;
   });
 
   // Dispatching
   const dispatch = useDispatch();
 
-  // State
-  const [activeEdit, setEdit] = React.useState(false);
+  // Actions
+  const resetPools = () => {
+    if (poolsValid) {
+      // Need to reset all pools because something has changed
+      dispatch({
+        type: 'resetPools',
+        payload: {
+          division,
+        },
+      });
+    }
+  };
 
   // Handlers
   const handleEdit = () => {
@@ -98,6 +121,9 @@ const DivEntries = (props) => {
         team: i,
       },
     });
+
+    // Reset pools if necessary
+    resetPools();
   };
 
   const handleChange = (e, i, player) => {
@@ -110,6 +136,8 @@ const DivEntries = (props) => {
         const { firstName, lastName } = parseName(value);
         newTeam.players[player].firstName = firstName;
         newTeam.players[player].lastName = lastName;
+        // Reset pools if necessary
+        resetPools();
         break;
       }
       case 'paid': {
@@ -126,7 +154,9 @@ const DivEntries = (props) => {
       }
       default:
         // eslint-disable-next-line no-console
-        console.error('Could not determine target type');
+        newTeam.players[player][name] = e.target.value;
+        // reset pools if necessary
+        resetPools();
     }
     // dispatch a change to player info
     dispatch({
@@ -165,6 +195,8 @@ const DivEntries = (props) => {
         team: null,
       },
     });
+    // Reset pools if necessary
+    resetPools();
   };
 
   const handleDelete = (e, i) => {
@@ -176,6 +208,8 @@ const DivEntries = (props) => {
         team: i,
       },
     });
+    // Reset pools if necessary
+    resetPools();
   };
 
   const genPools = () => {
@@ -188,7 +222,6 @@ const DivEntries = (props) => {
       });
     }
   };
-
   return (
     <TableContainer component={Paper}>
       <Typography variant="h6" align="left">
@@ -201,6 +234,7 @@ const DivEntries = (props) => {
         onSave={handleSave}
         onGenPools={genPools}
         waitList={waitList}
+        poolsValid={poolsValid}
       />
       <Table
         sx={{

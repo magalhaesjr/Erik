@@ -9,7 +9,15 @@ import PropTypes from 'prop-types';
 import MainDiv from '../MainDiv';
 
 const TableAction = (props) => {
-  const { activeEdit, onAdd, onEdit, onSave, onGenPools, waitList } = props;
+  const {
+    activeEdit,
+    onAdd,
+    onEdit,
+    onSave,
+    onGenPools,
+    waitList,
+    poolsValid,
+  } = props;
 
   // Handlers
   const handleEdit = (event) => {
@@ -42,7 +50,13 @@ const TableAction = (props) => {
             UPDATE RANKS
           </Button>
           {!waitList && (
-            <Button onClick={genPools}>
+            <Button
+              onClick={genPools}
+              disabled={poolsValid}
+              sx={{
+                color: 'red',
+              }}
+            >
               <LibraryBooksIcon />
               MAKE POOLS
             </Button>
@@ -67,7 +81,13 @@ const TableAction = (props) => {
           EDIT
         </Button>
         {!waitList && (
-          <Button onClick={genPools}>
+          <Button
+            onClick={genPools}
+            disabled={poolsValid}
+            sx={{
+              color: 'red',
+            }}
+          >
             <LibraryBooksIcon />
             MAKE POOLS
           </Button>
@@ -84,6 +104,7 @@ TableAction.propTypes = {
   onGenPools: PropTypes.func,
   activeEdit: PropTypes.bool,
   waitList: PropTypes.bool,
+  poolsValid: PropTypes.bool,
 };
 
 TableAction.defaultProps = {
@@ -93,6 +114,7 @@ TableAction.defaultProps = {
   onGenPools: () => {},
   activeEdit: false,
   waitList: false,
+  poolsValid: false,
 };
 
 export default TableAction;
