@@ -80,11 +80,11 @@ const addTeams = (division, teams) => {
 
 // Returns paid status based on player
 const paidStatus = (player) => {
-  if (player.paid) {
-    return PREPAID;
-  }
   if (player.staff) {
     return 'staff';
+  }
+  if (player.paid) {
+    return PREPAID;
   }
   return UNPAID;
 };

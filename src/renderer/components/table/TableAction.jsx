@@ -34,7 +34,7 @@ const TableAction = (props) => {
           }}
         >
           <Button onClick={handleAdd}>
-            <AddBoxIcon onClick={handleAdd} />
+            <AddBoxIcon />
             ADD
           </Button>
           <Button align="right" onClick={handleSave}>
@@ -43,7 +43,7 @@ const TableAction = (props) => {
           </Button>
           {!waitList && (
             <Button onClick={genPools}>
-              <LibraryBooksIcon onClick={genPools} />
+              <LibraryBooksIcon />
               MAKE POOLS
             </Button>
           )}
@@ -59,7 +59,7 @@ const TableAction = (props) => {
         }}
       >
         <Button onClick={handleAdd}>
-          <AddBoxIcon onClick={handleAdd} />
+          <AddBoxIcon />
           ADD
         </Button>
         <Button align="right" onClick={handleEdit}>
@@ -68,7 +68,7 @@ const TableAction = (props) => {
         </Button>
         {!waitList && (
           <Button onClick={genPools}>
-            <LibraryBooksIcon onClick={genPools} />
+            <LibraryBooksIcon />
             MAKE POOLS
           </Button>
         )}

@@ -8,12 +8,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Button, Typography, styled } from '@mui/material';
+import { Button, Checkbox, Typography, styled } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { hasProp } from '../../domain/validate';
+import { parseName, joinName } from '../../domain/player';
 import DataCell from './table/DataCell';
 import TableAction from './table/TableAction';
 
@@ -81,6 +82,7 @@ const DivEntries = (props) => {
 
   // State
   const [activeEdit, setEdit] = React.useState(false);
+
   // Handlers
   const handleEdit = () => {
     setEdit(!activeEdit);
@@ -102,8 +104,30 @@ const DivEntries = (props) => {
     const { name, value } = e.target;
     // Copy player info
     const newTeam = JSON.parse(JSON.stringify(entries[i]));
-    // Split player name back
-    newTeam.players[player][name] = value;
+    switch (name) {
+      case 'name': {
+        // Split player name back and assign
+        const { firstName, lastName } = parseName(value);
+        newTeam.players[player].firstName = firstName;
+        newTeam.players[player].lastName = lastName;
+        break;
+      }
+      case 'paid': {
+        newTeam.players[player].paid = e.target.checked;
+        break;
+      }
+      case 'staff': {
+        newTeam.players[player].staff = e.target.checked;
+        break;
+      }
+      case 'membership': {
+        newTeam.players[player].membershipValid = e.target.checked;
+        break;
+      }
+      default:
+        // eslint-disable-next-line no-console
+        console.error('Could not determine target type');
+    }
     // dispatch a change to player info
     dispatch({
       type: 'updatePlayer',
@@ -183,30 +207,117 @@ const DivEntries = (props) => {
           size: 'xs',
         }}
       >
-        <TableHead>
-          <TableRow>
-            <TableCell align="left" padding="none" margins="0px" />
-            <TableCell align="left" padding="none" margins="0px" />
-            <DataCell align="center" data={keyLabel(waitList)} immutable />
-            <DataCell align="center" data="Rank" immutable />
-            <DataCell align="center" data="First" immutable />
-            <DataCell align="center" data="Last" immutable />
-            <DataCell align="center" data="Points" immutable />
-            <DataCell align="center" data="Avp #" immutable />
-            <DataCell align="center" data="First" immutable />
-            <DataCell align="center" data="Last" immutable />
-            <DataCell align="center" data="Points" immutable />
-            <DataCell align="center" data="Avp #" immutable />
+        <TableHead key="divisionHeader">
+          <TableRow key="header">
+            <TableCell
+              align="left"
+              padding="none"
+              margins="0px"
+              key="delHeader"
+            />
+            <TableCell
+              align="left"
+              padding="none"
+              margins="0px"
+              key="promoteHeader"
+            />
+            <DataCell
+              align="center"
+              data={keyLabel(waitList)}
+              fontWeight="bold"
+              key="seedHeader"
+              immutable
+            />
+            <DataCell
+              align="center"
+              data="Rank"
+              fontWeight="bold"
+              immutable
+              key="rank"
+            />
+            <DataCell
+              align="center"
+              data="Name"
+              fontWeight="bold"
+              immutable
+              key="p1Name"
+            />
+            <DataCell
+              align="center"
+              data="Points"
+              fontWeight="bold"
+              key="p1Points"
+              immutable
+            />
+            <DataCell
+              align="center"
+              data="Paid"
+              fontWeight="bold"
+              immutable
+              key="p1Paid"
+            />
+            <DataCell
+              align="center"
+              data="Staff"
+              fontWeight="bold"
+              immutable
+              key="p1Staff"
+            />
+            <DataCell
+              align="center"
+              data="Avpa"
+              fontWeight="bold"
+              immutable
+              key="p1Avpa"
+            />
+            <DataCell
+              align="center"
+              data="Name"
+              fontWeight="bold"
+              immutable
+              key="p2Name"
+            />
+            <DataCell
+              align="center"
+              data="Points"
+              fontWeight="bold"
+              key="p2Points"
+              immutable
+            />
+            <DataCell
+              align="center"
+              data="Paid"
+              fontWeight="bold"
+              immutable
+              key="p2Paid"
+            />
+            <DataCell
+              align="center"
+              data="Staff"
+              fontWeight="bold"
+              immutable
+              key="p2Staff"
+            />
+            <DataCell
+              align="center"
+              data="Avpa"
+              fontWeight="bold"
+              immutable
+              key="p2Avpa"
+            />
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody key="divisionEntries">
           {entries.map((team, index) => (
-            <TableRow
-              key={team.seed}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell align="left" padding="none" margins="0px">
+            <TableRow key={team.seed}>
+              <TableCell
+                align="left"
+                padding="none"
+                margins="0px"
+                key={`delete_${team.seed}`}
+              >
                 <InlineButton
+                  key={`delete_btn_${team.seed}`}
                   onClick={(e) => {
                     handleDelete(e, index);
                   }}
@@ -219,8 +330,10 @@ const DivEntries = (props) => {
                 fontSize="small"
                 padding="none"
                 margins="0px"
+                key={`demote_${team.seed}`}
               >
                 <InlineButton
+                  key={`demote_btn_${team.seed}`}
                   onClick={(e) => {
                     changeWaitStatus(e, index);
                   }}
@@ -228,82 +341,96 @@ const DivEntries = (props) => {
                   {waitList ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
                 </InlineButton>
               </TableCell>
-              <TableCell component="th" scope="row" align="center">
+              <TableCell
+                component="th"
+                scope="row"
+                align="center"
+                key={`team_${team.seed}`}
+              >
                 {team.seed}
               </TableCell>
-              <DataCell align="center" data={team.ranking} immutable />
               <DataCell
                 align="center"
-                data={team.players[0].firstName}
-                name="firstName"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 0);
-                }}
+                data={team.ranking}
+                immutable
+                key={`ranking_${team.seed}`}
               />
-              <DataCell
-                align="center"
-                data={team.players[0].lastName}
-                name="lastName"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 0);
-                }}
-              />
-              <DataCell
-                align="center"
-                data={team.players[0].ranking}
-                name="ranking"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 0);
-                }}
-              />
-              <DataCell
-                align="center"
-                data={team.players[0].avpa}
-                name="avpa"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 0);
-                }}
-              />
-              <DataCell
-                align="center"
-                data={team.players[1].firstName}
-                name="firstName"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 1);
-                }}
-              />
-              <DataCell
-                align="center"
-                data={team.players[1].lastName}
-                name="lastName"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 1);
-                }}
-              />
-              <DataCell
-                align="center"
-                data={team.players[1].ranking}
-                name="ranking"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 1);
-                }}
-              />
-              <DataCell
-                align="center"
-                data={team.players[1].avpa}
-                name="avpa"
-                activeEdit={activeEdit}
-                onChange={(e) => {
-                  handleChange(e, index, 1);
-                }}
-              />
+              {team.players.map((player, playerInd) => (
+                <React.Fragment
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`team_${team.seed}_playerChecks_${playerInd}_${player.lastName}`}
+                >
+                  <DataCell
+                    align="center"
+                    data={joinName(player.firstName, player.lastName)}
+                    name="name"
+                    key={`team_${team.seed}_name_${player.firstName}_${player.lastName}`}
+                    activeEdit={activeEdit}
+                    onChange={(e) => {
+                      handleChange(e, index, playerInd);
+                    }}
+                  />
+                  <DataCell
+                    align="center"
+                    data={player.ranking}
+                    name="ranking"
+                    activeEdit={activeEdit}
+                    key={`team_${team.seed}_rank_${player.firstName}_${player.lastName}`}
+                    onChange={(e) => {
+                      handleChange(e, index, playerInd);
+                    }}
+                  />
+                  <TableCell
+                    align="center"
+                    fontSize="small"
+                    padding="none"
+                    key={`team_${team.seed}_paid_${player.firstName}_${player.lastName}`}
+                    margins="0px"
+                  >
+                    <Checkbox
+                      checked={player.paid && !player.staff}
+                      disabled={player.staff}
+                      name="paid"
+                      key={`team_${team.seed}_paidCheck_${player.firstName}_${player.lastName}`}
+                      onChange={(e) => {
+                        handleChange(e, index, playerInd);
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    fontSize="small"
+                    padding="none"
+                    margins="0px"
+                    key={`team_${team.seed}_staff_${player.firstName}_${player.lastName}`}
+                  >
+                    <Checkbox
+                      checked={player.staff}
+                      name="staff"
+                      key={`team_${team.seed}_staffCheck_${player.firstName}_${player.lastName}`}
+                      onChange={(e) => {
+                        handleChange(e, index, playerInd);
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    fontSize="small"
+                    padding="none"
+                    margins="0px"
+                    key={`team_${team.seed}_avpa_${player.firstName}_${player.lastName}`}
+                  >
+                    <Checkbox
+                      checked={player.membershipValid}
+                      name="membership"
+                      key={`team_${team.seed}_avpaCheck_${player.firstName}_${player.lastName}`}
+                      onChange={(e) => {
+                        handleChange(e, index, playerInd);
+                      }}
+                    />
+                  </TableCell>
+                </React.Fragment>
+              ))}
             </TableRow>
           ))}
         </TableBody>

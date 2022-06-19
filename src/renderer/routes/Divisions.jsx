@@ -1,13 +1,16 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { Box, InputLabel, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import DivEntries from '../components/DivisionEntries';
 import { hasProp } from '../../domain/validate';
 
 // Divisions Page
-const Divisions = () => {
+const Divisions = (props) => {
+  // Grab division from input props
+  const { division } = props;
   // Declare state for this division component
-  const [division, setDivision] = React.useState('');
+  const [currentDiv, setDivision] = React.useState(division);
 
   // Callback
   const handleOnChange = (event) => {
@@ -33,7 +36,7 @@ const Divisions = () => {
       <InputLabel>Division</InputLabel>
       <Select
         id="division-select"
-        value={division}
+        value={currentDiv}
         label="Division"
         onChange={handleOnChange}
       >
@@ -43,10 +46,17 @@ const Divisions = () => {
           </MenuItem>
         ))}
       </Select>
-      <DivEntries division={division} waitList={false} />
-      <DivEntries division={division} waitList />
+      <DivEntries division={currentDiv} waitList={false} key="entries" />
+      <DivEntries division={currentDiv} waitList key="waitlist" />
     </Box>
   );
+};
+
+Divisions.propTypes = {
+  division: PropTypes.string,
+};
+Divisions.defaultProps = {
+  division: '',
 };
 
 export default Divisions;

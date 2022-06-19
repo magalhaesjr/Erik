@@ -3,7 +3,8 @@ import TableCell from '@mui/material/TableCell';
 import PropTypes from 'prop-types';
 
 const DataCell = (props) => {
-  const { data, name, immutable, onChange, align, activeEdit } = props;
+  const { data, name, immutable, onChange, align, activeEdit, fontWeight } =
+    props;
 
   const handleChange = (e) => {
     onChange(e);
@@ -12,17 +13,34 @@ const DataCell = (props) => {
   // Return depends on edit parameter
   if (activeEdit && !immutable) {
     return (
-      <TableCell align={align} padding="none">
+      <TableCell
+        align={align}
+        sx={{
+          padding: '0px',
+          fontWeight: { fontWeight },
+        }}
+      >
         <input value={data} name={name} onChange={handleChange} />
       </TableCell>
     );
   }
-  return <TableCell align={align}>{data}</TableCell>;
+  return (
+    <TableCell
+      align={align}
+      sx={{
+        padding: '0px',
+        fontWeight: { fontWeight },
+      }}
+    >
+      {data}
+    </TableCell>
+  );
 };
 
 DataCell.propTypes = {
   data: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   name: PropTypes.string,
+  fontWeight: PropTypes.string,
   align: PropTypes.string,
   immutable: PropTypes.bool,
   activeEdit: PropTypes.bool,
@@ -31,6 +49,7 @@ DataCell.propTypes = {
 
 DataCell.defaultProps = {
   immutable: false,
+  fontWeight: 'normal',
   name: '',
   activeEdit: false,
   align: 'center',
