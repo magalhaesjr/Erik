@@ -91,7 +91,7 @@ const paidStatus = (player) => {
 
 // Division entries table
 const RegSheet = React.forwardRef((props, ref) => {
-  const { division, mode } = props;
+  const { division } = props;
 
   // Grabs selector from redux
   const entries = useSelector((state) => {
@@ -228,21 +228,17 @@ const RegSheet = React.forwardRef((props, ref) => {
             <TableRow key={team.seed}>
               <RegCell>{team.seed}</RegCell>
               <RegCell>{team.ranking}</RegCell>
-              {mode === 'form' ? (
-                <RegCell>
-                  <select
-                    value={paidStatus(team.players[0])}
-                    onChange={(e) => handlePaid(e, index, 0)}
-                    style={selectStyle}
-                  >
-                    <option value={PREPAID}>{PREPAID}</option>
-                    <option value={UNPAID}>{UNPAID}</option>
-                    <option value="staff">staff</option>
-                  </select>
-                </RegCell>
-              ) : (
-                <RegCell>{paidStatus(team.players[0])}</RegCell>
-              )}
+              <RegCell>
+                <select
+                  value={paidStatus(team.players[0])}
+                  onChange={(e) => handlePaid(e, index, 0)}
+                  style={selectStyle}
+                >
+                  <option value={PREPAID}>{PREPAID}</option>
+                  <option value={UNPAID}>{UNPAID}</option>
+                  <option value="staff">staff</option>
+                </select>
+              </RegCell>
               <RegCell />
               {team.players[0].membershipValid ? (
                 <RegCell>Valid</RegCell>
@@ -263,21 +259,17 @@ const RegSheet = React.forwardRef((props, ref) => {
               </RegCell>
               <RegCell>{team.players[0].ranking}</RegCell>
               <RegCell />
-              {mode === 'form' ? (
-                <RegCell>
-                  <select
-                    value={paidStatus(team.players[1])}
-                    onChange={(e) => handlePaid(e, index, 1)}
-                    style={selectStyle}
-                  >
-                    <option value={PREPAID}>{PREPAID}</option>
-                    <option value={UNPAID}>{UNPAID}</option>
-                    <option value="staff">staff</option>
-                  </select>
-                </RegCell>
-              ) : (
-                <RegCell>{paidStatus(team.players[1])}</RegCell>
-              )}
+              <RegCell>
+                <select
+                  value={paidStatus(team.players[1])}
+                  onChange={(e) => handlePaid(e, index, 1)}
+                  style={selectStyle}
+                >
+                  <option value={PREPAID}>{PREPAID}</option>
+                  <option value={UNPAID}>{UNPAID}</option>
+                  <option value="staff">staff</option>
+                </select>
+              </RegCell>
               <RegCell />
               {team.players[1].membershipValid ? (
                 <RegCell>Valid</RegCell>
@@ -309,7 +301,6 @@ const RegSheet = React.forwardRef((props, ref) => {
 
 RegSheet.propTypes = {
   division: PropTypes.string.isRequired,
-  mode: PropTypes.string.isRequired,
 };
 
 export default RegSheet;

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
@@ -27,12 +28,9 @@ const pageStyle = `
 
 // Pool Page
 const Pools = () => {
-  // Declare state for this division component
-  const [division, setDivision] = React.useState('');
-  const [availablePools, setAvailable] = React.useState([]);
-  const [pool, setPool] = React.useState('');
-  // Reference for printing
-  const printRef = React.useRef();
+  // Default division
+  const location = useLocation();
+  const { allPools, division, displayPool } = location.state;
 
   // Grabs selector from redux
   const divisions = useSelector((state) => {
@@ -49,6 +47,18 @@ const Pools = () => {
     return div;
   });
 
+  // Declare state for this division component
+  const [currentDiv, setDivision] = React.useState(
+    hasProp(divisions, division) ? division : ''
+  );
+  const [availablePools, setAvailable] = React.useState(
+    allPools.length > 0 ? allPools : []
+  );
+  const [pool, setPool] = React.useState(
+    allPools.length > 0 ? displayPool : ''
+  );
+  // Reference for printing
+  const printRef = React.useRef();
   // Callback
   const handleDivChange = (event) => {
     setDivision(event.target.value);
@@ -74,45 +84,79 @@ const Pools = () => {
 
   return (
     <Box>
-      <MainDiv sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
-        <MainDiv>
-          <InputLabel>Division</InputLabel>
-          <Select
-            id="division-select"
-            value={division}
-            label="Division"
-            onChange={handleDivChange}
-          >
-            {Object.keys(divisions).map((divName) => (
-              <MenuItem key={divName} value={divName}>
-                {divName}
-              </MenuItem>
-            ))}
-          </Select>
+      <Box display="inline-block" width="30%">
+        <Button
+          variant="outlined"
+          label="Div"
+          component={Link}
+          to="/divisions"
+          size="small"
+          state={{
+            division: currentDiv,
+          }}
+          sx={{
+            marginRight: '5px',
+          }}
+        >
+          Division
+        </Button>
+        <Button
+          variant="outlined"
+          label="Reg"
+          component={Link}
+          to="/registration"
+          size="small"
+          state={{
+            division: currentDiv,
+          }}
+          sx={{
+            marginRight: '5px',
+          }}
+        >
+          Registration
+        </Button>
+      </Box>
+      <Box display="inline-block" width="40%">
+        <MainDiv sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
+          <MainDiv>
+            <InputLabel>Division</InputLabel>
+            <Select
+              id="division-select"
+              value={currentDiv}
+              label="Division"
+              onChange={handleDivChange}
+            >
+              {Object.keys(divisions).map((divName) => (
+                <MenuItem key={divName} value={divName}>
+                  {divName}
+                </MenuItem>
+              ))}
+            </Select>
+          </MainDiv>
+          <MainDiv>
+            <InputLabel>Pool</InputLabel>
+            <Select
+              id="pool-select"
+              value={pool}
+              label="Pool"
+              onChange={handlePoolChange}
+            >
+              {availablePools.map((poolObj) => (
+                <MenuItem key={poolObj} value={poolObj}>
+                  {`Pool ${poolObj}`}
+                </MenuItem>
+              ))}
+            </Select>
+          </MainDiv>
+          <Button onClick={printSheet}>
+            <PrintIcon />
+            PRINT
+          </Button>
         </MainDiv>
-        <MainDiv>
-          <InputLabel>Pool</InputLabel>
-          <Select
-            id="pool-select"
-            value={pool}
-            label="Pool"
-            onChange={handlePoolChange}
-          >
-            {availablePools.map((poolObj) => (
-              <MenuItem key={poolObj} value={poolObj}>
-                {`Pool ${poolObj}`}
-              </MenuItem>
-            ))}
-          </Select>
-        </MainDiv>
-      </MainDiv>
-      <Button onClick={printSheet}>
-        <PrintIcon />
-        PRINT
-      </Button>
-      <PoolSheet division={division} poolId={pool - 1} ref={printRef} />
+      </Box>
+      <Box display="inline-block" width="30%" />
+      <PoolSheet division={currentDiv} poolId={pool - 1} ref={printRef} />
     </Box>
   );
 };
-
 export default Pools;

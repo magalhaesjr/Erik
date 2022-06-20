@@ -258,86 +258,122 @@ const DivEntries = (props) => {
             <DataCell
               align="center"
               data={keyLabel(waitList)}
-              fontWeight="bold"
               key="seedHeader"
               immutable
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Rank"
-              fontWeight="bold"
               immutable
               key="rank"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Name"
-              fontWeight="bold"
               immutable
               key="p1Name"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Points"
-              fontWeight="bold"
               key="p1Points"
               immutable
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Paid"
-              fontWeight="bold"
               immutable
               key="p1Paid"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Staff"
-              fontWeight="bold"
               immutable
               key="p1Staff"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Avpa"
-              fontWeight="bold"
               immutable
               key="p1Avpa"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Name"
-              fontWeight="bold"
               immutable
               key="p2Name"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Points"
-              fontWeight="bold"
               key="p2Points"
               immutable
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Paid"
-              fontWeight="bold"
               immutable
               key="p2Paid"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Staff"
-              fontWeight="bold"
               immutable
               key="p2Staff"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
             <DataCell
               align="center"
               data="Avpa"
-              fontWeight="bold"
               immutable
               key="p2Avpa"
+              sx={{
+                padding: '0px',
+                fontWeight: 'bold',
+              }}
             />
           </TableRow>
         </TableHead>
@@ -402,6 +438,10 @@ const DivEntries = (props) => {
                     activeEdit={activeEdit}
                     onChange={(e) => {
                       handleChange(e, index, playerInd);
+                    }}
+                    sx={{
+                      padding: '0px',
+                      borderLeft: '1px solid #bbbbbb',
                     }}
                   />
                   <DataCell
