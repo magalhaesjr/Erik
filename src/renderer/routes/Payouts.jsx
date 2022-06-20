@@ -31,10 +31,13 @@ const Payouts = () => {
       Object.keys(state.financials.payoutDivisions).forEach((day) => {
         if (hasProp(state, day)) {
           state.financials.payoutDivisions[day].forEach((payout) => {
-            const totalTeams =
-              state[day].divisions[payout.main].teams.length +
-              state[day].divisions[payout.sub].teams.length;
-
+            let totalTeams = 0;
+            if (hasProp(state[day].divisions, payout.main)) {
+              totalTeams += state[day].divisions[payout.main].teams.length;
+            }
+            if (hasProp(state[day].divisions, payout.sub)) {
+              totalTeams += state[day].divisions[payout.sub].teams.length;
+            }
             // Calculate payouts for this division
             const divPayout = calcPayouts(
               totalTeams,

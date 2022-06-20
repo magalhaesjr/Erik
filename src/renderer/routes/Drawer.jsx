@@ -48,7 +48,12 @@ const OutDrawer = () => {
             </ListItemIcon>
             <ListItemText primary="Court Map" />
           </ListItem>
-          <ListItem button component={Link} to="/divisions">
+          <ListItem
+            button
+            component={Link}
+            to="/divisions"
+            state={{ division: '' }}
+          >
             <ListItemIcon>
               <AppsIcon />
             </ListItemIcon>
@@ -60,13 +65,23 @@ const OutDrawer = () => {
             </ListItemIcon>
             <ListItemText primary="Payouts" />
           </ListItem>
-          <ListItem button component={Link} to="/pools">
+          <ListItem
+            button
+            component={Link}
+            to="/pools"
+            state={{ division: '', displayPool: '', allPools: [] }}
+          >
             <ListItemIcon>
               <AppsIcon />
             </ListItemIcon>
             <ListItemText primary="Pools" />
           </ListItem>
-          <ListItem button component={Link} to="/registration">
+          <ListItem
+            button
+            component={Link}
+            to="/registration"
+            state={{ division: '' }}
+          >
             <ListItemIcon>
               <AppsIcon />
             </ListItemIcon>

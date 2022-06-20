@@ -33,3 +33,13 @@ export function hasProp(inObject, prop) {
   }
   return false;
 }
+
+export function getPools(division) {
+  if (division !== undefined) {
+    const allPools = Array.from(Array(division.pools.length), (_, index) => {
+      return index + 1;
+    });
+    return allPools;
+  }
+  return [];
+}

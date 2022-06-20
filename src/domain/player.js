@@ -33,6 +33,25 @@ function validatePlayer(player) {
   }
 }
 
+// Parse / split a name
+export function parseName(inputName) {
+  // Remove location
+  const fullName = inputName.split('(');
+  const splitNames = fullName[0].trim().split(' ');
+
+  // Pull out first and last
+  const out = {};
+  out.firstName = splitNames[0].trim();
+  out.lastName = splitNames.slice(1).join(' ');
+
+  return out;
+}
+
+// Join a name
+export function joinName(firstName, lastName) {
+  return firstName.concat(' ', lastName);
+}
+
 // Class representing a player in the tournament
 export default class Player {
   constructor(playerIn) {
@@ -62,7 +81,9 @@ export default class Player {
     validateInput(playerInfo);
 
     // Fill in properties of player
-    this.parseName(playerInfo.name);
+    const name = parseName(playerInfo.name);
+    this.firstName = name.firstName;
+    this.lastName = name.lastName;
     this.avpa = parseInt(playerInfo['avpa#'], 10);
     this.email = playerInfo.email;
     this.org = playerInfo.org;
@@ -74,15 +95,6 @@ export default class Player {
   }
 
   // imports a player string from AVPAmerica into first and last name
-  parseName(inputName) {
-    // Remove location
-    const fullName = inputName.split('(');
-    const splitNames = fullName[0].trim().split(' ');
-    // Pull out first and last
-    this.firstName = splitNames[0].trim();
-    this.lastName = splitNames.slice(1).join(' ');
-  }
-
   // Export player info for saving
   export() {
     return JSON.stringify(this);

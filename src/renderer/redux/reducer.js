@@ -177,6 +177,24 @@ export default function appReducer(state = initialState, action) {
       }
       return state;
     }
+    case 'resetPools': {
+      // Find division
+      const division = getDivision(state, action.payload.division);
+      // Generate pools
+      if (division !== null) {
+        const divObj = new Division(division);
+        // Reset pools
+        divObj.pools = [];
+        const newState = setDivision(
+          JSON.parse(JSON.stringify(state)),
+          action.payload.division,
+          JSON.parse(JSON.stringify(divObj))
+        );
+        // Update stae
+        return newState;
+      }
+      return state;
+    }
     case 'updatePaidStatus': {
       // Get payload variables
       const { team, playerInd, paid, staff } = action.payload;
