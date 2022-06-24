@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 // Import Division for dependency
 import { Division } from '../domain/division';
+import { DIVISION_RULES } from '../domain/rules';
 // Tests Tournament class
 import Tournament from '../domain/tournament';
 // Mocks
@@ -24,6 +25,15 @@ test('addDivision with bad inputs throws', () => {
   expect(()=>{testTourny.addDivision({})}).toThrowError(new Error('Input division is not a Division object'));
   // eslint-disable-next-line prettier/prettier
   expect(()=>{testTourny.addDivision([])}).toThrowError(new Error('Input division is not a Division object'));
+});
+
+test('Tournament initializes courts', () => {
+  // Create test day
+  const testTournament = new Tournament();
+  // Expect courts to be initialized
+  expect(testTournament.courts.length).toBe(DIVISION_RULES.maxCourts);
+  expect(testTournament.courts[0].number).toBe(0);
+  expect(testTournament.courts.pop().number).toBe(DIVISION_RULES.maxCourts - 1);
 });
 
 test('addDivision adds division to correct day', () => {

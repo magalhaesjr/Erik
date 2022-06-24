@@ -1,13 +1,11 @@
 // Organizes a tournament day for a tournament weekend
 import { Division } from './division';
-import { DIVISION_RULES } from './rules';
 import { hasProp, isObject, validateObject } from './validate';
 
 // Class for each tournament Day
 export default class Day {
   constructor(input) {
-    // Initialize Divisions and courts for each day
-    this.courts = Array.from(Array(DIVISION_RULES.maxCourts).keys());
+    // Initialize Divisions and for each day
     this.divisions = {};
 
     // If an object was input, import it now

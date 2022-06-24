@@ -216,6 +216,16 @@ export default function appReducer(state = initialState, action) {
       }
       return state;
     }
+    case 'updateCourt': {
+      // Get the new court
+      const { court } = action.payload;
+
+      // Directly update the court number
+      const newState = JSON.parse(JSON.stringify(state));
+      newState.courts[court.number] = court;
+
+      return newState;
+    }
     default:
       // return state
       return state;
