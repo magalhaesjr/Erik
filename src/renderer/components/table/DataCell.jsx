@@ -1,24 +1,37 @@
 // Implements a basic table cell that allows editing
+import * as React from 'react';
 import TableCell from '@mui/material/TableCell';
 import PropTypes from 'prop-types';
 
 const DataCell = (props) => {
   const { data, name, immutable, onChange, align, activeEdit, sx } = props;
 
+  const [value, setValue] = React.useState(data);
+
   const handleChange = (e) => {
     onChange(e);
+  };
+
+  const updateState = (e) => {
+    setValue(e.target.value);
   };
 
   // Return depends on edit parameter
   if (activeEdit && !immutable) {
     return (
-      <TableCell align={align} sx={sx}>
-        <input value={data} name={name} onChange={handleChange} />
+      <TableCell key="nameEdit" align={align} sx={sx}>
+        <input
+          key="nameInput"
+          value={value}
+          name={name}
+          onChange={updateState}
+          onBlur={handleChange}
+        />
       </TableCell>
     );
   }
   return (
-    <TableCell align={align} sx={sx}>
+    <TableCell align={align} key="nameDisplay" sx={sx}>
       {data}
     </TableCell>
   );

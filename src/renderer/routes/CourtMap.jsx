@@ -19,7 +19,18 @@ const CourtMap = () => {
     return (
       <MainDiv>
         <Typography variant="h2">Court Map</Typography>
-        <Grid container columnSpacing={4} rowSpacing={2}>
+        <Grid
+          container
+          columnSpacing={4}
+          direction="row-reverse"
+          rowSpacing={2}
+        >
+          <Grid key="wall" item xs={6}>
+            <Typography variant="h4">Wall</Typography>
+          </Grid>
+          <Grid key="ocean" item xs={6}>
+            <Typography variant="h4">Ocean</Typography>
+          </Grid>
           {courts.map((court) => (
             <Grid key={court.number} item xs={6}>
               <CourtCard courtNumber={court.number + 1} />
