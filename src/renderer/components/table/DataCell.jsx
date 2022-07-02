@@ -32,7 +32,7 @@ const DataCell = (props) => {
   }
   return (
     <TableCell align={align} key="nameDisplay" sx={sx}>
-      {data}
+      {value}
     </TableCell>
   );
 };

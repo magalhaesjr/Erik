@@ -378,7 +378,7 @@ const DivEntries = (props) => {
             />
           </TableRow>
         </TableHead>
-        <TableBody key="divisionEntries">
+        <TableBody key={`${division}_Entries`}>
           {entries.map((team, index) => (
             <TableRow key={team.seed}>
               <TableCell
