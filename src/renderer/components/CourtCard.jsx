@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { Net } from '../../domain/court';
-import { hasProp } from '../../domain/validate';
+import { hasProp, isObject } from '../../domain/validate';
 
 // Colors for net heights
 const cardColor = {
@@ -55,6 +55,51 @@ const getColor = (court, divisions) => {
     return cardColor.women;
   }
   return cardColor.invalid;
+};
+
+const divText = (divisions, divName) => {
+  // Sets the select division text for a division
+
+  // this div
+  const division = divisions[divName];
+  // Verify it's valid
+  if (isObject(division) && hasProp(division, 'courts')) {
+    // Calculate the number of courts that still must be assigned
+    const remaining = division.nets - division.courts.length;
+
+    if (remaining < 0) {
+      return `${divName} (${Math.abs(remaining).toString()} too many)`;
+    }
+    return `${divName} (${remaining.toString()} remaining)`;
+  }
+
+  // Just return divname by default (for available)
+  return divName;
+};
+
+const divColor = (divisions, divName) => {
+  // Sets the select division text for a division
+
+  // this div
+  const division = divisions[divName];
+  // Verify it's valid
+  if (isObject(division) && hasProp(division, 'courts')) {
+    // Calculate the number of courts that still must be assigned
+    const remaining = division.nets - division.courts.length;
+
+    if (remaining < 0) {
+      return 'red';
+    }
+
+    if (remaining === 0) {
+      return '#555555';
+    }
+
+    return 'green';
+  }
+
+  // Just return divname by default (for available)
+  return '';
 };
 
 const CourtCard = (props) => {
@@ -182,8 +227,15 @@ const CourtCard = (props) => {
             }}
           >
             {Object.keys(divisions).map((divName) => (
-              <MenuItem key={divName} value={divName}>
-                {divName}
+              <MenuItem
+                key={divName}
+                value={divName}
+                sx={{
+                  justifyContent: 'flex-end',
+                  color: divColor(divisions, divName),
+                }}
+              >
+                {divText(divisions, divName)}
               </MenuItem>
             ))}
           </Select>
