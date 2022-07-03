@@ -276,7 +276,7 @@ export class Division {
       // Assign court number to pool
       newPool.courts = this.courts[court];
       // Save pool in division
-      this.pools.push(new Pool(this.division));
+      this.pools.push(newPool);
     }
 
     // Pool index

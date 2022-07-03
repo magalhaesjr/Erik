@@ -39,7 +39,7 @@ const courtText = {
 };
 
 const getColor = (court, divisions) => {
-  if (court.netHeight === Net.UNDEFINED) {
+  if (court.netHeight === Net.UNDEFINED || court.division === 'Available') {
     return cardColor.undefined;
   }
   if (
@@ -63,21 +63,21 @@ const CourtCard = (props) => {
 
   // Grabs selector from redux
   const { court, divisions } = useSelector((state) => {
-    const out = { court: {}, divisions: {} };
+    const out = {
+      court: {},
+      divisions: { Available: { netHeight: Net.UNDEFINED } },
+    };
     Object.keys(state).forEach((prop) => {
       if (hasProp(state[prop], 'divisions')) {
         Object.keys(state[prop].divisions).forEach((name) => {
           out.divisions[name] = state[prop].divisions[name];
         });
       } else if (prop === 'courts') {
-        [out.court] = state[prop].filter((c) => c.number + 1 === courtNumber);
+        [out.court] = state[prop].filter((c) => c.number === courtNumber);
       }
     });
     return out;
   });
-
-  // State
-  const [currentDiv, setDivision] = React.useState(court.division);
 
   // Dispatching
   const dispatch = useDispatch();
@@ -120,8 +120,6 @@ const CourtCard = (props) => {
     if (newCourt.netHeight === Net.UNDEFINED) {
       newCourt.netHeight = divisions[newCourt.division].netHeight;
     }
-    // Change division state
-    setDivision(newCourt.division);
 
     // Dispatch the change to the store
     dispatch({

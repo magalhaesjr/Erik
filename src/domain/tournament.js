@@ -24,7 +24,7 @@ export default class Tournament {
       // Fill in default courts
       this.courts = Array.from(Array(DIVISION_RULES.maxCourts).keys()).map(
         (num) => {
-          return new Court(num);
+          return new Court(num + 1);
         }
       );
     }

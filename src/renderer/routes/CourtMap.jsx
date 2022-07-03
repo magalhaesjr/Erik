@@ -33,7 +33,7 @@ const CourtMap = () => {
           </Grid>
           {courts.map((court) => (
             <Grid key={court.number} item xs={6}>
-              <CourtCard courtNumber={court.number + 1} />
+              <CourtCard courtNumber={court.number} />
             </Grid>
           ))}
         </Grid>

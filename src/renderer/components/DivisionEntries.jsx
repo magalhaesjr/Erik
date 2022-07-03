@@ -68,10 +68,12 @@ const DivEntries = (props) => {
   const [activeEdit, setEdit] = React.useState(false);
 
   // Grabs selector from redux
-  const { entries, poolsValid } = useSelector((state) => {
+  const { entries, poolsValid, divReady, divStatus } = useSelector((state) => {
     const out = {
       entries: [],
       poolsValid: false,
+      divReady: false,
+      divStatus: '',
     };
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
@@ -82,8 +84,28 @@ const DivEntries = (props) => {
             out.entries,
             waitList
           );
+
+          // State of pools
           if (state[day].divisions[division].pools.length > 0) {
             out.poolsValid = true;
+            out.divReady = true;
+            out.divStatus = 'Pools made';
+          } else if (
+            state[day].divisions[division].courts.length <
+            state[day].divisions[division].nets
+          ) {
+            out.divStatus = 'Not enough courts assigned';
+          } else if (
+            state[day].divisions[division].courts.length >
+            state[day].divisions[division].nets
+          ) {
+            out.divStatus = 'Too many courts assigned';
+          } else if (
+            state[day].divisions[division].courts.length ===
+            state[day].divisions[division].nets
+          ) {
+            out.divReady = true;
+            out.divStatus = 'Ready to make pools';
           }
         }
       }
@@ -154,7 +176,6 @@ const DivEntries = (props) => {
         break;
       }
       default:
-        // eslint-disable-next-line no-console
         newTeam.players[player][name] = e.target.value;
         // reset pools if necessary
         resetPools();
@@ -236,6 +257,8 @@ const DivEntries = (props) => {
         onGenPools={genPools}
         waitList={waitList}
         poolsValid={poolsValid}
+        divReady={divReady}
+        divStatus={divStatus}
       />
       <Table
         sx={{
@@ -416,7 +439,7 @@ const DivEntries = (props) => {
                 component="th"
                 scope="row"
                 align="center"
-                key={`team_${team.seed}`}
+                key={`team_${team.seed}_${team.ranking}`}
               >
                 {team.seed}
               </TableCell>
@@ -424,11 +447,11 @@ const DivEntries = (props) => {
                 align="center"
                 data={team.ranking}
                 immutable
-                key={`ranking_${team.seed}`}
+                key={`ranking_${team.seed}_${team.ranking}`}
               />
               {team.players.map((player, playerInd) => (
                 <React.Fragment
-                  key={`team_${team.seed}_playerChecks_${playerInd}`}
+                  key={`team_${team.seed}_num_${playerInd}_playerChecks_${player.firstName}_${player.lastName}`}
                 >
                   <DataCell
                     align="center"
