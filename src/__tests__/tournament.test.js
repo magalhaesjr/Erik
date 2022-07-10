@@ -32,8 +32,8 @@ test('Tournament initializes courts', () => {
   const testTournament = new Tournament();
   // Expect courts to be initialized
   expect(testTournament.courts.length).toBe(DIVISION_RULES.maxCourts);
-  expect(testTournament.courts[0].number).toBe(0);
-  expect(testTournament.courts.pop().number).toBe(DIVISION_RULES.maxCourts - 1);
+  expect(testTournament.courts[0].number).toBe(1);
+  expect(testTournament.courts.pop().number).toBe(DIVISION_RULES.maxCourts);
 });
 
 test('addDivision adds division to correct day', () => {
