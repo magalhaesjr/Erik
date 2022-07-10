@@ -17,15 +17,6 @@ const numTeamsMock = jest
     return 10;
   });
 
-test('Day initializes courts', () => {
-  // Create test day
-  const testDay = new Day();
-  // Expect courts to be initialized
-  expect(testDay.courts.length).toBe(DIVISION_RULES.maxCourts);
-  expect(testDay.courts[0]).toBe(0);
-  expect(testDay.courts.pop()).toBe(DIVISION_RULES.maxCourts - 1);
-});
-
 test('addDivision with bad inputs throws', () => {
   // Create a test day
   const testDay = new Day();

@@ -1,33 +1,62 @@
 // Root reducer. Make this kind of global for now, until I get something going
-import { hasProp } from '../../domain/validate';
+import { hasProp, isEmpty } from '../../domain/validate';
 import Player from '../../domain/player';
 import Team from '../../domain/team';
 import Tournament from '../../domain/tournament';
 import { Division } from '../../domain/division';
 
 // Helper functions
-const getDivision = (state, div) => {
+const getDivision = (state, div, newFlag) => {
   let division = {};
   Object.keys(state).forEach((day) => {
     if (hasProp(state[day], 'divisions')) {
       if (hasProp(state[day].divisions, div)) {
-        division = state[day].divisions[div];
+        if (newFlag === undefined || newFlag) {
+          // Make a new copy of the division object
+          division = new Division(state[day].divisions[div]);
+        } else {
+          division = state[day].divisions[div];
+        }
       }
     }
   });
   return division;
 };
 
-const setDivision = (state, div, newDiv) => {
-  Object.keys(state).forEach((day) => {
-    if (hasProp(state[day], 'divisions')) {
-      if (hasProp(state[day].divisions, div)) {
-        state[day].divisions[div] = newDiv;
+const setDivision = (state, newDiv) => {
+  const div = newDiv.division;
+  // Copy state to new state
+  const outState = JSON.parse(JSON.stringify(state));
+  Object.keys(outState).forEach((day) => {
+    if (hasProp(outState[day], 'divisions')) {
+      if (hasProp(outState[day].divisions, div)) {
+        outState[day].divisions[div] = JSON.parse(JSON.stringify(newDiv));
       }
     }
   });
+  return outState;
+};
+
+// Reset pools
+const resetPools = (state, division) => {
+  if (!isEmpty(division)) {
+    // Reset pools
+    division.pools = [];
+    const newState = setDivision(state, division);
+
+    // Reset pool numbers for courts
+    division.courts.forEach((c) => {
+      const court = newState.courts[c - 1];
+      court.pool = null;
+      newState.courts[c - 1] = court;
+    });
+
+    // Update stae
+    return newState;
+  }
   return state;
 };
+
 // Iniital state
 const initialState = JSON.parse(JSON.stringify(new Tournament()));
 
@@ -38,11 +67,13 @@ export default function appReducer(state = initialState, action) {
       return action.payload;
     }
     case 'updatePlayer': {
-      // Copy tournament
-      const newState = JSON.parse(JSON.stringify(state));
       // Find division in state
-      const division = getDivision(newState, action.payload.division);
-      if (division !== null) {
+      const division = getDivision(
+        JSON.parse(JSON.stringify(state)),
+        action.payload.division,
+        false
+      );
+      if (!isEmpty(division)) {
         const { team, player, playerNum, waitList } = action.payload;
         // update player info
         if (waitList) {
@@ -51,7 +82,7 @@ export default function appReducer(state = initialState, action) {
           division.teams[team].players[playerNum] = player;
         }
         // Update stae
-        return newState;
+        return setDivision(state, division);
       }
       // Return original state
       return state;
@@ -60,25 +91,20 @@ export default function appReducer(state = initialState, action) {
       // Find division
       const division = getDivision(state, action.payload.division);
       // Update teams
-      if (division !== null) {
-        const divObj = new Division(division);
+      if (!isEmpty(division)) {
         const { teams, waitList } = action.payload;
 
         if (waitList) {
-          divObj.waitList = [];
+          division.waitList = [];
         } else {
-          divObj.teams = [];
+          division.teams = [];
         }
         // Add all new teams
         teams.forEach((team) => {
-          divObj.addTeam(new Team(team));
+          division.addTeam(new Team(team));
         });
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
-        // Update stae
+        const newState = setDivision(state, division);
+        // Update state
         return newState;
       }
       // Return original state
@@ -88,8 +114,7 @@ export default function appReducer(state = initialState, action) {
       // Find division
       const division = getDivision(state, action.payload.division);
       // Update teams
-      if (division !== null) {
-        const divObj = new Division(division);
+      if (!isEmpty(division)) {
         const { team, waitList } = action.payload;
         const newTeam = new Team();
         if (team !== null) {
@@ -99,12 +124,8 @@ export default function appReducer(state = initialState, action) {
         newTeam.addPlayer(new Player());
         newTeam.addPlayer(new Player());
         // Add team
-        divObj.addTeam(newTeam);
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
+        division.addTeam(newTeam);
+        const newState = setDivision(state, division);
         // Update stae
         return newState;
       }
@@ -114,27 +135,22 @@ export default function appReducer(state = initialState, action) {
       // Find division
       const division = getDivision(state, action.payload.division);
       // Update teams
-      if (division !== null) {
-        const divObj = new Division(division);
+      if (!isEmpty(division)) {
         const { waitList, team } = action.payload;
         // First grab team
         let newTeam = {};
         if (waitList) {
-          newTeam = divObj.waitList[team];
+          newTeam = division.waitList[team];
         } else {
-          newTeam = divObj.teams[team];
+          newTeam = division.teams[team];
         }
         // Flip waitlist status
         newTeam.isWaitListed = !newTeam.isWaitListed;
         // Remove team from old list
-        divObj.removeTeam(team, waitList);
+        division.removeTeam(team, waitList);
         // Add team to new list
-        divObj.addTeam(newTeam);
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
+        division.addTeam(newTeam);
+        const newState = setDivision(state, division);
         // Update stae
         return newState;
       }
@@ -144,15 +160,10 @@ export default function appReducer(state = initialState, action) {
       // Find division
       const division = getDivision(state, action.payload.division);
       // Update teams
-      if (division !== null) {
-        const divObj = new Division(division);
+      if (!isEmpty(division)) {
         const { waitList, team } = action.payload;
-        divObj.removeTeam(team, waitList);
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
+        division.removeTeam(team, waitList);
+        const newState = setDivision(state, division);
         // Update stae
         return newState;
       }
@@ -162,16 +173,16 @@ export default function appReducer(state = initialState, action) {
       // Find division
       const division = getDivision(state, action.payload.division);
       // Generate pools
-      if (division !== null) {
-        const divObj = new Division(division);
+      if (!isEmpty(division)) {
         // Generate pools
-        divObj.assignCourts(Array(divObj.nets).fill(1));
-        divObj.createPools();
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
+        division.createPools();
+        // Update division
+        const newState = setDivision(state, division);
+        // Assign pool numbers to courts in main store
+        division.pools.forEach((p, ind) => {
+          newState.courts[p.courts - 1].pool = ind + 1;
+        });
+
         // Update stae
         return newState;
       }
@@ -180,41 +191,76 @@ export default function appReducer(state = initialState, action) {
     case 'resetPools': {
       // Find division
       const division = getDivision(state, action.payload.division);
-      // Generate pools
-      if (division !== null) {
-        const divObj = new Division(division);
-        // Reset pools
-        divObj.pools = [];
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
-        // Update stae
-        return newState;
-      }
-      return state;
+
+      // Reset pools
+      return resetPools(state, division);
     }
+
     case 'updatePaidStatus': {
       // Get payload variables
       const { team, playerInd, paid, staff } = action.payload;
       // Find division
       const division = getDivision(state, action.payload.division);
       // Generate pools
-      if (division !== null) {
-        const divObj = new Division(division);
+      if (!isEmpty(division)) {
         // Update player paid status in this division
-        divObj.teams[team].players[playerInd].paid = paid;
-        divObj.teams[team].players[playerInd].staff = staff;
-        const newState = setDivision(
-          JSON.parse(JSON.stringify(state)),
-          action.payload.division,
-          JSON.parse(JSON.stringify(divObj))
-        );
+        division.teams[team].players[playerInd].paid = paid;
+        division.teams[team].players[playerInd].staff = staff;
+        const newState = setDivision(state, division);
         // Update stae
         return newState;
       }
       return state;
+    }
+    case 'updateCourt': {
+      // Get the new court
+      const { court } = action.payload;
+
+      // Directly update the court number
+      let newState = JSON.parse(JSON.stringify(state));
+
+      // Previous division assigned to this court
+      const prevDiv = getDivision(
+        newState,
+        newState.courts[court.number - 1].division
+      );
+      // assign new court
+      newState.courts[court.number - 1] = court;
+
+      // If court was previously assigned to a division, then remove that court assignment
+      // from the division
+      if (!isEmpty(prevDiv)) {
+        // If there were previously pools, reset them
+        if (prevDiv.pools.length > 0) {
+          newState = resetPools(newState, prevDiv);
+        }
+
+        // Remove court from division
+        prevDiv.assignCourts(
+          [...prevDiv.courts].filter((c) => {
+            return c !== court.number;
+          })
+        );
+
+        // Replace division in state
+        newState = setDivision(newState, prevDiv);
+      }
+
+      // Now assign the new court to the new division
+      const newDiv = getDivision(newState, court.division);
+      // Ensure that new division is real
+      if (!isEmpty(newDiv)) {
+        // Get previous courts
+        const prevCourts = [...newDiv.courts];
+        // Add court
+        prevCourts.push(court.number);
+        // Re-assign courts
+        newDiv.assignCourts(prevCourts);
+        // Replace division in state
+        newState = setDivision(newState, newDiv);
+      }
+
+      return newState;
     }
     default:
       // return state

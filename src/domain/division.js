@@ -1,6 +1,7 @@
 // Implements the Division class for organizing tournaments
 import Team from './team';
 // Default rules if none provided
+import { Net } from './court';
 import { DIVISION_RULES, validateRules } from './rules';
 import { hasProp, isObject, validateObject } from './validate';
 // Schedules
@@ -30,7 +31,7 @@ function getPlayoffTeams(numTeams, totalTeams) {
   } else if (numTeams === totalTeams) {
     // 1 pool. Add team for playoff work team
     playoffTeams = 3;
-  } else if (numTeams === 5 && (totalTeams === 10 || totalTeams === 11)) {
+  } else if (totalTeams === 10 || totalTeams === 11) {
     // 2 Pools of 5 or pool of 5/6. 3 teams for even playoffs with work teams
     playoffTeams = 3;
   }
@@ -61,6 +62,7 @@ export class Division {
     this.rules = {};
     this.teams = [];
     this.waitList = [];
+    this.netHeight = Net.UNDEFINED;
 
     // Override defaults
     if (isObject(input)) {
@@ -74,6 +76,8 @@ export class Division {
       this.division = input;
       // Set the rules for the division
       this.rules = setDivisionRules(rules, this.division);
+      // Set the expected net height
+      this.setNetHeight();
     }
   }
 
@@ -107,6 +111,19 @@ export class Division {
       }
       // Recreate the pools instead of loading them, which wouldn't properly link the teams
       this.createPools();
+    }
+  }
+
+  /* ** Division Rules ** */
+  setNetHeight() {
+    // Ensure the division is valid
+    validateDivision(this.division);
+
+    // Set net height depending on name
+    if (this.division.includes('Women') || this.division.includes('Coed')) {
+      this.netHeight = Net.WOMEN;
+    } else {
+      this.netHeight = Net.MEN;
     }
   }
 
@@ -259,7 +276,7 @@ export class Division {
       // Assign court number to pool
       newPool.courts = this.courts[court];
       // Save pool in division
-      this.pools.push(new Pool(this.division));
+      this.pools.push(newPool);
     }
 
     // Pool index

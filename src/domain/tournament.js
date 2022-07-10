@@ -1,7 +1,9 @@
 // Implements the Tournament class for organizing tournament weeekend
 import Day from './day';
+import { DIVISION_RULES } from './rules';
 import { Division } from './division';
-import { isObject, validateObject } from './validate';
+import Court from './court';
+import { hasProp, isObject, validateObject } from './validate';
 
 // Team class for tournament entries
 export default class Tournament {
@@ -12,10 +14,19 @@ export default class Tournament {
     this.sunday = new Day();
     // Financial rules
     this.financials = {};
-
     // If input, import
     if (isObject(input)) {
       this.import(input);
+    }
+
+    // If courts aren't filled in, add them
+    if (!hasProp(this, 'courts')) {
+      // Fill in default courts
+      this.courts = Array.from(Array(DIVISION_RULES.maxCourts).keys()).map(
+        (num) => {
+          return new Court(num + 1);
+        }
+      );
     }
   }
 
@@ -26,6 +37,10 @@ export default class Tournament {
     Object.keys(input).forEach((key) => {
       if (key === 'saturday' || key === 'sunday') {
         this[key] = new Day(input[key]);
+      } else if (key === 'courts') {
+        this[key] = input[key].map((court) => {
+          return new Court(court);
+        });
       } else {
         this[key] = input[key];
       }

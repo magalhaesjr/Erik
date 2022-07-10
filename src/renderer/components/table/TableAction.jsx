@@ -1,6 +1,6 @@
 /* eslint-disable react/forbid-prop-types */
 // Implements a basic table cell that allows editing
-import { Button } from '@mui/material';
+import { Button, Typography, Box } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import CreateIcon from '@mui/icons-material/Create';
 import DoneIcon from '@mui/icons-material/Done';
@@ -17,6 +17,8 @@ const TableAction = (props) => {
     onGenPools,
     waitList,
     poolsValid,
+    divReady,
+    divStatus,
   } = props;
 
   // Handlers
@@ -33,38 +35,6 @@ const TableAction = (props) => {
     onGenPools();
   };
 
-  if (activeEdit) {
-    return (
-      <MainDiv display="flex">
-        <MainDiv
-          sx={{
-            textAlign: 'left',
-          }}
-        >
-          <Button onClick={handleAdd}>
-            <AddBoxIcon />
-            ADD
-          </Button>
-          <Button align="right" onClick={handleSave}>
-            <DoneIcon />
-            UPDATE RANKS
-          </Button>
-          {!waitList && (
-            <Button
-              onClick={genPools}
-              disabled={poolsValid}
-              sx={{
-                color: 'red',
-              }}
-            >
-              <LibraryBooksIcon />
-              MAKE POOLS
-            </Button>
-          )}
-        </MainDiv>
-      </MainDiv>
-    );
-  }
   return (
     <MainDiv display="flex">
       <MainDiv
@@ -76,21 +46,50 @@ const TableAction = (props) => {
           <AddBoxIcon />
           ADD
         </Button>
-        <Button align="right" onClick={handleEdit}>
-          <CreateIcon />
-          EDIT
-        </Button>
+        {activeEdit ? (
+          <Button align="right" onClick={handleSave}>
+            <DoneIcon />
+            UPDATE RANKS
+          </Button>
+        ) : (
+          <Button align="right" onClick={handleEdit}>
+            <CreateIcon />
+            EDIT
+          </Button>
+        )}
         {!waitList && (
           <Button
             onClick={genPools}
-            disabled={poolsValid}
+            disabled={poolsValid || !divReady}
             sx={{
-              color: 'red',
+              color: 'green',
             }}
           >
             <LibraryBooksIcon />
             MAKE POOLS
           </Button>
+        )}
+        {!waitList && (
+          <Box
+            sx={{
+              display: 'inline-flex',
+              fontWeight: 'bold',
+              alignContent: 'center',
+              float: 'right',
+            }}
+          >
+            <Typography
+              variant="h8"
+              sx={{
+                color: divReady ? 'green' : 'red',
+                display: 'inline-flex',
+                textAlign: 'right',
+                float: 'right',
+              }}
+            >
+              {divStatus}
+            </Typography>
+          </Box>
         )}
       </MainDiv>
     </MainDiv>
@@ -105,6 +104,8 @@ TableAction.propTypes = {
   activeEdit: PropTypes.bool,
   waitList: PropTypes.bool,
   poolsValid: PropTypes.bool,
+  divReady: PropTypes.bool,
+  divStatus: PropTypes.string,
 };
 
 TableAction.defaultProps = {
@@ -115,6 +116,8 @@ TableAction.defaultProps = {
   activeEdit: false,
   waitList: false,
   poolsValid: false,
+  divReady: false,
+  divStatus: 'Unknown',
 };
 
 export default TableAction;

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 // Creates a React table for all entries into division
 import * as React from 'react';
 import PropTypes from 'prop-types';
@@ -67,10 +68,12 @@ const DivEntries = (props) => {
   const [activeEdit, setEdit] = React.useState(false);
 
   // Grabs selector from redux
-  const { entries, poolsValid } = useSelector((state) => {
+  const { entries, poolsValid, divReady, divStatus } = useSelector((state) => {
     const out = {
       entries: [],
       poolsValid: false,
+      divReady: false,
+      divStatus: '',
     };
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
@@ -81,8 +84,28 @@ const DivEntries = (props) => {
             out.entries,
             waitList
           );
+
+          // State of pools
           if (state[day].divisions[division].pools.length > 0) {
             out.poolsValid = true;
+            out.divReady = true;
+            out.divStatus = 'Pools made';
+          } else if (
+            state[day].divisions[division].courts.length <
+            state[day].divisions[division].nets
+          ) {
+            out.divStatus = 'Not enough courts assigned';
+          } else if (
+            state[day].divisions[division].courts.length >
+            state[day].divisions[division].nets
+          ) {
+            out.divStatus = 'Too many courts assigned';
+          } else if (
+            state[day].divisions[division].courts.length ===
+            state[day].divisions[division].nets
+          ) {
+            out.divReady = true;
+            out.divStatus = 'Ready to make pools';
           }
         }
       }
@@ -153,7 +176,6 @@ const DivEntries = (props) => {
         break;
       }
       default:
-        // eslint-disable-next-line no-console
         newTeam.players[player][name] = e.target.value;
         // reset pools if necessary
         resetPools();
@@ -235,6 +257,8 @@ const DivEntries = (props) => {
         onGenPools={genPools}
         waitList={waitList}
         poolsValid={poolsValid}
+        divReady={divReady}
+        divStatus={divStatus}
       />
       <Table
         sx={{
@@ -377,7 +401,7 @@ const DivEntries = (props) => {
             />
           </TableRow>
         </TableHead>
-        <TableBody key="divisionEntries">
+        <TableBody key={`${division}_Entries`}>
           {entries.map((team, index) => (
             <TableRow key={team.seed}>
               <TableCell
@@ -415,7 +439,7 @@ const DivEntries = (props) => {
                 component="th"
                 scope="row"
                 align="center"
-                key={`team_${team.seed}`}
+                key={`team_${team.seed}_${team.ranking}`}
               >
                 {team.seed}
               </TableCell>
@@ -423,18 +447,17 @@ const DivEntries = (props) => {
                 align="center"
                 data={team.ranking}
                 immutable
-                key={`ranking_${team.seed}`}
+                key={`ranking_${team.seed}_${team.ranking}`}
               />
               {team.players.map((player, playerInd) => (
                 <React.Fragment
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`team_${team.seed}_playerChecks_${playerInd}_${player.lastName}`}
+                  key={`team_${team.seed}_num_${playerInd}_playerChecks_${player.firstName}_${player.lastName}`}
                 >
                   <DataCell
                     align="center"
                     data={joinName(player.firstName, player.lastName)}
                     name="name"
-                    key={`team_${team.seed}_name_${player.firstName}_${player.lastName}`}
+                    key={`team_${team.seed}_name_${playerInd}`}
                     activeEdit={activeEdit}
                     onChange={(e) => {
                       handleChange(e, index, playerInd);
@@ -449,7 +472,7 @@ const DivEntries = (props) => {
                     data={player.ranking}
                     name="ranking"
                     activeEdit={activeEdit}
-                    key={`team_${team.seed}_rank_${player.firstName}_${player.lastName}`}
+                    key={`team_${team.seed}_rank_${playerInd}`}
                     onChange={(e) => {
                       handleChange(e, index, playerInd);
                     }}
@@ -458,14 +481,14 @@ const DivEntries = (props) => {
                     align="center"
                     fontSize="small"
                     padding="none"
-                    key={`team_${team.seed}_paid_${player.firstName}_${player.lastName}`}
+                    key={`team_${team.seed}_paid_${playerInd}`}
                     margins="0px"
                   >
                     <Checkbox
                       checked={player.paid && !player.staff}
                       disabled={player.staff}
                       name="paid"
-                      key={`team_${team.seed}_paidCheck_${player.firstName}_${player.lastName}`}
+                      key={`team_${team.seed}_paidCheck_${playerInd}`}
                       onChange={(e) => {
                         handleChange(e, index, playerInd);
                       }}
@@ -476,12 +499,12 @@ const DivEntries = (props) => {
                     fontSize="small"
                     padding="none"
                     margins="0px"
-                    key={`team_${team.seed}_staff_${player.firstName}_${player.lastName}`}
+                    key={`team_${team.seed}_staff_${playerInd}`}
                   >
                     <Checkbox
                       checked={player.staff}
                       name="staff"
-                      key={`team_${team.seed}_staffCheck_${player.firstName}_${player.lastName}`}
+                      key={`team_${team.seed}_staffCheck_${playerInd}`}
                       onChange={(e) => {
                         handleChange(e, index, playerInd);
                       }}
@@ -492,12 +515,12 @@ const DivEntries = (props) => {
                     fontSize="small"
                     padding="none"
                     margins="0px"
-                    key={`team_${team.seed}_avpa_${player.firstName}_${player.lastName}`}
+                    key={`team_${team.seed}_avpa_${playerInd}`}
                   >
                     <Checkbox
                       checked={player.membershipValid}
                       name="membership"
-                      key={`team_${team.seed}_avpaCheck_${player.firstName}_${player.lastName}`}
+                      key={`team_${team.seed}_avpaCheck_${playerInd}`}
                       onChange={(e) => {
                         handleChange(e, index, playerInd);
                       }}

@@ -15,7 +15,7 @@ const PoolHeader = (props) => {
         boxShadow: 'none',
       }}
     >
-      <PoolInfo inputCourt={0} division={pool.division} />
+      <PoolInfo inputCourt={pool.courts} division={pool.division} />
       <PoolFormat
         numGames={pool.numGames}
         points={pool.points}
