@@ -37,20 +37,23 @@ test('addDivision sets division correctly', () => {
   // create a test division
   const testDiv = new Division();
   testDiv.division = 'Test';
-  testDiv.nets = 5;
+  testDiv.minNets = 5;
+  testDiv.maxNets = 5;
   // Add division
   // eslint-disable-next-line prettier/prettier
   expect(() => {testDay.addDivision(testDiv)}).not.toThrow();
   // Change division nets
   const replaceDiv = new Division();
   replaceDiv.division = 'Test';
-  replaceDiv.nets = 10;
+  replaceDiv.minNets = 10;
+  replaceDiv.maxNets = 10;
   testDay.addDivision(replaceDiv);
   // Reset division
   // eslint-disable-next-line prettier/prettier
   expect(Object.prototype.hasOwnProperty.call(testDay.divisions, 'Test')).toBeTruthy();
   // Expect teams to be the second
-  expect(testDay.divisions.Test.nets).toBe(10);
+  expect(testDay.divisions.Test.minNets).toBe(10);
+  expect(testDay.divisions.Test.maxNets).toBe(10);
 });
 
 test('Day accurately counts number of teams', () => {
@@ -76,7 +79,8 @@ test('Day accurately counts required nets', () => {
   // Create a test division
   const testDiv = new Division();
   testDiv.division = 'Test';
-  testDiv.nets = 4;
+  testDiv.minNets = 4;
+  testDiv.maxNets = 4;
   // Add division
   testDay.addDivision(testDiv);
   // Verify num teams is correct
@@ -84,7 +88,8 @@ test('Day accurately counts required nets', () => {
   // Add another division and test
   const newDiv = new Division();
   newDiv.division = 'Test2';
-  newDiv.nets = 6;
+  newDiv.minNets = 6;
+  newDiv.maxNets = 6;
   testDay.addDivision(newDiv);
   expect(testDay.requiredNets()).toBe(10);
 });

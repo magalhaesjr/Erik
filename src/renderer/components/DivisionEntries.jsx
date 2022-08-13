@@ -92,17 +92,19 @@ const DivEntries = (props) => {
             out.divStatus = 'Pools made';
           } else if (
             state[day].divisions[division].courts.length <
-            state[day].divisions[division].nets
+            state[day].divisions[division].minNets
           ) {
             out.divStatus = 'Not enough courts assigned';
           } else if (
             state[day].divisions[division].courts.length >
-            state[day].divisions[division].nets
+            state[day].divisions[division].maxNets
           ) {
             out.divStatus = 'Too many courts assigned';
           } else if (
-            state[day].divisions[division].courts.length ===
-            state[day].divisions[division].nets
+            state[day].divisions[division].courts.length >=
+              state[day].divisions[division].minNets &&
+            state[day].divisions[division].courts.length <=
+              state[day].divisions[division].maxNets
           ) {
             out.divReady = true;
             out.divStatus = 'Ready to make pools';

@@ -196,6 +196,20 @@ export default function appReducer(state = initialState, action) {
       return resetPools(state, division);
     }
 
+    case 'updatePool': {
+      // Find division
+      const division = getDivision(state, action.payload.division);
+
+      // Get pool
+      division.pools[action.payload.id].playoffTeams =
+        action.payload.playoffTeams;
+
+      // Update state
+      const newState = setDivision(state, division);
+
+      return newState;
+    }
+
     case 'updatePaidStatus': {
       // Get payload variables
       const { team, playerInd, paid, staff } = action.payload;

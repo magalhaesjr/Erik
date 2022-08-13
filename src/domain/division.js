@@ -57,7 +57,8 @@ export class Division {
     // Initialize
     this.courts = [];
     this.division = '';
-    this.nets = 0;
+    this.minNets = 0;
+    this.maxNets = 0;
     this.pools = [];
     this.rules = {};
     this.teams = [];
@@ -106,8 +107,8 @@ export class Division {
     // If pools were saved, re-create them now
     if (hasProp(input, 'pools') && input.pools.length > 0) {
       // TODO fix kludge
-      if (this.courts.length < this.nets) {
-        this.courts = Array(this.nets).fill(1);
+      if (this.courts.length < this.minNets) {
+        this.courts = Array(this.minNets).fill(1);
       }
       // Recreate the pools instead of loading them, which wouldn't properly link the teams
       this.createPools();
@@ -189,14 +190,11 @@ export class Division {
 
   // Update number of required nets
   updateNets() {
-    // Special cases
-    if (this.numTeams() === 11) {
-      this.nets = 2;
-    } else if (this.numTeams() <= 7) {
-      this.nets = 1;
-    } else {
-      this.nets = Math.ceil(this.numTeams() / this.rules.maxTeams);
-    }
+    this.minNets = Math.ceil(this.numTeams() / this.rules.maxTeams);
+    this.maxNets = Math.max(
+      1,
+      Math.floor(this.numTeams() / this.rules.minTeams)
+    );
   }
 
   // Update seeds in the tournament
@@ -263,14 +261,19 @@ export class Division {
   // Create all pools
   createPools() {
     // Validate that you have enough courts for all the nets you need
-    if (this.courts.length < this.nets || this.nets === 0) {
-      throw new Error('There are not enough courts assigned to this division');
+    if (
+      this.courts.length < this.minNets ||
+      this.courts.length > this.maxNets
+    ) {
+      throw new Error(
+        `The number of courts for ${this.division} must be >= ${this.minNets} & <= ${this.maxNets}`
+      );
     }
 
     // Remove previous pools
     this.pools = [];
     // Create new pools with court assignment
-    for (let court = 0; court < this.nets; court += 1) {
+    for (let court = 0; court < this.courts.length; court += 1) {
       // Create new pool
       const newPool = new Pool(this.division);
       // Assign court number to pool
@@ -283,7 +286,7 @@ export class Division {
     let poolIndex = 0;
     let direction = 1;
     // Number of pools required
-    const numPools = Math.floor(this.numTeams() / this.rules.minTeams);
+    const numPools = this.courts.length;
     // Number of teams to do regular assignment in snake (-1 because index is 0 based)
     const teamCutoff = Math.floor(this.numTeams() / numPools) * numPools - 1;
     // Do a snake style assignment of teams to pools
@@ -293,11 +296,19 @@ export class Division {
       // Increment pool Index
       poolIndex += direction;
       // Check for time to switch snake direction
-      if (index === teamCutoff && this.numTeams() !== 11) {
+      if (index === teamCutoff && this.pools[0].teams.length < 5) {
         // Force reverse snake for last round
         direction = -1;
-        poolIndex = this.nets - 1;
-      } else if (poolIndex === this.nets || poolIndex < 0) {
+        poolIndex = numPools - 1;
+      } else if (
+        index === teamCutoff &&
+        this.pools[0].teams.length === 5 &&
+        this.numTeams() !== 11
+      ) {
+        // Force the snake to start at pool 1
+        direction = 1;
+        poolIndex = 0;
+      } else if (poolIndex === numPools || poolIndex < 0) {
         direction *= -1;
         poolIndex += direction;
       }
