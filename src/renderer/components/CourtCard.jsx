@@ -65,11 +65,18 @@ const divText = (divisions, divName) => {
   // Verify it's valid
   if (isObject(division) && hasProp(division, 'courts')) {
     // Calculate the number of courts that still must be assigned
-    const remaining = division.nets - division.courts.length;
+    const remaining = division.minNets - division.courts.length;
+
+    if (remaining <= 0 && division.courts.length <= division.maxNets) {
+      return `${divName} (0 remaining)`;
+    }
 
     if (remaining < 0) {
-      return `${divName} (${Math.abs(remaining).toString()} too many)`;
+      return `${divName} (${Math.abs(
+        division.courts.length - division.maxNets
+      ).toString()} too many)`;
     }
+
     return `${divName} (${remaining.toString()} remaining)`;
   }
 
@@ -85,14 +92,14 @@ const divColor = (divisions, divName) => {
   // Verify it's valid
   if (isObject(division) && hasProp(division, 'courts')) {
     // Calculate the number of courts that still must be assigned
-    const remaining = division.nets - division.courts.length;
+    const remaining = division.minNets - division.courts.length;
+
+    if (remaining <= 0 && division.courts.length <= division.maxNets) {
+      return '#555555';
+    }
 
     if (remaining < 0) {
       return 'red';
-    }
-
-    if (remaining === 0) {
-      return '#555555';
     }
 
     return 'green';

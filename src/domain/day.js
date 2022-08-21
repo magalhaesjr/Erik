@@ -57,7 +57,7 @@ export default class Day {
   requiredNets() {
     let numNets = 0;
     Object.keys(this.divisions).forEach((div) => {
-      numNets += this.divisions[div].nets;
+      numNets += this.divisions[div].minNets;
     });
     return numNets;
   }

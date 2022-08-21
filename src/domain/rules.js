@@ -29,10 +29,10 @@ export function validateRules(rules) {
 export const DIVISION_RULES = {
   /* Global rules */
   // Maximum number of courts allowed on the beach
-  maxCourts: 22,
+  maxCourts: 20,
   // Minimum number of teams per net
   minTeams: 4,
-  maxTeams: 5,
+  maxTeams: 7,
   // Pool Format
   poolFormat: {
     4: {
@@ -56,7 +56,7 @@ export const DIVISION_RULES = {
   /* Division specific rules can override globals */
   "Men's Open": {
     // Preferred center court
-    centerCourt: 9,
+    centerCourt: 11,
     // Pool Format
     poolFormat: {
       4: {
@@ -67,17 +67,21 @@ export const DIVISION_RULES = {
         numGames: 1,
         points: 21,
       },
+      6: {
+        numGames: 1,
+        points: 21,
+      },
     },
   },
   "Men's AA": {
-    centerCourt: 10,
+    centerCourt: 12,
   },
   "Coed 2's Open": {
     // Preferred center court
-    centerCourt: 9,
+    centerCourt: 11,
   },
   "Coed 2's AA": {
     // Preferred center court
-    centerCourt: 10,
+    centerCourt: 12,
   },
 };

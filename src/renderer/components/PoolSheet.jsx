@@ -2,7 +2,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Paper, Typography, styled, Grid } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { hasProp } from '../../domain/validate';
 import PoolHeader from './poolSheet/PoolHeader';
 import PoolSchedule from './poolSheet/PoolSchedule';
@@ -41,6 +41,21 @@ const PoolSheet = React.forwardRef((props, ref) => {
     return divPool;
   });
 
+  // Dispatcher
+  const dispatch = useDispatch();
+
+  // Handler
+  const handleChange = (val) => {
+    dispatch({
+      type: 'updatePool',
+      payload: {
+        division: pool.division,
+        id: poolId,
+        playoffTeams: val,
+      },
+    });
+  };
+
   if (pool !== undefined && Object.keys(pool).length > 0) {
     return (
       <PoolPaper
@@ -52,7 +67,7 @@ const PoolSheet = React.forwardRef((props, ref) => {
       >
         <Grid container spacing={1}>
           <Grid item xs={10}>
-            <PoolHeader pool={pool} />
+            <PoolHeader pool={pool} onChange={handleChange} />
           </Grid>
           <Grid item xs={2}>
             <PoolSchedule pool={pool} />
