@@ -1,46 +1,38 @@
 // Organizes a tournament day for a tournament weekend
-import { Division } from './division';
-import { hasProp, isObject, validateObject } from './validate';
+import Division from './division';
+import { getDivisionKey } from './utility';
+
+type DayDivisions = {
+  [key: string]: Division;
+};
 
 // Class for each tournament Day
 export default class Day {
-  constructor(input) {
+  divisions: DayDivisions;
+
+  constructor(input?: Day) {
     // Initialize Divisions and for each day
     this.divisions = {};
 
     // If an object was input, import it now
-    if (isObject(input)) {
+    if (input) {
       this.import(input);
     }
   }
 
   /* ** IMPORT ** */
-  import(input) {
-    // Validate input object
-    validateObject(input);
-
+  import(input: Day) {
     // Loop through all fields in class and import as needed
-    Object.keys(this).forEach((key) => {
-      if (hasProp(input, key)) {
-        if (key === 'divisions') {
-          // Re-create Division objects and add them to the day
-          Object.keys(input.divisions).forEach((div) => {
-            this.addDivision(new Division(input.divisions[div]));
-          });
-        }
-      }
+    Object.entries(input.divisions).forEach(([, v]) => {
+      this.addDivision(new Division(v));
     });
   }
 
   // Add a division to the tournament day
-  addDivision(inputDivision) {
-    // Ensure division object is valid
-    if (!(inputDivision instanceof Division)) {
-      throw new Error('Input division is not a Division object');
-    }
-
+  addDivision(inputDivision: Division) {
     // Assign the division
-    this.divisions[inputDivision.division] = inputDivision;
+    this.divisions[getDivisionKey(inputDivision.props.division)] =
+      inputDivision;
   }
 
   /* ** Helpful getters about the tournament ** */
@@ -57,7 +49,7 @@ export default class Day {
   requiredNets() {
     let numNets = 0;
     Object.keys(this.divisions).forEach((div) => {
-      numNets += this.divisions[div].minNets;
+      numNets += this.divisions[div].props.minNets;
     });
     return numNets;
   }

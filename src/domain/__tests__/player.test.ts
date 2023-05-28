@@ -1,6 +1,5 @@
-/* eslint-disable no-new */
 // Tests player class
-import { Player, PlayerInfo } from '../domain/player';
+import Player, { PlayerInfo } from '../player';
 
 // Individual player fields to import
 const name = 'Jeff Magalhaes (fakeland, usa)';
@@ -81,10 +80,7 @@ test('export saves all properties', () => {
   // export player info (save into an object for testing
   const outObject = JSON.parse(testPlayer.export());
   // Compare exported properties to testPlayer properties
-  Object.keys(testPlayer.props).forEach((key) => {
-    expect(Object.prototype.hasOwnProperty.call(outObject, key)).toBeTruthy();
-    expect(outObject[key]).toBe(testPlayer.props[key]);
-  });
+  expect(outObject.props).toStrictEqual(testPlayer.props);
 });
 
 test('import initializes player', () => {

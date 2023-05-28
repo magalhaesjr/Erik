@@ -1,17 +1,4 @@
-/* eslint-disable @typescript-eslint/lines-between-class-members */
-// Defines the player class for individual players in the tournament
-/* import { hasProp, isObject, validateObject } from './validate';
-
-// Fields required for player construction
-const PLAYER_FIELDS = [
-  'name',
-  'email',
-  'org',
-  'avpa#',
-  'ranking',
-  'membershipValid',
-];
-*/
+import omit from 'lodash/omit';
 
 // Player Info object (parsed from Avp America)
 export type PlayerInfo = {
@@ -30,9 +17,7 @@ type PlayerName = {
 };
 
 // Player properties
-export interface PlayerProps {
-  [key: string]: string | number | boolean | undefined;
-  // Class properties
+interface PlayerPropTypes {
   firstName: string;
   lastName: string;
   avpa: number;
@@ -44,24 +29,12 @@ export interface PlayerProps {
   staff: boolean;
 }
 
+export type PlayerProps = { [P in keyof PlayerPropTypes]: PlayerPropTypes[P] };
+
 // Type guard
-function isPlayerInfo(obj: PlayerInfo | PlayerProps): obj is PlayerInfo {
+function isPlayerInfo(obj: PlayerInfo | Player): obj is PlayerInfo {
   return (obj as PlayerInfo).name !== undefined;
 }
-
-// Validates that all required inputs are available
-/* function validateInput(info: PlayerInfo) {
-  // Validate it's an object
-  validateObject(info);
-  PLAYER_FIELDS.forEach((key) => {
-    if (!hasProp(info, key)) {
-      throw new Error(`Player input is missing ${key}`);
-    } else if (info[key] === undefined || info[key] === null) {
-      throw new Error(`Player input ${key} is undefined`);
-    }
-  });
-}
-*/
 
 // Validates required fields are filled in
 function validatePlayer(player: PlayerProps) {
@@ -93,26 +66,36 @@ export function joinName(firstName: string, lastName: string): string {
 }
 
 // Class representing a player in the tournament
-export class Player {
+class Player {
   // Class properties
   props: PlayerProps;
 
-  constructor(playerIn: PlayerProps | PlayerInfo) {
+  constructor(playerIn?: Player | PlayerInfo) {
+    // Defaults
+    this.props = {
+      firstName: 'first',
+      lastName: 'last',
+      avpa: NaN,
+      email: 'not-real',
+      org: '',
+      ranking: 0.0,
+      membershipValid: false,
+      paid: false,
+      staff: false,
+    };
+
     // If more data was input
-    if (isPlayerInfo(playerIn)) {
+    if (playerIn && isPlayerInfo(playerIn)) {
       // Import from a parsed avpamerica html table
       this.props = Player.importFromSheet(playerIn);
-    } else {
+    } else if (playerIn) {
       // Import from exported object
-      this.props = playerIn;
+      this.import(playerIn);
     }
   }
 
   // Import info from a parsed HTML
   static importFromSheet(playerInfo: PlayerInfo): PlayerProps {
-    // Verify that the input object has all required fields
-    // validateInput(playerInfo);
-
     // Fill in properties of player
     const name = parseName(playerInfo.name);
     const newProps: PlayerProps = {
@@ -134,26 +117,19 @@ export class Player {
   // imports a player string from AVPAmerica into first and last name
   // Export player info for saving
   export() {
-    return JSON.stringify(this.props);
+    return JSON.stringify(this);
   }
 
-  /*
   // Import player from a save
-  import(player: PlayerProps) {
+  import(player: Player) {
     // Validate input object
-    // Loop through all fields in class and import as needed
-    Object.keys(player).forEach((key: string) => {
-      this[key] = player[key];
-    });
-    // Check that numbers are numbers
-    if (typeof this.avpa !== 'number') {
-      this.avpa = parseInt(this.avpa, 10);
-    }
-    // Check that numbers are numbers
-    if (typeof this.ranking !== 'number') {
-      this.ranking = parseFloat(this.ranking);
-    }
-    // Validate player
-    validatePlayer(this);
-  } */
+    // Import generic properties first
+    Object.assign(this.props, omit(player.props, ['avpa', 'ranking']));
+
+    // handle possibly not a number inputs
+    this.props.avpa = player.props.avpa;
+    this.props.ranking = player.props.ranking;
+  }
 }
+
+export default Player;
