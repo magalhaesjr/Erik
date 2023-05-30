@@ -72,7 +72,7 @@ const HeadCell = styled(TableCell)(({ theme }) => ({
 
 // Adds team entries to the division state
 const addTeams = (division, teams) => {
-  division.teams.forEach((team) => {
+  division.props.teams.forEach((team) => {
     teams.push(team);
   });
   return teams;
@@ -80,10 +80,10 @@ const addTeams = (division, teams) => {
 
 // Returns paid status based on player
 const paidStatus = (player) => {
-  if (player.staff) {
+  if (player.props.staff) {
     return 'staff';
   }
-  if (player.paid) {
+  if (player.props.paid) {
     return PREPAID;
   }
   return UNPAID;
@@ -104,7 +104,6 @@ const RegSheet = React.forwardRef((props, ref) => {
         }
       }
     });
-
     return teams;
   });
 
@@ -225,12 +224,12 @@ const RegSheet = React.forwardRef((props, ref) => {
           }}
         >
           {entries.map((team, index) => (
-            <TableRow key={team.seed}>
-              <RegCell>{team.seed}</RegCell>
-              <RegCell>{team.ranking}</RegCell>
+            <TableRow key={team.props.seed}>
+              <RegCell>{team.props.seed}</RegCell>
+              <RegCell>{team.props.ranking}</RegCell>
               <RegCell>
                 <select
-                  value={paidStatus(team.players[0])}
+                  value={paidStatus(team.props.players[0])}
                   onChange={(e) => handlePaid(e, index, 0)}
                   style={selectStyle}
                 >
@@ -240,7 +239,7 @@ const RegSheet = React.forwardRef((props, ref) => {
                 </select>
               </RegCell>
               <RegCell />
-              {team.players[0].membershipValid ? (
+              {team.props.players[0].props.membershipValid ? (
                 <RegCell>Valid</RegCell>
               ) : (
                 <RegCell
@@ -252,16 +251,16 @@ const RegSheet = React.forwardRef((props, ref) => {
                 </RegCell>
               )}
               <RegCell>
-                {team.players[0].firstName.concat(
+                {team.props.players[0].props.firstName.concat(
                   ' ',
-                  team.players[0].lastName
+                  team.props.players[0].props.lastName
                 )}
               </RegCell>
-              <RegCell>{team.players[0].ranking}</RegCell>
+              <RegCell>{team.props.players[0].props.ranking}</RegCell>
               <RegCell />
               <RegCell>
                 <select
-                  value={paidStatus(team.players[1])}
+                  value={paidStatus(team.props.players[1])}
                   onChange={(e) => handlePaid(e, index, 1)}
                   style={selectStyle}
                 >
@@ -271,7 +270,7 @@ const RegSheet = React.forwardRef((props, ref) => {
                 </select>
               </RegCell>
               <RegCell />
-              {team.players[1].membershipValid ? (
+              {team.props.players[1].props.membershipValid ? (
                 <RegCell>Valid</RegCell>
               ) : (
                 <RegCell
@@ -283,12 +282,12 @@ const RegSheet = React.forwardRef((props, ref) => {
                 </RegCell>
               )}
               <RegCell>
-                {team.players[1].firstName.concat(
+                {team.props.players[1].props.firstName.concat(
                   ' ',
-                  team.players[1].lastName
+                  team.props.players[1].props.lastName
                 )}
               </RegCell>
-              <RegCell>{team.players[1].ranking}</RegCell>
+              <RegCell>{team.props.players[1].props.ranking}</RegCell>
               <RegCell />
             </TableRow>
           ))}

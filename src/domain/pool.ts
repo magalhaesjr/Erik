@@ -5,7 +5,7 @@ import { Match } from './schedules';
 
 // Team class for tournament entries
 export default class Pool {
-  courts: number[] | number;
+  courts: number[];
 
   division: string;
 

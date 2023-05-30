@@ -12,13 +12,19 @@ const extractTime = (regString: string): number => {
   return regDate.getTime() / 1000;
 };
 
-export type TeamSheet = {
+export type TeamSheetPropTypes = {
   seed?: string;
   division: string;
   paid: string;
   'wait list'?: string;
   'sign-up': string;
 };
+
+export type TeamSheet = {
+  [P in keyof TeamSheetPropTypes]: TeamSheetPropTypes[P];
+};
+
+export type TeamSheetKey = keyof TeamSheet;
 
 type TeamPropsTypes = {
   seed: number | null;

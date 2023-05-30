@@ -1,21 +1,36 @@
 // Functions for the avp america website
-import Player from './player';
-import Team from './team';
-import { Division } from './division';
+import Player, { PlayerInfo, PlayerInfoKey } from './player';
+import Team, { TeamSheet, TeamSheetKey } from './team';
+import Division from './division';
 import Tournament from './tournament';
-import { isEmpty } from './validate';
+import { hasProp, isEmpty } from './validate';
+
+type CategoryColumns = {
+  [key: string]: number[];
+};
+
+type CategoryIndex = {
+  [key: string]: number;
+};
+
+type HeaderMap = {
+  [key: string]: CategoryIndex;
+};
 
 // Find columns indices for each category
-function findCategoryCols(header) {
+function findCategoryCols(
+  header: NodeListOf<HTMLTableCellElement>
+): CategoryColumns {
   // Initialize columns
-  const columns = {};
+  const columns: CategoryColumns = {};
+
   // Absolute header index
   let startIndex = 0;
   // Header map
   header.forEach((h) => {
     // Find how many columns this header spans
     const thisHeader = Array(h.colSpan)
-      .fill()
+      .fill(1)
       .map((_, i) => {
         return i + startIndex;
       });
@@ -23,16 +38,21 @@ function findCategoryCols(header) {
     startIndex += thisHeader.length;
 
     // Assign to the right key
-    columns[h.textContent] = thisHeader;
+    if (h.textContent) {
+      columns[h.textContent] = thisHeader;
+    }
   });
 
   return columns;
 }
 
 // Find the inidividual data columns within a category
-function findDataCols(header, columns) {
+function findDataCols(
+  header: NodeListOf<HTMLTableCellElement>,
+  columns: CategoryColumns
+) {
   // Initialize the header map
-  const headerMap = {};
+  const headerMap: HeaderMap = {};
   // Find the headers for each category
   Object.keys(columns).forEach((key) => {
     // Initialize a new object in header map for this category
@@ -41,60 +61,96 @@ function findDataCols(header, columns) {
     columns[key].forEach((index) => {
       // Extract the name of the header and save to the category
       const cellName = header[index].textContent;
-      headerMap[key][cellName] = index;
+      if (cellName) {
+        headerMap[key][cellName] = index;
+      }
     });
   });
   return headerMap;
 }
 
 // Extracts all team info from the table
-function extractTeam(data, headerMap, division) {
+function extractTeam(
+  data: NodeListOf<HTMLTableCellElement>,
+  headerMap: HeaderMap,
+  division: string
+): Team | null {
   // Initialize a team
-  let team = {};
+  let team: Team = new Team();
   // Cycle through each entry category
   Object.keys(headerMap).forEach((type) => {
     // Cycle through each data column
-    const category = {};
+    const teamInfo: TeamSheet = {
+      seed: undefined,
+      division,
+      paid: 'N',
+      'sign-up': '',
+      'wait list': undefined,
+    };
+    const playerInfo: PlayerInfo = {
+      name: 't',
+      email: 't',
+      org: 't',
+      'avpa#': 't',
+      ranking: 't',
+      membershipValid: false,
+    };
+    let validPlayer = false;
+
     Object.keys(headerMap[type]).forEach((field) => {
-      // import data into the team
-      category[field.toLowerCase()] = data[headerMap[type][field]].textContent;
-      // Check for valid membership
-      if (field.toLowerCase() === 'name') {
-        // Valid membership is determined by color of name
-        const membership = data[headerMap[type][field]].querySelector('font');
-        if (membership === null) {
-          // Not a valid player
-          category.valid = false;
-          return;
+      // Info from map
+      const keyName = field.toLowerCase();
+      // Data
+      const valueData = data[headerMap[type][field]];
+
+      if (valueData.textContent) {
+        if (hasProp(teamInfo, keyName)) {
+          teamInfo[keyName as TeamSheetKey] = valueData.textContent;
         }
-        category.valid = true;
-        // Get validity of membership
-        category.membershipValid = membership.color === 'green';
+
+        if (hasProp(playerInfo, keyName)) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          playerInfo[keyName as PlayerInfoKey] = valueData.textContent;
+        }
+
+        // Check for valid membership
+        if (field.toLowerCase() === 'name') {
+          // Valid membership is determined by color of name
+          const membership = valueData.querySelector('font');
+          if (membership === null) {
+            // Not a valid player
+            validPlayer = false;
+            return;
+          }
+          validPlayer = true;
+          // Get validity of membership
+          playerInfo.membershipValid = membership.color === 'green';
+        }
       }
     });
 
     if (type === 'Entry') {
-      category.division = division;
-      team = new Team(category);
-    } else if (type.includes('Player') && category.valid) {
-      team.addPlayer(new Player(category));
+      team = new Team(teamInfo);
+    } else if (type.includes('Player') && validPlayer) {
+      team.addPlayer(new Player(playerInfo));
     }
   });
 
   // Check of team is valid. If not, it won't have any players
-  if (team.players.length < 2) {
+  if (team.props.players.length < 2) {
     return null;
   }
   return team;
 }
 
 // Pulls all entries for a division from the input sheet
-function extractDivision(table, name) {
+function extractDivision(table: HTMLTableElement, name: string): Division {
   // Headers for tables
-  let columns = {};
+  let columns: CategoryColumns = {};
   const division = new Division(name);
   // Initialize a header Map
-  let headerMap = {};
+  let headerMap: HeaderMap;
 
   // Cycle through each row and decode the table
   Array.from(table.rows).forEach((row) => {
@@ -110,7 +166,7 @@ function extractDivision(table, name) {
       const data = row.querySelectorAll('td');
       // Add team to entries
       const newTeam = extractTeam(data, headerMap, name);
-      if (newTeam instanceof Team) {
+      if (newTeam) {
         division.addTeam(newTeam);
       }
     }
@@ -119,14 +175,14 @@ function extractDivision(table, name) {
 }
 
 // Extracts all teams for the tournament
-export default function extractEntries(dom) {
+export default function extractEntries(dom: Document) {
   // Cycle through the dom objects to build an output JSON object with all tournament entries
 
   // Entries
   // Create a new tournament
   const tourny = new Tournament();
-  let divisionName = null;
-  let division = {};
+  let divisionName: string | null = null;
+  let division: null | Division = null;
 
   // Cycle through nodes until you find a division node
   dom.body.querySelectorAll('*').forEach((node) => {
@@ -135,19 +191,19 @@ export default function extractEntries(dom) {
       divisionName = node.textContent;
     } else if (node.className === 'LargeRedTitle') {
       // Add division to tournament
-      if (division instanceof Division) {
+      if (division) {
         tourny.addDivision(division);
       }
       divisionName = node.textContent;
       // reset division
-      division = {};
-    } else if (node.nodeName === 'TABLE') {
-      division = extractDivision(node, divisionName);
+      division = null;
+    } else if (node.nodeName === 'TABLE' && divisionName) {
+      division = extractDivision(node as HTMLTableElement, divisionName);
     }
   });
 
   // Check to add the last division
-  if (division instanceof Division) {
+  if (division) {
     tourny.addDivision(division);
   }
 

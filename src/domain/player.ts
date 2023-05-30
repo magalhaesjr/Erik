@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
 
 // Player Info object (parsed from Avp America)
-export type PlayerInfo = {
+export type PlayerInfoProps = {
   name: string;
   email: string;
   org: string;
@@ -9,6 +9,9 @@ export type PlayerInfo = {
   ranking: string;
   membershipValid: boolean;
 };
+
+export type PlayerInfo = { [P in keyof PlayerInfoProps]: PlayerInfoProps[P] };
+export type PlayerInfoKey = keyof PlayerInfoProps;
 
 // Player name
 type PlayerName = {

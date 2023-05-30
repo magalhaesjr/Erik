@@ -5,7 +5,7 @@ import min from 'lodash/min';
 import cloneDeep from 'lodash/cloneDeep';
 import Team from './team';
 // Default rules if none provided
-import type { NetHeight } from './court';
+import { NetHeight } from './court';
 import Pool from './pool';
 // Schedules
 import { retrieveTemplate } from './schedules';
@@ -238,12 +238,15 @@ export default class Division {
       const centerIndex = this.props.courts.findIndex((el) => {
         return el === this.props.rules.centerCourt;
       });
-      // Remove center court and push it to the front of the array (it gets popped out first)
-      const swap = (arr: number[], index1: number, index2: number) => {
-        [arr[index2], arr[index1]] = [arr[index1], arr[index2]];
-      };
-      // Swap first element with center court
-      swap(this.props.courts, 0, centerIndex);
+
+      if (centerIndex > 0) {
+        // Remove center court and push it to the front of the array (it gets popped out first)
+        const swap = (arr: number[], index1: number, index2: number) => {
+          [arr[index2], arr[index1]] = [arr[index1], arr[index2]];
+        };
+        // Swap first element with center court
+        swap(this.props.courts, 0, centerIndex);
+      }
     }
   }
 
@@ -266,7 +269,8 @@ export default class Division {
       // Create new pool
       const newPool = new Pool(this.props.division);
       // Assign court number to pool
-      newPool.courts = this.props.courts[court];
+      newPool.courts = [this.props.courts[court]];
+
       // Save pool in division
       this.props.pools.push(newPool);
     }

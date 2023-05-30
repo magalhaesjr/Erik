@@ -3,6 +3,7 @@ import { Typography, Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { isObject } from '../../domain/validate';
 import MainDiv from '../components/MainDiv';
+import Tournament from '../../domain/tournament';
 
 const Main = () => {
   const dispatch = useDispatch();
@@ -17,8 +18,9 @@ const Main = () => {
           onClick={() => {
             window.electron
               .importFile()
-              .then((tourny: unknown) => {
-                if (isObject(tourny)) {
+              .then((value: unknown) => {
+                const tourny = value as Tournament | null;
+                if (tourny) {
                   dispatch({ type: 'loadTournament', payload: tourny });
                 }
                 return 0;

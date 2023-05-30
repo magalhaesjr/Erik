@@ -19,14 +19,7 @@ Division.mockImplementation(() => {
     numTeams: jest.fn().mockReturnValue(10),
   };
 });
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-/*
-const numTeamsMock = jest
-  .spyOn(Division.prototype, 'numTeams')
-  .mockImplementation(() => {
-    return 10;
-  });
-  */
+
 describe('day', () => {
   test('addDivision sets division correctly', () => {
     // Create a test day

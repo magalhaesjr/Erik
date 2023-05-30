@@ -32,12 +32,13 @@ const PoolSheet = React.forwardRef((props, ref) => {
       if (hasProp(state[day], 'divisions')) {
         if (hasProp(state[day].divisions, division)) {
           // Get pool
-          if (poolId < state[day].divisions[division].pools.length) {
-            divPool = state[day].divisions[division].pools[poolId];
+          if (poolId < state[day].divisions[division].props.pools.length) {
+            divPool = state[day].divisions[division].props.pools[poolId];
           }
         }
       }
     });
+
     return divPool;
   });
 
@@ -49,7 +50,7 @@ const PoolSheet = React.forwardRef((props, ref) => {
     dispatch({
       type: 'updatePool',
       payload: {
-        division: pool.division,
+        division: pool.props.division,
         id: poolId,
         playoffTeams: val,
       },

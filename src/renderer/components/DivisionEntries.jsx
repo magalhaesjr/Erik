@@ -34,11 +34,11 @@ const InlineButton = styled(Button)(({ theme }) => ({
 // Adds team entries to the division state
 const addTeams = (division, teams, waitList) => {
   if (waitList) {
-    division.waitList.forEach((team) => {
+    division.props.waitList.forEach((team) => {
       teams.push(team);
     });
   } else {
-    division.teams.forEach((team) => {
+    division.props.teams.forEach((team) => {
       teams.push(team);
     });
   }
@@ -77,38 +77,36 @@ const DivEntries = (props) => {
     };
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
-      if (hasProp(state[day], 'divisions')) {
-        if (hasProp(state[day].divisions, division)) {
-          out.entries = addTeams(
-            state[day].divisions[division],
-            out.entries,
-            waitList
-          );
+      if (hasProp(state[day].divisions, division)) {
+        out.entries = addTeams(
+          state[day].divisions[division],
+          out.entries,
+          waitList
+        );
 
-          // State of pools
-          if (state[day].divisions[division].pools.length > 0) {
-            out.poolsValid = true;
-            out.divReady = true;
-            out.divStatus = 'Pools made';
-          } else if (
-            state[day].divisions[division].courts.length <
-            state[day].divisions[division].minNets
-          ) {
-            out.divStatus = 'Not enough courts assigned';
-          } else if (
-            state[day].divisions[division].courts.length >
-            state[day].divisions[division].maxNets
-          ) {
-            out.divStatus = 'Too many courts assigned';
-          } else if (
-            state[day].divisions[division].courts.length >=
-              state[day].divisions[division].minNets &&
-            state[day].divisions[division].courts.length <=
-              state[day].divisions[division].maxNets
-          ) {
-            out.divReady = true;
-            out.divStatus = 'Ready to make pools';
-          }
+        // State of pools
+        if (state[day].divisions[division].props.pools.length > 0) {
+          out.poolsValid = true;
+          out.divReady = true;
+          out.divStatus = 'Pools made';
+        } else if (
+          state[day].divisions[division].props.courts.length <
+          state[day].divisions[division].props.minNets
+        ) {
+          out.divStatus = 'Not enough courts assigned';
+        } else if (
+          state[day].divisions[division].props.courts.length >
+          state[day].divisions[division].props.maxNets
+        ) {
+          out.divStatus = 'Too many courts assigned';
+        } else if (
+          state[day].divisions[division].props.courts.length >=
+            state[day].divisions[division].props.minNets &&
+          state[day].divisions[division].props.courts.length <=
+            state[day].divisions[division].props.maxNets
+        ) {
+          out.divReady = true;
+          out.divStatus = 'Ready to make pools';
         }
       }
     });
@@ -125,6 +123,7 @@ const DivEntries = (props) => {
       dispatch({
         type: 'resetPools',
         payload: {
+          waitList,
           division,
         },
       });
@@ -159,26 +158,26 @@ const DivEntries = (props) => {
       case 'name': {
         // Split player name back and assign
         const { firstName, lastName } = parseName(value);
-        newTeam.players[player].firstName = firstName;
-        newTeam.players[player].lastName = lastName;
+        newTeam.props.players[player].props.firstName = firstName;
+        newTeam.props.players[player].props.lastName = lastName;
         // Reset pools if necessary
         resetPools();
         break;
       }
       case 'paid': {
-        newTeam.players[player].paid = e.target.checked;
+        newTeam.props.players[player].props.paid = e.target.checked;
         break;
       }
       case 'staff': {
-        newTeam.players[player].staff = e.target.checked;
+        newTeam.props.players[player].props.staff = e.target.checked;
         break;
       }
       case 'membership': {
-        newTeam.players[player].membershipValid = e.target.checked;
+        newTeam.props.players[player].props.membershipValid = e.target.checked;
         break;
       }
       default:
-        newTeam.players[player][name] = e.target.value;
+        newTeam.props.players[player].props[name] = e.target.value;
         // reset pools if necessary
         resetPools();
     }
@@ -190,7 +189,7 @@ const DivEntries = (props) => {
         division,
         team: i,
         playerNum: player,
-        player: newTeam.players[player],
+        player: newTeam.props.players[player],
       },
     });
   };
@@ -405,15 +404,15 @@ const DivEntries = (props) => {
         </TableHead>
         <TableBody key={`${division}_Entries`}>
           {entries.map((team, index) => (
-            <TableRow key={team.seed}>
+            <TableRow key={team.props.seed}>
               <TableCell
                 align="left"
                 padding="none"
                 margins="0px"
-                key={`delete_${team.seed}`}
+                key={`delete_${team.props.seed}`}
               >
                 <InlineButton
-                  key={`delete_btn_${team.seed}`}
+                  key={`delete_btn_${team.props.seed}`}
                   onClick={(e) => {
                     handleDelete(e, index);
                   }}
@@ -426,10 +425,10 @@ const DivEntries = (props) => {
                 fontSize="small"
                 padding="none"
                 margins="0px"
-                key={`demote_${team.seed}`}
+                key={`demote_${team.props.seed}`}
               >
                 <InlineButton
-                  key={`demote_btn_${team.seed}`}
+                  key={`demote_btn_${team.props.seed}`}
                   onClick={(e) => {
                     changeWaitStatus(e, index);
                   }}
@@ -441,25 +440,28 @@ const DivEntries = (props) => {
                 component="th"
                 scope="row"
                 align="center"
-                key={`team_${team.seed}_${team.ranking}`}
+                key={`team_${team.props.seed}_${team.props.ranking}`}
               >
-                {team.seed}
+                {team.props.seed}
               </TableCell>
               <DataCell
                 align="center"
-                data={team.ranking}
+                data={team.props.ranking}
                 immutable
-                key={`ranking_${team.seed}_${team.ranking}`}
+                key={`ranking_${team.props.seed}_${team.props.ranking}`}
               />
-              {team.players.map((player, playerInd) => (
+              {team.props.players.map((player, playerInd) => (
                 <React.Fragment
-                  key={`team_${team.seed}_num_${playerInd}_playerChecks_${player.firstName}_${player.lastName}`}
+                  key={`team_${team.props.seed}_num_${playerInd}_playerChecks_${player.props.firstName}_${player.props.lastName}`}
                 >
                   <DataCell
                     align="center"
-                    data={joinName(player.firstName, player.lastName)}
+                    data={joinName(
+                      player.props.firstName,
+                      player.props.lastName
+                    )}
                     name="name"
-                    key={`team_${team.seed}_name_${playerInd}`}
+                    key={`team_${team.props.seed}_name_${playerInd}`}
                     activeEdit={activeEdit}
                     onChange={(e) => {
                       handleChange(e, index, playerInd);
@@ -471,10 +473,10 @@ const DivEntries = (props) => {
                   />
                   <DataCell
                     align="center"
-                    data={player.ranking}
+                    data={player.props.ranking}
                     name="ranking"
                     activeEdit={activeEdit}
-                    key={`team_${team.seed}_rank_${playerInd}`}
+                    key={`team_${team.props.seed}_rank_${playerInd}`}
                     onChange={(e) => {
                       handleChange(e, index, playerInd);
                     }}
@@ -483,14 +485,14 @@ const DivEntries = (props) => {
                     align="center"
                     fontSize="small"
                     padding="none"
-                    key={`team_${team.seed}_paid_${playerInd}`}
+                    key={`team_${team.props.seed}_paid_${playerInd}`}
                     margins="0px"
                   >
                     <Checkbox
-                      checked={player.paid && !player.staff}
-                      disabled={player.staff}
+                      checked={player.props.paid && !player.props.staff}
+                      disabled={player.props.staff}
                       name="paid"
-                      key={`team_${team.seed}_paidCheck_${playerInd}`}
+                      key={`team_${team.props.seed}_paidCheck_${playerInd}`}
                       onChange={(e) => {
                         handleChange(e, index, playerInd);
                       }}
@@ -501,12 +503,12 @@ const DivEntries = (props) => {
                     fontSize="small"
                     padding="none"
                     margins="0px"
-                    key={`team_${team.seed}_staff_${playerInd}`}
+                    key={`team_${team.props.seed}_staff_${playerInd}`}
                   >
                     <Checkbox
-                      checked={player.staff}
+                      checked={player.props.staff}
                       name="staff"
-                      key={`team_${team.seed}_staffCheck_${playerInd}`}
+                      key={`team_${team.props.seed}_staffCheck_${playerInd}`}
                       onChange={(e) => {
                         handleChange(e, index, playerInd);
                       }}
@@ -517,12 +519,12 @@ const DivEntries = (props) => {
                     fontSize="small"
                     padding="none"
                     margins="0px"
-                    key={`team_${team.seed}_avpa_${playerInd}`}
+                    key={`team_${team.props.seed}_avpa_${playerInd}`}
                   >
                     <Checkbox
                       checked={player.membershipValid}
                       name="membership"
-                      key={`team_${team.seed}_avpaCheck_${playerInd}`}
+                      key={`team_${team.props.seed}_avpaCheck_${playerInd}`}
                       onChange={(e) => {
                         handleChange(e, index, playerInd);
                       }}
