@@ -87,7 +87,7 @@ const calcPayout = (
   // Calculate the total prize pool
   const totalPrize = totalTeams * prizePool;
   // Cycle through each payout division and place
-  const prize: PrizePayout = { main: {} };
+  const prize: PrizePayout = { main: {}, sub: {} };
 
   // There is always a main payout
   Object.entries(payoutDay.main).forEach(([place, payout]) => {
@@ -96,6 +96,16 @@ const calcPayout = (
       prize.main[place as Finish] = Math.ceil((totalPrize * payout) / 10) * 10;
     }
   });
+
+  if (payoutDay.sub) {
+    // There is always a main payout
+    Object.entries(payoutDay.sub).forEach(([place, payout]) => {
+      if (payout) {
+        // Calculate payout for each defined place
+        prize.sub[place as Finish] = Math.ceil((totalPrize * payout) / 10) * 10;
+      }
+    });
+  }
 
   return prize;
 };
