@@ -46,7 +46,7 @@ export const defaultFormat: DivisionFormat = {
 const divisionRules: DivisionRules = {
   [getDivisionKey("Men's Open")]: {
     // Preferred center court
-    centerCourt: 11,
+    centerCourt: 15,
     // Pool Format
     poolFormat: {
       4: {
@@ -115,7 +115,7 @@ export type TournamentRules = {
 } & DivisionRules;
 
 export const tournamentRules = {
-  maxCourts: 20,
+  maxCourts: 26,
   ...cloneDeep(divisionRules),
 };
 

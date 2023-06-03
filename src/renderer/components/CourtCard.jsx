@@ -167,11 +167,11 @@ const CourtCard = (props) => {
     const newCourt = JSON.parse(JSON.stringify(court));
 
     if (event.target.value === 'Available') {
-      return;
+      newCourt.division = '';
+    } else {
+      // Sets the division of the court
+      newCourt.division = event.target.value;
     }
-
-    // Sets the division of the court
-    newCourt.division = event.target.value;
 
     // If net height is unset, set it to the division default
     if (newCourt.netHeight === 'undefined') {

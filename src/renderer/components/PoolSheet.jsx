@@ -62,7 +62,7 @@ const PoolSheet = React.forwardRef((props, ref) => {
       <PoolPaper
         ref={ref}
         sx={{
-          maxHeight: pool.teams.length > 6 ? '21.8in' : '10.8in',
+          maxHeight: pool.teams.length > 5 ? '21.8in' : '10.8in',
           overflowY: 'hidden',
         }}
       >
