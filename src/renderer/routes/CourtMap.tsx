@@ -1,19 +1,15 @@
 // Footer for main page
-import { useSelector } from 'react-redux';
 import { Grid, Typography } from '@mui/material';
+import { useAppSelector } from '../redux/hooks';
 import MainDiv from '../components/MainDiv';
 import CourtCard from '../components/CourtCard';
-import { hasProp } from '../../domain/validate';
 import { RootState } from '../redux/store';
 
 // Footer component
 const CourtMap = () => {
   // Grabs selector from redux
-  const courts = useSelector((state: RootState) => {
-    if (hasProp(state, 'courts')) {
-      return state.courts;
-    }
-    return [];
+  const courts = useAppSelector((state: RootState) => {
+    return state.tournament.courts;
   });
 
   if (courts.length > 0) {

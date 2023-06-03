@@ -9,7 +9,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Paper, styled } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
+import isEqual from 'lodash/isEqual';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { selectTournament, updatePaidStatus } from '../redux/tournament';
 import { hasProp } from '../../domain/validate';
 
 // Define pre-paid and unpaid values
@@ -93,8 +95,9 @@ const paidStatus = (player) => {
 const RegSheet = React.forwardRef((props, ref) => {
   const { division } = props;
 
-  // Grabs selector from redux
-  const entries = useSelector((state) => {
+  /** TODO: REPLACE ME */
+  const tournament = useAppSelector(selectTournament, isEqual);
+  const getEntries = (state) => {
     let teams = [];
     // eslint-disable-next-line prettier/prettier
     Object.keys(state).forEach((day) => {
@@ -105,51 +108,34 @@ const RegSheet = React.forwardRef((props, ref) => {
       }
     });
     return teams;
-  });
+  };
+  const entries = getEntries(tournament);
+  /** END TODO */
 
   // Grab dispatch
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Update paid status of a player
   const handlePaid = (event, index, playerInd) => {
+    const playerPaidStatus = {
+      division,
+      team: index,
+      playerInd,
+      paid: false,
+      staff: false,
+    };
     switch (event.target.value) {
       case PREPAID: {
-        dispatch({
-          type: 'updatePaidStatus',
-          payload: {
-            division,
-            team: index,
-            playerInd,
-            paid: true,
-            staff: false,
-          },
-        });
+        playerPaidStatus.paid = true;
         break;
       }
       case UNPAID: {
-        dispatch({
-          type: 'updatePaidStatus',
-          payload: {
-            division,
-            team: index,
-            playerInd,
-            paid: false,
-            staff: false,
-          },
-        });
+        playerPaidStatus.paid = false;
         break;
       }
       default: {
-        dispatch({
-          type: 'updatePaidStatus',
-          payload: {
-            division,
-            team: index,
-            playerInd,
-            paid: false,
-            staff: true,
-          },
-        });
+        playerPaidStatus.paid = false;
+        playerPaidStatus.staff = true;
       }
     }
   };

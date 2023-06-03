@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../redux/hooks';
 import calcPayouts, { PrizePayout } from '../../domain/payouts';
 import MainDiv from '../components/MainDiv';
 import { RootState } from '../redux/store';
@@ -28,7 +28,9 @@ const payoutCard = (place: string, prize: number) => {
 // Registration Page
 const Payouts = () => {
   // Grabs selector from redux
-  const payouts = useSelector((state: RootState) => {
+  /** TODO REPLACE ME */
+  const payouts = useAppSelector((rootState: RootState) => {
+    const state = rootState.tournament;
     // Tournament payouts
     const tPayouts: PrizePayout = {};
     const { payoutDivisions } = state.financials;
@@ -58,6 +60,8 @@ const Payouts = () => {
         }
       });
     }
+    /** END REPLACE */
+
     if (payoutDivisions.sunday) {
       payoutDivisions.sunday.forEach((div) => {
         const { main, sub } = div;

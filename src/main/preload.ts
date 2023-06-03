@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import Tournament from '../domain/tournament';
+import type { TournamentFinancials } from '../renderer/redux/financials';
 
 contextBridge.exposeInMainWorld('electron', {
   importFile: (): Promise<Tournament | null> => {
@@ -20,5 +21,12 @@ contextBridge.exposeInMainWorld('electron', {
   },
   saveTournament: (tourney: unknown) => {
     ipcRenderer.invoke('tournament:saveTournament', tourney);
+  },
+  /** Financials */
+  importFinancials: (): Promise<TournamentFinancials | null> => {
+    return ipcRenderer.invoke('tournament:importFinancials');
+  },
+  exportFinancials: (financials: TournamentFinancials): Promise<boolean> => {
+    return ipcRenderer.invoke('tournament:exportFinancials', financials);
   },
 });

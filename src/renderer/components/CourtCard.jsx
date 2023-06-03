@@ -12,7 +12,8 @@ import {
   Box,
   Select,
 } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { updateCourt } from '../redux/tournament';
 import { hasProp, isObject } from '../../domain/validate';
 
 // Colors for net heights
@@ -112,8 +113,9 @@ const CourtCard = (props) => {
   // Court number for this card
   const { courtNumber } = props;
 
-  // Grabs selector from redux
-  const { court, divisions } = useSelector((state) => {
+  /** TODO: REPLACE ME */
+  const { court, divisions } = useAppSelector((rootState) => {
+    const state = rootState.tournament;
     const out = {
       court: {},
       divisions: { Available: { netHeight: 'undefined' } },
@@ -130,9 +132,10 @@ const CourtCard = (props) => {
     });
     return out;
   });
+  /** End */
 
   // Dispatching
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Change in net height
   const setHeight = (event) => {
@@ -153,12 +156,7 @@ const CourtCard = (props) => {
     }
 
     // Dispatch the change to the store
-    dispatch({
-      type: 'updateCourt',
-      payload: {
-        court: newCourt,
-      },
-    });
+    dispatch(updateCourt({ court: newCourt }));
   };
 
   // Change division
@@ -179,12 +177,7 @@ const CourtCard = (props) => {
     }
 
     // Dispatch the change to the store
-    dispatch({
-      type: 'updateCourt',
-      payload: {
-        court: newCourt,
-      },
-    });
+    dispatch(updateCourt({ court: newCourt }));
   };
 
   return (
