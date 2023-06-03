@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import Tournament from '../domain/tournament';
 
 contextBridge.exposeInMainWorld('electron', {
-  importFile: () => {
+  importFile: (): Promise<Tournament | null> => {
     return ipcRenderer.invoke('tournament:importFile');
   },
   loadTournament: () => {

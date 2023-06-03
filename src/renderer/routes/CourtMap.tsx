@@ -4,11 +4,12 @@ import { Grid, Typography } from '@mui/material';
 import MainDiv from '../components/MainDiv';
 import CourtCard from '../components/CourtCard';
 import { hasProp } from '../../domain/validate';
+import { RootState } from '../redux/store';
 
 // Footer component
 const CourtMap = () => {
   // Grabs selector from redux
-  const courts = useSelector((state) => {
+  const courts = useSelector((state: RootState) => {
     if (hasProp(state, 'courts')) {
       return state.courts;
     }
@@ -31,11 +32,14 @@ const CourtMap = () => {
           <Grid key="ocean" item xs={6}>
             <Typography variant="h4">Ocean</Typography>
           </Grid>
-          {courts.map((court) => (
-            <Grid key={court.number} item xs={6}>
-              <CourtCard courtNumber={court.number} />
-            </Grid>
-          ))}
+          {courts.map(
+            (court) =>
+              court.number && (
+                <Grid key={court.number} item xs={6}>
+                  <CourtCard courtNumber={court.number} />
+                </Grid>
+              )
+          )}
         </Grid>
       </MainDiv>
     );

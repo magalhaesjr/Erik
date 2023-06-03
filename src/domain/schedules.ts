@@ -1,38 +1,21 @@
 // Defines the pool schedules
 
-class Match {
-  constructor(t1, t2, work) {
-    this.setField('team1', t1);
-    this.setField('team2', t2);
-    this.setField('work', work);
-  }
+export class Match {
+  readonly team1: number;
 
-  // Validate & set a field
-  setField(name, input) {
-    if (typeof input !== 'number' || input === undefined || input === null) {
-      throw new Error(`${name} must be a number`);
-    }
-    this[name] = input;
-  }
-}
+  readonly team2: number;
 
-// Define schedule validation
-export function validateSchedule(schedule) {
-  // Must be an array
-  if (!Array.isArray(schedule)) {
-    throw new Error('Schedule must be an array of matches');
-  }
+  readonly work: number;
 
-  // Check that all elements are matches
-  schedule.forEach((round) => {
-    if (!(round instanceof Match)) {
-      throw new Error('Schedule must be an array of matches');
-    }
-  });
+  constructor(t1: number, t2: number, work: number) {
+    this.team1 = t1;
+    this.team2 = t2;
+    this.work = work;
+  }
 }
 
 // Defines the pool schedules for pools with different amount of teams
-export function retrieveTemplate(numTeams) {
+export function retrieveTemplate(numTeams: number) {
   switch (numTeams) {
     case 4:
       return [

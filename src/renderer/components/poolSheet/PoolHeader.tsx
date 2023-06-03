@@ -1,16 +1,20 @@
 // Returns the pool sheet header table
-import React from 'react';
-import PropTypes from 'prop-types';
 import { Paper } from '@mui/material';
 import PoolInfo from './PoolInfo';
 import PoolFormat from './PoolFormat';
 import PoolResults from './PoolResults';
+import Pool from '../../../domain/pool';
 
-const PoolHeader = (props) => {
-  const { pool, onChange } = props;
+type PoolHeaderProps = {
+  pool: Pool;
+  onChange?: (playoffTeams: number) => void;
+};
 
-  const handleChange = (val) => {
-    onChange(val);
+const PoolHeader = ({ pool, onChange }: PoolHeaderProps) => {
+  const handleChange = (val: number) => {
+    if (onChange) {
+      onChange(val);
+    }
   };
 
   return (
@@ -30,16 +34,6 @@ const PoolHeader = (props) => {
       <PoolResults teams={pool.teams} />
     </Paper>
   );
-};
-
-PoolHeader.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  pool: PropTypes.object.isRequired,
-  onChange: PropTypes.func,
-};
-
-PoolHeader.defaultProps = {
-  onChange: () => {},
 };
 
 export default PoolHeader;

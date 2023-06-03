@@ -13,7 +13,6 @@ import {
   Select,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { Net } from '../../domain/court';
 import { hasProp, isObject } from '../../domain/validate';
 
 // Colors for net heights
@@ -25,10 +24,10 @@ const cardColor = {
 };
 
 const defaultHeight = (court) => {
-  if (court.netHeight === Net.MEN) {
+  if (court.netHeight === 'men') {
     return -1;
   }
-  if (court.netHeight === Net.WOMEN) {
+  if (court.netHeight === 'women') {
     return 1;
   }
   return 0;
@@ -39,19 +38,19 @@ const courtText = {
 };
 
 const getColor = (court, divisions) => {
-  if (court.netHeight === Net.UNDEFINED || court.division === 'Available') {
+  if (court.netHeight === 'undefined' || court.division === 'Available') {
     return cardColor.undefined;
   }
   if (
     hasProp(divisions, court.division) &&
-    court.netHeight !== divisions[court.division].netHeight
+    court.netHeight !== divisions[court.division].props.netHeight
   ) {
     return cardColor.invalid;
   }
-  if (court.netHeight === Net.MEN) {
+  if (court.netHeight === 'men') {
     return cardColor.men;
   }
-  if (court.netHeight === Net.WOMEN) {
+  if (court.netHeight === 'women') {
     return cardColor.women;
   }
   return cardColor.invalid;
@@ -61,19 +60,19 @@ const divText = (divisions, divName) => {
   // Sets the select division text for a division
 
   // this div
-  const division = divisions[divName];
-  // Verify it's valid
-  if (isObject(division) && hasProp(division, 'courts')) {
+  if (hasProp(divisions[divName], 'props')) {
+    const { minNets, maxNets, courts } = divisions[divName].props;
+    // Verify it's valid
     // Calculate the number of courts that still must be assigned
-    const remaining = division.minNets - division.courts.length;
+    const remaining = minNets - courts.length;
 
-    if (remaining <= 0 && division.courts.length <= division.maxNets) {
+    if (remaining <= 0 && courts.length <= maxNets) {
       return `${divName} (0 remaining)`;
     }
 
     if (remaining < 0) {
       return `${divName} (${Math.abs(
-        division.courts.length - division.maxNets
+        courts.length - maxNets
       ).toString()} too many)`;
     }
 
@@ -88,7 +87,7 @@ const divColor = (divisions, divName) => {
   // Sets the select division text for a division
 
   // this div
-  const division = divisions[divName];
+  const division = divisions[divName].props;
   // Verify it's valid
   if (isObject(division) && hasProp(division, 'courts')) {
     // Calculate the number of courts that still must be assigned
@@ -117,12 +116,13 @@ const CourtCard = (props) => {
   const { court, divisions } = useSelector((state) => {
     const out = {
       court: {},
-      divisions: { Available: { netHeight: Net.UNDEFINED } },
+      divisions: { Available: { netHeight: 'undefined' } },
     };
     Object.keys(state).forEach((prop) => {
       if (hasProp(state[prop], 'divisions')) {
         Object.keys(state[prop].divisions).forEach((name) => {
-          out.divisions[name] = state[prop].divisions[name];
+          out.divisions[state[prop].divisions[name].props.division] =
+            state[prop].divisions[name];
         });
       } else if (prop === 'courts') {
         [out.court] = state[prop].filter((c) => c.number === courtNumber);
@@ -141,15 +141,15 @@ const CourtCard = (props) => {
     // Height
     switch (event.target.value) {
       case -1: {
-        newCourt.netHeight = Net.MEN;
+        newCourt.netHeight = 'men';
         break;
       }
       case 1: {
-        newCourt.netHeight = Net.WOMEN;
+        newCourt.netHeight = 'women';
         break;
       }
       default:
-        newCourt.netHeight = Net.UNDEFINED;
+        newCourt.netHeight = 'undefined';
     }
 
     // Dispatch the change to the store
@@ -165,12 +165,17 @@ const CourtCard = (props) => {
   const changeDivision = (event) => {
     // Copy court object
     const newCourt = JSON.parse(JSON.stringify(court));
-    // Sets the division of the court
-    newCourt.division = event.target.value;
+
+    if (event.target.value === 'Available') {
+      newCourt.division = '';
+    } else {
+      // Sets the division of the court
+      newCourt.division = event.target.value;
+    }
 
     // If net height is unset, set it to the division default
-    if (newCourt.netHeight === Net.UNDEFINED) {
-      newCourt.netHeight = divisions[newCourt.division].netHeight;
+    if (newCourt.netHeight === 'undefined') {
+      newCourt.netHeight = divisions[newCourt.division].props.netHeight;
     }
 
     // Dispatch the change to the store

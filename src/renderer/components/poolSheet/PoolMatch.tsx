@@ -1,14 +1,14 @@
 // Returns the pool sheet header table
-import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { styled, TableHead } from '@mui/material';
 import PoolScore from './PoolScore';
+import Pool from '../../../domain/pool';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PoolCell = styled(TableCell)(({ theme }) => ({
+const PoolCell = styled(TableCell)(() => ({
   fontSize: '8pt',
   fontWeight: 'bold',
   margin: '0px',
@@ -24,10 +24,14 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   flexShrink: '0',
 }));
 
-const PoolMatch = (props) => {
-  const { pool } = props;
+type PoolMatchProps = {
+  pool: Pool;
+};
 
+const PoolMatch = ({ pool }: PoolMatchProps) => {
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <TableContainer width="8.2in">
       <Table
         sx={{
@@ -63,11 +67,6 @@ const PoolMatch = (props) => {
       ))}
     </TableContainer>
   );
-};
-
-PoolMatch.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  pool: PropTypes.object.isRequired,
 };
 
 export default PoolMatch;

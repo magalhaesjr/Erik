@@ -52,9 +52,9 @@ const TeamResults = (props) => {
               width: '21.875%',
             }}
           >
-            {teams[index].players[0].firstName.concat(
+            {teams[index].props.players[0].props.firstName.concat(
               ' ',
-              teams[index].players[0].lastName
+              teams[index].props.players[0].props.lastName
             )}
           </PoolCell>
           {teams.map((_, i) => (
@@ -93,9 +93,9 @@ const TeamResults = (props) => {
               width: '21.875%',
             }}
           >
-            {teams[index].players[1].firstName.concat(
+            {teams[index].props.players[1].props.firstName.concat(
               ' ',
-              teams[index].players[1].lastName
+              teams[index].props.players[1].props.lastName
             )}
           </PoolCell>
         </TableRow>

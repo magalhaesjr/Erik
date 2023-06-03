@@ -38,7 +38,7 @@ const Pools = () => {
     Object.keys(state).forEach((day) => {
       if (hasProp(state[day], 'divisions')) {
         Object.keys(state[day].divisions).forEach((name) => {
-          if (state[day].divisions[name].pools.length > 0) {
+          if (state[day].divisions[name].props.pools.length > 0) {
             div[name] = state[day].divisions[name];
           }
         });
@@ -64,7 +64,7 @@ const Pools = () => {
     setDivision(event.target.value);
     // set available pools
     const divPools = Array.from(
-      Array(divisions[event.target.value].pools.length),
+      Array(divisions[event.target.value].props.pools.length),
       (_, index) => {
         return index + 1;
       }

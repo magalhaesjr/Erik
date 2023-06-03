@@ -1,12 +1,13 @@
 // Returns the pool sheet header table
-import * as React from 'react';
-import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
 import MainDiv from '../MainDiv';
 
-const PoolInfo = (props) => {
-  const { inputCourt, division } = props;
+type PoolInfoProps = {
+  inputCourt: number[];
+  division: string;
+};
 
+const PoolInfo = ({ inputCourt, division }: PoolInfoProps) => {
   return (
     <MainDiv>
       <Typography
@@ -26,15 +27,10 @@ const PoolInfo = (props) => {
           display: 'inline-block',
         }}
       >
-        {`Court ${inputCourt}`}
+        {`Court ${inputCourt[0]}`}
       </Typography>
     </MainDiv>
   );
-};
-
-PoolInfo.propTypes = {
-  inputCourt: PropTypes.number.isRequired,
-  division: PropTypes.string.isRequired,
 };
 
 export default PoolInfo;
