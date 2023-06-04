@@ -6,6 +6,7 @@ import OutDrawer from './Drawer';
 // import Header from "./Header";
 // import Footer from "./Footer";
 import MainDiv from '../components/MainDiv';
+import Notifications from '../components/Notifications';
 
 // Defines Property as a non-null ReactNode
 type Props = {
@@ -25,6 +26,7 @@ const Layout: React.FC<Props> = ({ children }) => {
         minHeight: '100vh',
       }}
     >
+      <Notifications />
       <Box>
         <OutDrawer />
         <Box

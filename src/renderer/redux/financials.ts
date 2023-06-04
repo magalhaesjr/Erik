@@ -102,7 +102,10 @@ export const financialSlice = createSlice({
   name: 'financials',
   initialState,
   reducers: {
-    updateFinancials: (state, payload: PayloadAction<TournamentFinancials>) => {
+    updateFinancials: (
+      state,
+      payload: PayloadAction<Partial<TournamentFinancials>>
+    ) => {
       // Use current state, in case the payload is missing any information
       return { ...state, ...payload.payload };
     },
@@ -130,3 +133,6 @@ export const selectDayPayout = (state: RootState, day: Day): DayFinancials => {
     params,
   };
 };
+
+export const selectFinancials = (state: RootState): TournamentFinancials =>
+  state.financials;

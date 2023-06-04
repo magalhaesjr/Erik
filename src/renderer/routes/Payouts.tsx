@@ -1,10 +1,17 @@
+import { useMemo } from 'react';
 import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
+import isEqual from 'lodash/isEqual';
 import { useAppSelector } from '../redux/hooks';
 import calcPayouts, { PrizePayout } from '../../domain/payouts';
 import MainDiv from '../components/MainDiv';
 import { RootState } from '../redux/store';
 import { getDivisionKey } from '../../domain/utility';
 import Division from '../../domain/division';
+import { selectDayPayout } from '../redux/financials';
+import {
+  selectSaturdayDivisions,
+  selectSundayDivisions,
+} from '../redux/tournament';
 
 // Helper functions
 const getNumTeams = (div?: Division) => {
@@ -13,6 +20,14 @@ const getNumTeams = (div?: Division) => {
   }
   return 0;
 };
+
+const selectSaturdayPay = (state: RootState) => {
+  return selectDayPayout(state, 'saturday');
+};
+const selectSundayPay = (state: RootState) => {
+  return selectDayPayout(state, 'sunday');
+};
+
 // React fragment with card content
 const payoutCard = (place: string, prize: number) => {
   return (
@@ -27,67 +42,58 @@ const payoutCard = (place: string, prize: number) => {
 
 // Registration Page
 const Payouts = () => {
-  // Grabs selector from redux
-  /** TODO REPLACE ME */
-  const payouts = useAppSelector((rootState: RootState) => {
-    const state = rootState.tournament;
-    // Tournament payouts
-    const tPayouts: PrizePayout = {};
-    const { payoutDivisions } = state.financials;
-    if (payoutDivisions.saturday) {
-      payoutDivisions.saturday.forEach((div) => {
-        const { main, sub } = div;
-        let totalTeams = 0;
-        totalTeams += getNumTeams(
-          state.saturday.divisions[getDivisionKey(main)]
-        );
-        if (sub) {
-          totalTeams += getNumTeams(
-            state.saturday.divisions[getDivisionKey(sub)]
-          );
-        }
-        if (state.financials.payoutParams.saturday) {
-          // Calculate payouts for this division
-          const divPayout = calcPayouts(
-            totalTeams,
-            state.financials.payoutParams.prizePool,
-            state.financials.payoutParams.saturday
-          );
-          tPayouts[main] = divPayout.main;
-          if (Object.keys(divPayout.sub).length > 0 && sub) {
-            tPayouts[sub] = divPayout.sub;
-          }
-        }
-      });
-    }
-    /** END REPLACE */
+  /** State */
+  // Saturday
+  const saturdayPayout = useAppSelector(selectSaturdayPay, isEqual);
+  const saturdayDiv = useAppSelector(selectSaturdayDivisions, isEqual);
 
-    if (payoutDivisions.sunday) {
-      payoutDivisions.sunday.forEach((div) => {
-        const { main, sub } = div;
-        let totalTeams = 0;
-        totalTeams += getNumTeams(state.sunday.divisions[getDivisionKey(main)]);
-        if (sub) {
-          totalTeams += getNumTeams(
-            state.sunday.divisions[getDivisionKey(sub)]
-          );
-        }
-        if (state.financials.payoutParams.sunday) {
-          // Calculate payouts for this division
-          const divPayout = calcPayouts(
-            totalTeams,
-            state.financials.payoutParams.prizePool,
-            state.financials.payoutParams.sunday
-          );
-          tPayouts[main] = divPayout.main;
-          if (Object.keys(divPayout.sub).length > 0 && sub) {
-            tPayouts[sub] = divPayout.sub;
-          }
-        }
-      });
-    }
+  // Sunday
+  const sundayPayout = useAppSelector(selectSundayPay, isEqual);
+  const sundayDiv = useAppSelector(selectSundayDivisions, isEqual);
+
+  /** Effects */
+  const payouts = useMemo(() => {
+    const tPayouts: PrizePayout = {};
+    saturdayPayout.divisions.forEach((div) => {
+      const { main, sub } = div;
+      let totalTeams = 0;
+      totalTeams += getNumTeams(saturdayDiv[getDivisionKey(main)]);
+      if (sub) {
+        totalTeams += getNumTeams(saturdayDiv[getDivisionKey(sub)]);
+      }
+      // Calculate payouts for this division
+      const divPayout = calcPayouts(
+        totalTeams,
+        saturdayPayout.prizePool,
+        saturdayPayout.params
+      );
+      tPayouts[main] = divPayout.main;
+      if (Object.keys(divPayout.sub).length > 0 && sub) {
+        tPayouts[sub] = divPayout.sub;
+      }
+    });
+
+    sundayPayout.divisions.forEach((div) => {
+      const { main, sub } = div;
+      let totalTeams = 0;
+      totalTeams += getNumTeams(sundayDiv[getDivisionKey(main)]);
+      if (sub) {
+        totalTeams += getNumTeams(sundayDiv[getDivisionKey(sub)]);
+      }
+      // Calculate payouts for this division
+      const divPayout = calcPayouts(
+        totalTeams,
+        sundayPayout.prizePool,
+        sundayPayout.params
+      );
+      tPayouts[main] = divPayout.main;
+      if (Object.keys(divPayout.sub).length > 0 && sub) {
+        tPayouts[sub] = divPayout.sub;
+      }
+    });
+
     return tPayouts;
-  });
+  }, [saturdayPayout, saturdayDiv, sundayPayout, sundayDiv]);
 
   return (
     <Box>

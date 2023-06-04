@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { Snackbar } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import isEqual from 'lodash/isEqual';
@@ -7,7 +8,7 @@ import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { selectNotification, reset } from '../redux/notifications';
 
 /** Constants */
-const TIMEOUT = 60; // seconds
+const TIMEOUT = 10; // seconds
 
 const action = (onClose: () => void) => {
   return (
@@ -40,8 +41,11 @@ const AppStatus = () => {
         autoHideDuration={TIMEOUT * 1000}
         onClose={onClose}
         action={action(onClose)}
-        message={message}
-      />
+      >
+        <Alert severity={status !== 'none' ? status : undefined}>
+          {message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

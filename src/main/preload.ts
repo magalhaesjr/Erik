@@ -23,6 +23,18 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('tournament:saveTournament', tourney);
   },
   /** Financials */
+  // Menu requesting functions
+  requestFinancialImport(func: (...args: unknown[]) => void) {
+    ipcRenderer.on('tournament:requestFinancialImport', (_event, ...args) =>
+      func(...args)
+    );
+  },
+  requestFinancialExport(func: (...args: unknown[]) => void) {
+    ipcRenderer.on('tournament:requestFinancialExport', (_event, ...args) =>
+      func(...args)
+    );
+  },
+  // Import/Export
   importFinancials: (): Promise<TournamentFinancials | null> => {
     return ipcRenderer.invoke('tournament:importFinancials');
   },

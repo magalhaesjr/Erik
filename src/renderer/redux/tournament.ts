@@ -384,3 +384,7 @@ export default tournamentSlice.reducer;
 
 /** Selectors */
 export const selectTournament = (state: RootState) => state.tournament;
+export const selectSaturdayDivisions = (state: RootState) =>
+  state.tournament.saturday.divisions;
+export const selectSundayDivisions = (state: RootState) =>
+  state.tournament.sunday.divisions;

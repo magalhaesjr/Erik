@@ -215,7 +215,7 @@ ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
   }
 
   // Write out the JSON file
-  fs.writeFile(filename, JSON.stringify(tourney), (err) => {
+  fs.writeFile(filename, JSON.stringify(tourney, null, 2), (err) => {
     if (err) {
       throw err;
     }
@@ -224,14 +224,17 @@ ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
 
 /** Financials */
 ipcMain.handle('tournament:importFinancials', () => {
-  return readFile({ filters: [{ name: 'Financials', extensions: ['json'] }] });
+  const financials = readFile({
+    filters: [{ name: 'Financials', extensions: ['json'] }],
+  });
+  return financials ? JSON.parse(financials) : null;
 });
 
 ipcMain.handle(
   'tournament:exportFinancials',
   (_, financials: TournamentFinancials) => {
     return writeFile({
-      outString: JSON.stringify(financials),
+      outString: JSON.stringify(financials, null, 2),
       filters: [{ name: 'Financials', extensions: ['json'] }],
     });
   }

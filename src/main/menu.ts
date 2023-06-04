@@ -168,6 +168,29 @@ export default class MenuBuilder {
         ],
       },
       {
+        label: '&Tournament',
+        submenu: [
+          {
+            label: 'Import Financial Rules',
+            accelerator: 'Ctrl+F',
+            click: () => {
+              this.mainWindow.webContents.send(
+                'tournament:requestFinancialImport'
+              );
+            },
+          },
+          {
+            label: 'Export Financial Rules',
+            accelerator: 'Alt+Ctrl+F',
+            click: () => {
+              this.mainWindow.webContents.send(
+                'tournament:requestFinancialExport'
+              );
+            },
+          },
+        ],
+      },
+      {
         label: '&View',
         submenu: [
           {
