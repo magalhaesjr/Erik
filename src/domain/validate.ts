@@ -1,6 +1,10 @@
 // Adds validation checks for different types
 import Division from './division';
 
+// Generic export types for clear purpose in code
+export const FAILURE = true;
+export const SUCCESS = !FAILURE;
+
 // Makes sure the input is an {} object
 export function isObject(info: unknown) {
   return !(

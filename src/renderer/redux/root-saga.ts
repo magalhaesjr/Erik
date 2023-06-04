@@ -1,13 +1,9 @@
-// import { all } from 'redux-saga/effects';
-// import { watchLoad, watchUpdateActive } from './sagas/template';
+import { all } from 'redux-saga/effects';
+import {
+  watchImportFinancials,
+  watchExportFinancials,
+} from './sagas/financials';
 
-/*
 export default function* rootSaga() {
-  yield all([
-    watchLoad(),
-    watchUpdateActive(),
-    watchImportTeams(),
-    watchGeneratePreviews(),
-  ]);
+  yield all([watchImportFinancials(), watchExportFinancials()]);
 }
-*/

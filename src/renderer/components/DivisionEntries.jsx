@@ -10,10 +10,20 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button, Checkbox, Typography, styled } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import {
+  addTeam,
+  generatePools,
+  resetPools as poolReset,
+  changeWaitStatus as reduxWaitChange,
+  removeTeam,
+  selectTournament,
+  updateDivision,
+  updatePlayer,
+} from '../redux/tournament';
 import { hasProp } from '../../domain/validate';
 import { parseName, joinName } from '../../domain/player';
 import DataCell from './table/DataCell';
@@ -67,8 +77,10 @@ const DivEntries = (props) => {
   // Edit state
   const [activeEdit, setEdit] = React.useState(false);
 
-  // Grabs selector from redux
-  const { entries, poolsValid, divReady, divStatus } = useSelector((state) => {
+  /** TODO: REPLACE ME */
+  const tournament = useAppSelector(selectTournament);
+
+  const getEntries = (state) => {
     const out = {
       entries: [],
       poolsValid: false,
@@ -111,22 +123,19 @@ const DivEntries = (props) => {
       }
     });
     return out;
-  });
+  };
+
+  const { entries, poolsValid, divReady, divStatus } = getEntries(tournament);
+  /** END TODO */
 
   // Dispatching
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Actions
   const resetPools = () => {
     if (poolsValid) {
       // Need to reset all pools because something has changed
-      dispatch({
-        type: 'resetPools',
-        payload: {
-          waitList,
-          division,
-        },
-      });
+      dispatch(poolReset({ waitList, division }));
     }
   };
 
@@ -137,14 +146,7 @@ const DivEntries = (props) => {
 
   const changeWaitStatus = (e, i) => {
     // Add the team to the opposite list
-    dispatch({
-      type: 'changeWaitStatus',
-      payload: {
-        waitList,
-        division,
-        team: i,
-      },
-    });
+    dispatch(reduxWaitChange({ waitList, division, team: i }));
 
     // Reset pools if necessary
     resetPools();
@@ -182,69 +184,55 @@ const DivEntries = (props) => {
         resetPools();
     }
     // dispatch a change to player info
-    dispatch({
-      type: 'updatePlayer',
-      payload: {
+    dispatch(
+      updatePlayer({
         waitList,
         division,
         team: i,
         playerNum: player,
         player: newTeam.props.players[player],
-      },
-    });
+      })
+    );
   };
 
   const handleSave = () => {
     setEdit(!activeEdit);
     // Send all entries to dispatch
-    dispatch({
-      type: 'updateDivision',
-      payload: {
+    dispatch(
+      updateDivision({
         waitList,
         division,
         teams: entries,
-      },
-    });
+      })
+    );
   };
 
   const handleAdd = () => {
     setEdit(true);
     // Create a new team
-    dispatch({
-      type: 'addTeam',
-      payload: {
+    dispatch(
+      addTeam({
         waitList,
         division,
         team: null,
-      },
-    });
+      })
+    );
     // Reset pools if necessary
     resetPools();
   };
 
   const handleDelete = (e, i) => {
-    dispatch({
-      type: 'removeTeam',
-      payload: {
-        waitList,
-        division,
-        team: i,
-      },
-    });
+    dispatch(removeTeam({ waitList, division, team: i }));
     // Reset pools if necessary
     resetPools();
   };
 
   const genPools = () => {
     if (entries.length > 0) {
-      dispatch({
-        type: 'generatePools',
-        payload: {
-          division,
-        },
-      });
+      dispatch(generatePools({ division }));
     }
   };
+
   return (
     <TableContainer component={Paper}>
       <Typography variant="h6" align="left">

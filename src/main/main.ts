@@ -17,7 +17,9 @@ import { JSDOM } from 'jsdom';
 import { isEmpty } from '../domain/validate';
 import extractEntries from '../domain/avpamerica';
 import MenuBuilder from './menu';
+import { readFile, writeFile } from './fileIO';
 import { resolveHtmlPath } from './util';
+import { TournamentFinancials } from '../renderer/redux/financials';
 
 export default class AppUpdater {
   constructor() {
@@ -213,12 +215,30 @@ ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
   }
 
   // Write out the JSON file
-  fs.writeFile(filename, JSON.stringify(tourney), (err) => {
+  fs.writeFile(filename, JSON.stringify(tourney, null, 2), (err) => {
     if (err) {
       throw err;
     }
   });
 });
+
+/** Financials */
+ipcMain.handle('tournament:importFinancials', () => {
+  const financials = readFile({
+    filters: [{ name: 'Financials', extensions: ['json'] }],
+  });
+  return financials ? JSON.parse(financials) : null;
+});
+
+ipcMain.handle(
+  'tournament:exportFinancials',
+  (_, financials: TournamentFinancials) => {
+    return writeFile({
+      outString: JSON.stringify(financials, null, 2),
+      filters: [{ name: 'Financials', extensions: ['json'] }],
+    });
+  }
+);
 
 /**
  * Add event listeners...

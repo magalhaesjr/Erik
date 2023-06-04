@@ -2,7 +2,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Paper, Typography, styled, Grid } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { selectTournament, updatePool } from '../redux/tournament';
 import { hasProp } from '../../domain/validate';
 import PoolHeader from './poolSheet/PoolHeader';
 import PoolSchedule from './poolSheet/PoolSchedule';
@@ -24,9 +25,9 @@ const PoolPaper = styled(Paper)(({ theme }) => ({
 const PoolSheet = React.forwardRef((props, ref) => {
   const { division, poolId } = props;
 
-  // Grabs selector from redux
-  const pool = useSelector((state) => {
-    // eslint-disable-next-line prettier/prettier
+  /** TODO: REPLACE ME */
+  const tournament = useAppSelector(selectTournament);
+  const getPool = (state) => {
     let divPool = {};
     Object.keys(state).forEach((day) => {
       if (hasProp(state[day], 'divisions')) {
@@ -40,21 +41,22 @@ const PoolSheet = React.forwardRef((props, ref) => {
     });
 
     return divPool;
-  });
+  };
+  const pool = getPool(tournament);
+  /** END TODO */
 
   // Dispatcher
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Handler
   const handleChange = (val) => {
-    dispatch({
-      type: 'updatePool',
-      payload: {
+    dispatch(
+      updatePool({
         division: pool.props.division,
         id: poolId,
         playoffTeams: val,
-      },
-    });
+      })
+    );
   };
 
   if (pool !== undefined && Object.keys(pool).length > 0) {

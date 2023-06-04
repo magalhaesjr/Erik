@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
+import { useAppSelector } from '../redux/hooks';
 import { getPools, hasProp } from '../../domain/validate';
 import RegSheet from '../components/RegSheet';
 
@@ -26,8 +26,9 @@ const Registration = () => {
   const location = useLocation();
   const { division } = location.state;
 
-  // Grabs selector from redux
-  const divisions = useSelector((state) => {
+  /** TODO: REPLACE ME */
+  const divisions = useAppSelector((rootState) => {
+    const state = rootState.tournament;
     const div = {};
     Object.keys(state).forEach((day) => {
       if (hasProp(state[day], 'divisions')) {
@@ -38,6 +39,7 @@ const Registration = () => {
     });
     return div;
   });
+  /** END REPLACE */
 
   // Declare state for this division component
   const [currentDiv, setDivision] = React.useState(

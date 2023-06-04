@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, InputLabel, MenuItem, Select, Button } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../redux/hooks';
 import DivEntries from '../components/DivisionEntries';
 import { getPools, hasProp } from '../../domain/validate';
 
@@ -12,15 +12,16 @@ const Divisions = () => {
   const { division } = location.state;
 
   // Grabs selector from redux
-  const { divisions } = useSelector((state) => {
+  const { divisions } = useAppSelector((state) => {
+    const { tournament } = state;
     const out = {
       divisions: {},
     };
     // eslint-disable-next-line prettier/prettier
-    Object.keys(state).forEach((day) => {
-      if (hasProp(state[day], 'divisions')) {
-        Object.keys(state[day].divisions).forEach((name) => {
-          out.divisions[name] = state[day].divisions[name];
+    Object.keys(tournament).forEach((day) => {
+      if (hasProp(tournament[day], 'divisions')) {
+        Object.keys(tournament[day].divisions).forEach((name) => {
+          out.divisions[name] = tournament[day].divisions[name];
         });
       }
     });

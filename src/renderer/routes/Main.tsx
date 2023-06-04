@@ -1,12 +1,12 @@
 // Footer for main page
 import { Typography, Button } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { isObject } from '../../domain/validate';
+import { useAppDispatch } from '../redux/hooks';
+import { loadTournament } from '../redux/tournament';
 import MainDiv from '../components/MainDiv';
 import Tournament from '../../domain/tournament';
 
 const Main = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   return (
     <MainDiv>
@@ -21,7 +21,7 @@ const Main = () => {
               .then((value: unknown) => {
                 const tourny = value as Tournament | null;
                 if (tourny) {
-                  dispatch({ type: 'loadTournament', payload: tourny });
+                  dispatch(loadTournament(tourny));
                 }
                 return 0;
               })
@@ -38,9 +38,10 @@ const Main = () => {
           onClick={() => {
             window.electron
               .loadTournament()
-              .then((tourny) => {
-                if (isObject(tourny)) {
-                  dispatch({ type: 'loadTournament', payload: tourny });
+              .then((value: unknown) => {
+                const tourny = value as Tournament | null;
+                if (tourny) {
+                  dispatch(loadTournament(tourny));
                 }
                 return 0;
               })
