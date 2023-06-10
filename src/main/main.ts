@@ -20,6 +20,7 @@ import MenuBuilder from './menu';
 import { readFile, writeFile } from './fileIO';
 import { resolveHtmlPath } from './util';
 import { TournamentFinancials } from '../renderer/redux/financials';
+import type { Notification } from '../renderer/redux/notifications';
 
 export default class AppUpdater {
   constructor() {
@@ -222,21 +223,54 @@ ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
   });
 });
 
+/** Notifications */
+
+/**
+ * Publishes a notification to the renderer (displayed as a snackbar)
+ *
+ * @param notification is the notification to publish
+ */
+export const publishNotification = (notification: Notification) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('tournament:publishNotification', notification);
+  }
+};
+
 /** Financials */
 ipcMain.handle('tournament:importFinancials', () => {
   const financials = readFile({
     filters: [{ name: 'Financials', extensions: ['json'] }],
   });
-  return financials ? JSON.parse(financials) : null;
+
+  // Notify user of success/failure
+  if (financials) {
+    publishNotification({
+      status: 'success',
+      message: 'Imported financial parameters',
+    });
+
+    return JSON.parse(financials);
+  }
+
+  // Failed to read
+  publishNotification({
+    status: 'error',
+    message: 'Failed importing financial parameters',
+  });
+
+  return null;
 });
 
 ipcMain.handle(
   'tournament:exportFinancials',
   (_, financials: TournamentFinancials) => {
-    return writeFile({
+    const result = writeFile({
       outString: JSON.stringify(financials, null, 2),
       filters: [{ name: 'Financials', extensions: ['json'] }],
     });
+
+    // Notify user of operation result
+    publishNotification(result);
   }
 );
 
