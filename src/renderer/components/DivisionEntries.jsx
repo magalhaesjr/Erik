@@ -178,6 +178,10 @@ const DivEntries = (props) => {
         newTeam.props.players[player].props.membershipValid = e.target.checked;
         break;
       }
+      case 'ranking': {
+        newTeam.props.players[player].props.ranking = parseFloat(value);
+        break;
+      }
       default:
         newTeam.props.players[player].props[name] = e.target.value;
         // reset pools if necessary
