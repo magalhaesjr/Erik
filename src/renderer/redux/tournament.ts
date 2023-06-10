@@ -69,10 +69,10 @@ const getDivision = (
   if (hasProp(tournament.sunday.divisions, divKey)) {
     if (newFlag === undefined || newFlag) {
       // Make a new copy of the division object
-      return new Division(tournament.saturday.divisions[divKey]);
+      return new Division(tournament.sunday.divisions[divKey]);
     }
 
-    return tournament.saturday.divisions[divKey];
+    return tournament.sunday.divisions[divKey];
   }
 
   return null;
@@ -86,7 +86,7 @@ const setDivision = (tournament: Tournament, newDiv: Division): Tournament => {
   if (hasProp(outState.saturday.divisions, divName)) {
     outState.saturday.divisions[divName] = JSON.parse(JSON.stringify(newDiv));
   } else if (hasProp(outState.sunday.divisions, divName)) {
-    outState.saturday.divisions[divName] = JSON.parse(JSON.stringify(newDiv));
+    outState.sunday.divisions[divName] = JSON.parse(JSON.stringify(newDiv));
   }
 
   return outState;
