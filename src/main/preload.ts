@@ -4,24 +4,24 @@ import type { TournamentFinancials } from '../renderer/redux/financials';
 import type { Notification } from '../renderer/redux/notifications';
 
 contextBridge.exposeInMainWorld('electron', {
-  importFile: (): Promise<Tournament | null> => {
-    return ipcRenderer.invoke('tournament:importFile');
+  importSheet: (): Promise<Tournament | null> => {
+    return ipcRenderer.invoke('tournament:importSheet');
   },
-  loadTournament: () => {
-    return ipcRenderer.invoke('tournament:loadTournament');
+  importTournament: () => {
+    return ipcRenderer.invoke('tournament:importTournament');
   },
-  requestSave(func: (...args: unknown[]) => void) {
-    ipcRenderer.on('tournament:requestSave', (_event, ...args) =>
+  requestTournamentExport(func: (...args: unknown[]) => void) {
+    ipcRenderer.on('tournament:requestTournamentExport', (_event, ...args) =>
       func(...args)
     );
   },
-  requestLoad(func: (...args: unknown[]) => void) {
-    ipcRenderer.on('tournament:requestLoad', (_event, ...args) =>
+  requestTournamentImport(func: (...args: unknown[]) => void) {
+    ipcRenderer.on('tournament:requestTournamentImport', (_event, ...args) =>
       func(...args)
     );
   },
-  saveTournament: (tourney: unknown) => {
-    ipcRenderer.invoke('tournament:saveTournament', tourney);
+  exportTournament: (tourney: Tournament) => {
+    ipcRenderer.invoke('tournament:exportTournament', tourney);
   },
 
   /** Notifications */

@@ -5,8 +5,6 @@ export const fetchFinancials =
     return window.electron.importFinancials();
   };
 
-export const exportFinancials = async (
-  financials: TournamentFinancials
-): Promise<boolean> => {
-  return window.electron.exportFinancials(financials);
+export const exportFinancials = async (financials: TournamentFinancials) => {
+  window.electron.exportFinancials(financials);
 };

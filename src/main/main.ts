@@ -9,20 +9,18 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import fs from 'fs';
 import { JSDOM } from 'jsdom';
 import cloneDeep from 'lodash/cloneDeep';
-import { isEmpty } from '../domain/validate';
+import Tournament from 'domain/tournament';
 import extractEntries from '../domain/avpamerica';
 import MenuBuilder from './menu';
 import { readFile, writeFile } from './fileIO';
 import { resolveHtmlPath } from './util';
 import { TournamentFinancials } from '../renderer/redux/financials';
 import type { Notification } from '../renderer/redux/notifications';
-import Tournament from '../domain/tournament';
 
 export default class AppUpdater {
   constructor() {
@@ -64,11 +62,6 @@ const installExtensions = async () => {
     )
     .catch(console.log);
 };
-
-// Path to financial json
-const FINANCIAL_PATH = app.isPackaged
-  ? path.join(process.resourcesPath, 'assets')
-  : path.join(__dirname, '../../assets');
 
 const createWindow = async () => {
   if (isDebug) {
@@ -140,7 +133,7 @@ export const publishNotification = (notification: Notification) => {
 };
 
 /** Tournament I/O */
-ipcMain.handle('tournament:importFile', () => {
+ipcMain.handle('tournament:importSheet', () => {
   let htmlString = readFile({
     filters: [
       {
@@ -185,7 +178,7 @@ ipcMain.handle('tournament:importFile', () => {
   }
 });
 
-ipcMain.handle('tournament:loadTournament', () => {
+ipcMain.handle('tournament:importTournament', () => {
   const tournament = readFile({
     filters: [{ name: 'Tournament', extensions: ['json'] }],
   });
@@ -207,6 +200,16 @@ ipcMain.handle('tournament:loadTournament', () => {
   });
 
   return JSON.parse(tournament);
+});
+
+ipcMain.handle('tournament:exportTournament', (_, tourney: Tournament) => {
+  const result = writeFile({
+    outString: JSON.stringify(tourney, null, 2),
+    filters: [{ name: 'Financials', extensions: ['json'] }],
+  });
+
+  // Notify user of operation result
+  publishNotification(result);
 });
 
 /** Financials */
