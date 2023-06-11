@@ -14,12 +14,15 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
+import cloneDeep from 'lodash/cloneDeep';
 import { isEmpty } from '../domain/validate';
 import extractEntries from '../domain/avpamerica';
 import MenuBuilder from './menu';
 import { readFile, writeFile } from './fileIO';
 import { resolveHtmlPath } from './util';
 import { TournamentFinancials } from '../renderer/redux/financials';
+import type { Notification } from '../renderer/redux/notifications';
+import Tournament from '../domain/tournament';
 
 export default class AppUpdater {
   constructor() {
@@ -123,9 +126,22 @@ const createWindow = async () => {
   //new AppUpdater();
 };
 
+/** Notifications */
+
+/**
+ * Publishes a notification to the renderer (displayed as a snackbar)
+ *
+ * @param notification is the notification to publish
+ */
+export const publishNotification = (notification: Notification) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('tournament:publishNotification', notification);
+  }
+};
+
+/** Tournament I/O */
 ipcMain.handle('tournament:importFile', () => {
-  const filename = dialog.showOpenDialogSync({
-    properties: ['openFile'],
+  let htmlString = readFile({
     filters: [
       {
         name: 'Sheet',
@@ -134,92 +150,63 @@ ipcMain.handle('tournament:importFile', () => {
     ],
   });
 
-  if (filename === null || filename === undefined) {
-    return null;
-  }
+  if (!htmlString) {
+    // Failed to read
+    publishNotification({
+      status: 'error',
+      message: 'Failed importing entries sheet',
+    });
 
-  // The file is actually html tables... why call it an excel file?????
-  let htmlString = fs.readFileSync(filename[0], {
-    encoding: 'utf-8',
-  });
-  if (htmlString === null || htmlString === undefined) {
     return null;
   }
 
   // Add to string
   htmlString = `<div id="container"'>${htmlString}</div>`;
   const dom = new JSDOM(htmlString);
-  const tourny = extractEntries(dom.window.document);
-  // Set financial rules
-  tourny.financials = JSON.parse(
-    fs.readFileSync(path.join(FINANCIAL_PATH, 'financials.json'), {
-      encoding: 'utf-8',
-    })
-  );
 
-  return JSON.parse(JSON.stringify(tourny));
+  try {
+    const tourney = extractEntries(dom.window.document);
+
+    publishNotification({
+      status: 'success',
+      message: 'Imported entries from sheet',
+    });
+
+    // Return extracted entries
+    return cloneDeep(tourney);
+  } catch {
+    // Something failed
+    publishNotification({
+      status: 'error',
+      message: 'Failed to extract entries',
+    });
+
+    return null;
+  }
 });
 
 ipcMain.handle('tournament:loadTournament', () => {
-  const filename = dialog.showOpenDialogSync({
-    properties: ['openFile'],
-    filters: [
-      {
-        name: 'Tournament',
-        extensions: ['json'],
-      },
-    ],
+  const tournament = readFile({
+    filters: [{ name: 'Tournament', extensions: ['json'] }],
   });
 
-  if (filename === null || filename === undefined) {
+  // Notify user of success/failure
+  if (!tournament) {
+    // Failed to read
+    publishNotification({
+      status: 'error',
+      message: 'Failed importing financial parameters',
+    });
+
     return null;
   }
-  // Create a tournament
-  const tourny = JSON.parse(
-    fs.readFileSync(filename[0], {
-      encoding: 'utf-8',
-    })
-  );
 
-  // Set financial rules if not set
-  if (tourny.financials === undefined || isEmpty(tourny.financials)) {
-    tourny.financials = JSON.parse(
-      fs.readFileSync(path.join(FINANCIAL_PATH, 'financials.json'), {
-        encoding: 'utf-8',
-      })
-    );
-  }
-
-  // Return the JSON object
-  return tourny;
-});
-
-ipcMain.handle('tournament:saveTournament', (_event, tourney: object) => {
-  // If empty tournament sent, just ignore it
-  if (isEmpty(tourney)) {
-    return;
-  }
-  // Have the use select a save file
-  const filename = dialog.showSaveDialogSync({
-    filters: [
-      {
-        name: 'Tournament',
-        extensions: ['json'],
-      },
-    ],
+  publishNotification({
+    status: 'success',
+    message: 'Imported tournament',
   });
 
-  // User selected cancel
-  if (filename === null || filename === undefined) {
-    return;
-  }
-
-  // Write out the JSON file
-  fs.writeFile(filename, JSON.stringify(tourney, null, 2), (err) => {
-    if (err) {
-      throw err;
-    }
-  });
+  return JSON.parse(tournament);
 });
 
 /** Financials */
@@ -227,16 +214,36 @@ ipcMain.handle('tournament:importFinancials', () => {
   const financials = readFile({
     filters: [{ name: 'Financials', extensions: ['json'] }],
   });
-  return financials ? JSON.parse(financials) : null;
+
+  // Notify user of success/failure
+  if (financials) {
+    publishNotification({
+      status: 'success',
+      message: 'Imported financial parameters',
+    });
+
+    return JSON.parse(financials);
+  }
+
+  // Failed to read
+  publishNotification({
+    status: 'error',
+    message: 'Failed importing financial parameters',
+  });
+
+  return null;
 });
 
 ipcMain.handle(
   'tournament:exportFinancials',
   (_, financials: TournamentFinancials) => {
-    return writeFile({
+    const result = writeFile({
       outString: JSON.stringify(financials, null, 2),
       filters: [{ name: 'Financials', extensions: ['json'] }],
     });
+
+    // Notify user of operation result
+    publishNotification(result);
   }
 );
 

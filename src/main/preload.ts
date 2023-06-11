@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import Tournament from '../domain/tournament';
 import type { TournamentFinancials } from '../renderer/redux/financials';
+import type { Notification } from '../renderer/redux/notifications';
 
 contextBridge.exposeInMainWorld('electron', {
   importFile: (): Promise<Tournament | null> => {
@@ -22,6 +23,14 @@ contextBridge.exposeInMainWorld('electron', {
   saveTournament: (tourney: unknown) => {
     ipcRenderer.invoke('tournament:saveTournament', tourney);
   },
+
+  /** Notifications */
+  publishNotification(func: (notification: Notification) => void) {
+    ipcRenderer.on('tournament:publishNotification', (_event, notification) =>
+      func(notification)
+    );
+  },
+
   /** Financials */
   // Menu requesting functions
   requestFinancialImport(func: (...args: unknown[]) => void) {
@@ -38,7 +47,7 @@ contextBridge.exposeInMainWorld('electron', {
   importFinancials: (): Promise<TournamentFinancials | null> => {
     return ipcRenderer.invoke('tournament:importFinancials');
   },
-  exportFinancials: (financials: TournamentFinancials): Promise<boolean> => {
-    return ipcRenderer.invoke('tournament:exportFinancials', financials);
+  exportFinancials: (financials: TournamentFinancials): void => {
+    ipcRenderer.invoke('tournament:exportFinancials', financials);
   },
 });
