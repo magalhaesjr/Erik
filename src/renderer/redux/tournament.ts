@@ -46,6 +46,26 @@ type CourtUpdate = {
   court: Court;
 };
 
+export type TournamentExport = {
+  type: string;
+  tournament: Tournament;
+};
+
+/** Sagas */
+export const TournamentActions = {
+  importTournament: 'IMPORT_TOURNAMENT',
+  importSheet: 'IMPORT_SHEET',
+  exportTournament: 'EXPORT_TOURNAMENT',
+};
+export const importTournament = () => ({
+  type: TournamentActions.importTournament,
+});
+export const importSheet = () => ({ type: TournamentActions.importSheet });
+export const exportTournament = (tournament: Tournament) => ({
+  type: TournamentActions.exportTournament,
+  tournament,
+});
+
 // Helper functions
 const getDivision = (
   tournament: Tournament,

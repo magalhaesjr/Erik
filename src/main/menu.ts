@@ -148,14 +148,18 @@ export default class MenuBuilder {
             label: '&Open',
             accelerator: 'Ctrl+O',
             click: () => {
-              this.mainWindow.webContents.send('tournament:requestLoad');
+              this.mainWindow.webContents.send(
+                'tournament:requestTournamentImport'
+              );
             },
           },
           {
             label: '&Save',
             accelerator: 'Ctrl+S',
             click: () => {
-              this.mainWindow.webContents.send('tournament:requestSave');
+              this.mainWindow.webContents.send(
+                'tournament:requestTournamentExport'
+              );
             },
           },
           {

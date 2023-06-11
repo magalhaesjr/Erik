@@ -1,56 +1,31 @@
 // Footer for main page
+import { useCallback } from 'react';
 import { Typography, Button } from '@mui/material';
 import { useAppDispatch } from '../redux/hooks';
-import { loadTournament } from '../redux/tournament';
+import { importSheet, importTournament } from '../redux/tournament';
 import MainDiv from '../components/MainDiv';
-import Tournament from '../../domain/tournament';
 
 const Main = () => {
   const dispatch = useAppDispatch();
+
+  /** Callbacks */
+  const handleImportTournament = useCallback(() => {
+    dispatch(importTournament());
+  }, [dispatch]);
+
+  const handleImportSheet = useCallback(() => {
+    dispatch(importSheet());
+  }, [dispatch]);
 
   return (
     <MainDiv>
       <Typography variant="h2">NVC Tournament Manager</Typography>
       <Typography variant="h3">ERIK</Typography>
       <MainDiv>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            window.electron
-              .importFile()
-              .then((value: unknown) => {
-                const tourny = value as Tournament | null;
-                if (tourny) {
-                  dispatch(loadTournament(tourny));
-                }
-                return 0;
-              })
-              .catch((errors: unknown) => {
-                // eslint-disable-next-line no-console
-                console.log(errors);
-              });
-          }}
-        >
+        <Button variant="outlined" onClick={handleImportSheet}>
           New Tournament
         </Button>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            window.electron
-              .loadTournament()
-              .then((value: unknown) => {
-                const tourny = value as Tournament | null;
-                if (tourny) {
-                  dispatch(loadTournament(tourny));
-                }
-                return 0;
-              })
-              .catch((errors) => {
-                // eslint-disable-next-line no-console
-                console.log(errors);
-              });
-          }}
-        >
+        <Button variant="outlined" onClick={handleImportTournament}>
           Load Tournament
         </Button>
       </MainDiv>
