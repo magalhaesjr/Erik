@@ -120,11 +120,13 @@ test('assignCourts sets courts for division', () => {
 test('setCenterCourt makes center court first court', () => {
   // create a test division with a center court preference
   const testDiv = new Division("Men's Open");
+  // Expected center
+  const expectedCenter = testDiv.props.rules.centerCourt || 11;
   // Assign courts
-  testDiv.assignCourts([7, 9, 11]);
+  testDiv.assignCourts([7, 9, expectedCenter]);
   // Ensure center court is first out
-  expect(testDiv.props.courts[0]).toBe(testDiv.props.rules.centerCourt);
-  expect(testDiv.props.courts.shift()).toBe(testDiv.props.rules.centerCourt);
+  expect(testDiv.props.courts[0]).toBe(expectedCenter);
+  expect(testDiv.props.courts.shift()).toBe(expectedCenter);
 });
 
 test('createPools without enough pools throws', () => {

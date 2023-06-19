@@ -159,9 +159,9 @@ const DivEntries = (props) => {
     switch (name) {
       case 'name': {
         // Split player name back and assign
-        const { firstName, lastName } = parseName(value);
-        newTeam.props.players[player].props.firstName = firstName;
-        newTeam.props.players[player].props.lastName = lastName;
+        const { first, last } = parseName(value);
+        newTeam.props.players[player].props.firstName = first;
+        newTeam.props.players[player].props.lastName = last;
         // Reset pools if necessary
         resetPools();
         break;

@@ -1,28 +1,42 @@
 // Creates a redux store for holding state
-import { configureStore } from '@reduxjs/toolkit';
+import {
+  PreloadedState,
+  combineReducers,
+  configureStore,
+} from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-// import appReducer from './reducer';
 import financialReducer from './financials';
 import notificationReducer from './notifications';
 import tournamentReducer from './tournament';
+import entryReducer from './entries';
 import rootSaga from './root-saga';
 
-const sagaMiddleware = createSagaMiddleware();
-
-const store = configureStore({
-  reducer: {
-    financials: financialReducer,
-    notification: notificationReducer,
-    tournament: tournamentReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(sagaMiddleware),
+const rootReducer = combineReducers({
+  entries: entryReducer,
+  financials: financialReducer,
+  notification: notificationReducer,
+  tournament: tournamentReducer,
 });
 
-sagaMiddleware.run(rootSaga);
+export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+  // Create middleware
+  const sagaMiddleware = createSagaMiddleware();
+
+  // Create the store
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(sagaMiddleware),
+    preloadedState,
+  });
+
+  // Start the middleware
+  sagaMiddleware.run(rootSaga);
+
+  return store;
+};
 
 // Root state for all dispatch/selectors
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-export default store;
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore['dispatch'];

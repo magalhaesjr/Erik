@@ -1,4 +1,8 @@
 import omit from 'lodash/omit';
+import type {
+  Player as PlayerEntry,
+  OptionalPlayerProps,
+} from '../renderer/redux/entries';
 
 // Player Info object (parsed from Avp America)
 export type PlayerInfoProps = {
@@ -14,9 +18,10 @@ export type PlayerInfo = { [P in keyof PlayerInfoProps]: PlayerInfoProps[P] };
 export type PlayerInfoKey = keyof PlayerInfoProps;
 
 // Player name
-type PlayerName = {
-  firstName: string;
-  lastName: string;
+export type PlayerName = {
+  first: string;
+  last: string;
+  full: string;
 };
 
 // Player properties
@@ -56,12 +61,28 @@ export function parseName(inputName: string): PlayerName {
 
   // Pull out first and last
   const out: PlayerName = {
-    firstName: splitNames[0].trim(),
-    lastName: splitNames.slice(1).join(' '),
+    first: splitNames[0].trim(),
+    last: splitNames.slice(1).join(' '),
+    full: splitNames.join(' '),
   };
 
   return out;
 }
+
+export const createPlayer = (
+  firstName: string,
+  lastName: string,
+  ranking: number,
+  props?: OptionalPlayerProps
+): PlayerEntry => ({
+  name: {
+    first: firstName,
+    last: lastName,
+    full: firstName.concat(' ', lastName),
+  },
+  ranking,
+  ...props,
+});
 
 // Join a name
 export function joinName(firstName: string, lastName: string): string {
@@ -102,8 +123,8 @@ class Player {
     // Fill in properties of player
     const name = parseName(playerInfo.name);
     const newProps: PlayerProps = {
-      firstName: name.firstName,
-      lastName: name.lastName,
+      firstName: name.first,
+      lastName: name.last,
       avpa: parseInt(playerInfo['avpa#'], 10),
       email: playerInfo.email,
       org: playerInfo.org,
