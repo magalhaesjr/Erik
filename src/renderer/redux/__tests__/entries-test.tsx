@@ -11,6 +11,7 @@ import {
   addEntry,
   modifyEntry,
   removeEntry,
+  replaceAll,
   selectDivisionEntries,
   selectDivisionWaitlist,
   selectEntry,
@@ -34,6 +35,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: false,
     registrationTime: 1,
+    paid: true,
   },
   team_2: {
     ranking: 800,
@@ -44,6 +46,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: false,
     registrationTime: 1,
+    paid: false,
   },
   wait_1: {
     ranking: 800,
@@ -54,6 +57,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: true,
     registrationTime: 100,
+    paid: false,
   },
   wait_2: {
     ranking: 800,
@@ -64,6 +68,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: true,
     registrationTime: 1,
+    paid: false,
   },
   team_3: {
     ranking: 400,
@@ -74,6 +79,7 @@ const mockEntries: MockEntry = {
     division: div2,
     isWaitlisted: false,
     registrationTime: 1,
+    paid: false,
   },
 };
 
@@ -146,6 +152,9 @@ describe('reducer', () => {
       store.dispatch(modifyEntry(modTeam));
     });
 
+    // The team ranking should have been updated
+    modTeam.ranking = modTeam.players[0].ranking + modTeam.players[1].ranking;
+
     // Verify that the team ranking is correct
     await waitFor(() => {
       expect(store.getState().entries).toEqual(
@@ -155,6 +164,45 @@ describe('reducer', () => {
           },
         })
       );
+    });
+  });
+
+  test('replaceAll replaces all entries', async () => {
+    const { store } = renderWithProviders(<div />);
+
+    // Add all entries
+    act(() => {
+      Object.values(mockEntries).forEach((e) => store.dispatch(addEntry(e)));
+    });
+
+    await waitFor(() => {
+      expect(Object.keys(store.getState().entries)).toEqual([
+        getDivisionKey(div1),
+        getDivisionKey(div2),
+      ]);
+    });
+
+    // New division
+    const newDiv = "Coed 2's Open";
+
+    // Replace division of all entries
+    const newEntries = {
+      [newDiv]: Object.values(cloneDeep(mockEntries)).map((v) => ({
+        ...v,
+        division: newDiv,
+      })),
+    };
+
+    // Replace all entries
+    act(() => {
+      store.dispatch(replaceAll(newEntries));
+    });
+
+    // Expect only entries from new division
+    await waitFor(() => {
+      expect(Object.keys(store.getState().entries)).toEqual([
+        getDivisionKey(newDiv),
+      ]);
     });
   });
 

@@ -10,8 +10,10 @@ import {
   TeamEntry,
   addEntry,
   modifyEntry,
+  replaceAll,
   removeEntry,
   selectEntry,
+  TournamentEntryIO,
 } from '../../entries';
 import { getTeamKey } from '../../../../domain/utility';
 import { notifyError } from './notifications';
@@ -21,6 +23,13 @@ function* handleAddEntry(entry: TeamEntry) {
 
   // Push entry to entry slice
   yield put(addEntry(entry));
+}
+
+function* handleReplaceAll(tourney: TournamentEntryIO) {
+  // Replaces all entries in a tournament
+
+  // Push entry to entry slice
+  yield put(replaceAll(tourney));
 }
 
 function* handleRemoveEntry(entry: TeamEntry) {
@@ -89,29 +98,33 @@ function* handleUpdateEntry(updateMsg: EntryPayload) {
   try {
     switch (action) {
       case entryActions.add: {
-        yield call(handleAddEntry, entry);
+        yield call(handleAddEntry, entry as TeamEntry);
         break;
       }
       case entryActions.changeDivision: {
         if (props) {
-          yield call(handleChangeDivision, entry, props);
+          yield call(handleChangeDivision, entry as TeamEntry, props);
         }
         break;
       }
       case entryActions.changeWaitlist: {
         if (props) {
-          yield call(handleChangeWaitlist, entry, props);
+          yield call(handleChangeWaitlist, entry as TeamEntry, props);
         }
         break;
       }
       case entryActions.modify: {
         if (props) {
-          yield call(handleModifyEntry, entry, props);
+          yield call(handleModifyEntry, entry as TeamEntry, props);
         }
         break;
       }
+      case entryActions.replaceAll: {
+        yield call(handleReplaceAll, entry as TournamentEntryIO);
+        break;
+      }
       case entryActions.remove: {
-        yield call(handleRemoveEntry, entry);
+        yield call(handleRemoveEntry, entry as TeamEntry);
         break;
       }
       default:

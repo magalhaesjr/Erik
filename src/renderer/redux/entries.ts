@@ -28,6 +28,7 @@ export type TeamEntry = {
   players: Player[];
   registrationTime: number;
   isWaitlisted: boolean;
+  paid: boolean;
 };
 
 // Payload to modify an existing entry
@@ -49,12 +50,17 @@ export type WaitlistChange = {
   waitList: boolean;
 };
 
+export type TournamentEntryIO = {
+  [key: string]: TeamEntry[];
+};
+
 /** Sagas */
 export const entryActions = {
   add: 'ADD_NEW_ENTRY',
   changeDivision: 'CHANGE_ENTRY_DIVISION',
   changeWaitlist: 'CHANGE_ENTRY_WAITLIST_STATUS',
   modify: 'MODIFY_ENTRY',
+  replaceAll: 'REPLACE_ALL_ENTRIES',
   remove: 'REMOVE_ENTRY',
 };
 
@@ -67,13 +73,13 @@ export const EntryActionChannel = 'ENTRY_ACTIONS';
 export type EntryPayload = {
   type: string;
   action: string;
-  entry: TeamEntry;
+  entry: unknown;
   props?: EntryProps<unknown>;
 };
 
 export const updateEntries = (
   action: EntryActions,
-  entry: TeamEntry,
+  entry: unknown,
   props?: EntryProps<unknown>
 ): EntryPayload => ({
   type: EntryActionChannel,
@@ -99,6 +105,14 @@ const updateRanking = (entry: TeamEntry) => {
   return entry;
 };
 
+const extractEntryProps = (entry: TeamEntry) => {
+  return {
+    entry: updateRanking(cloneDeep(entry)),
+    divKey: getDivisionKey(entry.division),
+    teamKey: getTeamKey(entry),
+  };
+};
+
 /** Slice Defintion */
 const initialState: TournamentEntries = {};
 
@@ -107,9 +121,7 @@ export const entrySlice = createSlice({
   initialState,
   reducers: {
     addEntry: (state, action: PayloadAction<TeamEntry>) => {
-      const entry = updateRanking(action.payload);
-      const divKey = getDivisionKey(entry.division);
-      const teamKey = getTeamKey(entry);
+      const { entry, divKey, teamKey } = extractEntryProps(action.payload);
 
       // If no division yet, create it
       if (divKey && !isDivision(state, divKey)) {
@@ -126,9 +138,8 @@ export const entrySlice = createSlice({
       state[divKey][teamKey] = cloneDeep(entry);
     },
     modifyEntry: (state, action: PayloadAction<TeamEntry>) => {
-      const entry = updateRanking(action.payload);
-      const divKey = getDivisionKey(entry.division);
-      const teamKey = getTeamKey(entry);
+      const { entry, divKey, teamKey } = extractEntryProps(action.payload);
+
       if (isDivision(state, divKey)) {
         if (isEntry(state[divKey], teamKey)) {
           state[divKey][teamKey] = entry;
@@ -139,10 +150,28 @@ export const entrySlice = createSlice({
         throw new Error(`No division ${entry.division} entries`);
       }
     },
+    replaceAll: (_, action: PayloadAction<TournamentEntryIO>) => {
+      // Replace the entire state
+      const newState = cloneDeep(initialState);
+
+      // Cycle through each division
+      Object.entries(action.payload).forEach(([division, entries]) => {
+        const divKey = getDivisionKey(division);
+        // Initialize division
+        newState[divKey] = {};
+
+        // Cycle through entries and add them
+        entries.forEach((divEntry) => {
+          const { entry, teamKey } = extractEntryProps(divEntry);
+          newState[divKey][teamKey] = entry;
+        });
+      });
+
+      return newState;
+    },
     removeEntry: (state, action: PayloadAction<TeamEntry>) => {
-      const entry = action.payload;
-      const divKey = getDivisionKey(entry.division);
-      const teamKey = getTeamKey(entry);
+      const { entry, divKey, teamKey } = extractEntryProps(action.payload);
+
       if (isDivision(state, divKey)) {
         if (isEntry(state[divKey], teamKey)) {
           delete state[divKey][teamKey];
@@ -156,7 +185,8 @@ export const entrySlice = createSlice({
   },
 });
 
-export const { addEntry, modifyEntry, removeEntry } = entrySlice.actions;
+export const { addEntry, modifyEntry, removeEntry, replaceAll } =
+  entrySlice.actions;
 export default entrySlice.reducer;
 
 /** Selectors */

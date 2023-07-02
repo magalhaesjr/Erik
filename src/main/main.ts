@@ -16,6 +16,7 @@ import { JSDOM } from 'jsdom';
 import cloneDeep from 'lodash/cloneDeep';
 import Tournament from 'domain/tournament';
 import extractEntries from '../domain/avpamerica';
+import newExtractEntries from '../domain/entry-import';
 import MenuBuilder from './menu';
 import { readFile, writeFile } from './fileIO';
 import { resolveHtmlPath } from './util';
@@ -159,6 +160,8 @@ ipcMain.handle('tournament:importSheet', () => {
 
   try {
     const tourney = extractEntries(dom.window.document);
+    const test = newExtractEntries(dom.window.document);
+    console.log(test);
 
     publishNotification({
       status: 'success',

@@ -31,6 +31,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: false,
     registrationTime: 1,
+    paid: false,
   },
   team_2: {
     ranking: 800,
@@ -41,6 +42,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: false,
     registrationTime: 1,
+    paid: true,
   },
   wait_1: {
     ranking: 800,
@@ -51,6 +53,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: true,
     registrationTime: 100,
+    paid: false,
   },
   wait_2: {
     ranking: 800,
@@ -61,6 +64,7 @@ const mockEntries: MockEntry = {
     division: div1,
     isWaitlisted: true,
     registrationTime: 1,
+    paid: false,
   },
   team_3: {
     ranking: 400,
@@ -71,6 +75,7 @@ const mockEntries: MockEntry = {
     division: div2,
     isWaitlisted: false,
     registrationTime: 1,
+    paid: false,
   },
 };
 
@@ -231,6 +236,10 @@ describe('update saga', () => {
       );
     });
 
+    // The team ranking should have been updated
+    newTeam1.ranking =
+      newTeam1.players[0].ranking + newTeam1.players[1].ranking;
+
     // Store is predictable state
     await waitFor(() => {
       expect(selectDivisionEntries(store.getState(), div1)).toEqual([
@@ -240,7 +249,7 @@ describe('update saga', () => {
     });
 
     // Change entry
-    const newPlayer = cloneDeep(mockEntries.team_1);
+    const newPlayer = cloneDeep(newTeam1);
     newPlayer.players[0] = createPlayer('new', 'guy', 0);
 
     // Change entry
