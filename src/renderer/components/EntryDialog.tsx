@@ -26,6 +26,7 @@ import {
 export type EntryDialogProps = {
   open: boolean;
   onClose: () => void;
+  waitList: boolean;
   entry?: TeamEntry;
   division?: string;
 };
@@ -71,7 +72,13 @@ const validateRanking = (ranking: number): EntryValidity => {
 };
 
 /** Component */
-const EntryDialog = ({ open, onClose, division, entry }: EntryDialogProps) => {
+const EntryDialog = ({
+  open,
+  onClose,
+  division,
+  entry,
+  waitList,
+}: EntryDialogProps) => {
   /** Definitions */
   const dispatch = useAppDispatch();
 
@@ -220,11 +227,11 @@ const EntryDialog = ({ open, onClose, division, entry }: EntryDialogProps) => {
         division: entryDivision,
         players: [cloneDeep(player1), cloneDeep(player2)],
         registrationTime: 0,
-        isWaitlisted: false,
+        isWaitlisted: waitList,
         paid: false,
       })
     );
-  }, [dispatch, entryDivision, player1, player2, entry]);
+  }, [dispatch, entryDivision, player1, player2, entry, waitList]);
 
   return (
     <Dialog key="entry-dialog" open={open}>
