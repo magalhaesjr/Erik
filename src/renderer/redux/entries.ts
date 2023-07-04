@@ -190,6 +190,8 @@ export const { addEntry, modifyEntry, removeEntry, replaceAll } =
 export default entrySlice.reducer;
 
 /** Selectors */
+export const selectDivisions = (state: RootState) => Object.keys(state.entries);
+
 export const selectDivisionEntries = (
   state: RootState,
   division: string

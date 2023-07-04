@@ -14,6 +14,7 @@ import {
   replaceAll,
   selectDivisionEntries,
   selectDivisionWaitlist,
+  selectDivisions,
   selectEntry,
 } from '../entries';
 
@@ -246,6 +247,21 @@ describe('reducer', () => {
 });
 
 describe('selector', () => {
+  test('selectDivisions gets division names', async () => {
+    const { store } = renderWithProviders(<div />);
+
+    // Update the store
+    act(() => {
+      store.dispatch(addEntry(mockEntries.team_1));
+      store.dispatch(addEntry(mockEntries.team_2));
+      store.dispatch(addEntry(mockEntries.team_3));
+    });
+
+    await waitFor(() =>
+      expect(selectDivisions(store.getState())).toEqual([div1, div2])
+    );
+  });
+
   test('selectDivisionEntries recovers entries for input division', async () => {
     const { store } = renderWithProviders(<div />);
 
