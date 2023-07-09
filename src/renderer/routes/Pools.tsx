@@ -1,12 +1,28 @@
-import * as React from 'react';
+import { ReactInstance, useCallback, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  InputLabel,
+  Button,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
 import { useReactToPrint } from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
+import isEqual from 'lodash/isEqual';
 import { useAppSelector } from '../redux/hooks';
-import { hasProp } from '../../domain/validate';
 import PoolSheet from '../components/PoolSheet';
 import MainDiv from '../components/MainDiv';
+import { selectDivisions } from '../redux/entries';
+import { selectDivisionPools } from '../redux/pools';
+import { RootState } from '../redux/store';
+
+/** Types */
+type PoolProps = {
+  division: string;
+  displayPool: number;
+};
 
 const pageStyle = `
   @page {
@@ -30,54 +46,47 @@ const pageStyle = `
 const Pools = () => {
   // Default division
   const location = useLocation();
-  const { allPools, division, displayPool } = location.state;
+  const { division, displayPool } = location.state as PoolProps;
 
-  /** TODO: REPLACE ME */
-  const divisions = useAppSelector((rootState) => {
-    const state = rootState.tournament;
-    const div = {};
-    Object.keys(state).forEach((day) => {
-      if (hasProp(state[day], 'divisions')) {
-        Object.keys(state[day].divisions).forEach((name) => {
-          if (state[day].divisions[name].props.pools.length > 0) {
-            div[name] = state[day].divisions[name];
-          }
-        });
-      }
-    });
-    return div;
-  });
-  /** END REPLACE */
-
+  /** State */
+  const divisions = useAppSelector(selectDivisions, isEqual);
   // Declare state for this division component
-  const [currentDiv, setDivision] = React.useState(
-    hasProp(divisions, division) ? division : ''
+  const [currentDiv, setDivision] = useState(
+    divisions.includes(division) ? division : ''
   );
-  const [availablePools, setAvailable] = React.useState(
-    allPools.length > 0 ? allPools : []
+
+  const selectPoolNumbers = useCallback(
+    (state: RootState) => {
+      const pools = selectDivisionPools(state, currentDiv);
+      return pools.map((_, i) => i + 1);
+    },
+    [currentDiv]
   );
-  const [pool, setPool] = React.useState(
-    allPools.length > 0 ? displayPool : ''
+  const allPools = useAppSelector(selectPoolNumbers, isEqual);
+
+  const [pool, setPool] = useState<string>(
+    allPools.length > 0 ? `${displayPool}` : ''
   );
+
   // Reference for printing
-  const printRef = React.useRef();
+  const printRef = useRef<ReactInstance | null>(null);
+
   // Callback
-  const handleDivChange = (event) => {
-    setDivision(event.target.value);
-    // set available pools
-    const divPools = Array.from(
-      Array(divisions[event.target.value].props.pools.length),
-      (_, index) => {
-        return index + 1;
-      }
-    );
-    setAvailable(divPools);
-    // Default to first pool
-    setPool(1);
-  };
-  const handlePoolChange = (event) => {
-    setPool(event.target.value);
-  };
+  const handleDivChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      setDivision(event.target.value);
+      // Default to first pool
+      setPool('1');
+    },
+    [setDivision, setPool]
+  );
+
+  const handlePoolChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      setPool(event.target.value);
+    },
+    [setPool]
+  );
 
   const printSheet = useReactToPrint({
     content: () => printRef.current,
@@ -89,7 +98,7 @@ const Pools = () => {
       <Box display="inline-block" width="30%">
         <Button
           variant="outlined"
-          label="Div"
+          key="division-btn"
           component={Link}
           to="/divisions"
           size="small"
@@ -104,7 +113,7 @@ const Pools = () => {
         </Button>
         <Button
           variant="outlined"
-          label="Reg"
+          key="registration-btn"
           component={Link}
           to="/registration"
           size="small"
@@ -128,7 +137,7 @@ const Pools = () => {
               label="Division"
               onChange={handleDivChange}
             >
-              {Object.keys(divisions).map((divName) => (
+              {divisions.map((divName) => (
                 <MenuItem key={divName} value={divName}>
                   {divName}
                 </MenuItem>
@@ -143,7 +152,7 @@ const Pools = () => {
               label="Pool"
               onChange={handlePoolChange}
             >
-              {availablePools.map((poolObj) => (
+              {allPools.map((poolObj) => (
                 <MenuItem key={poolObj} value={poolObj}>
                   {`Pool ${poolObj}`}
                 </MenuItem>
@@ -157,7 +166,7 @@ const Pools = () => {
         </MainDiv>
       </Box>
       <Box display="inline-block" width="30%" />
-      <PoolSheet division={currentDiv} poolId={pool - 1} ref={printRef} />
+      <PoolSheet division={currentDiv} poolId={Number(pool)} ref={printRef} />
     </Box>
   );
 };

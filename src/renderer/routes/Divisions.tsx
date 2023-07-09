@@ -1,42 +1,39 @@
-import * as React from 'react';
+import { useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, InputLabel, MenuItem, Select, Button } from '@mui/material';
+import {
+  Box,
+  InputLabel,
+  MenuItem,
+  Select,
+  Button,
+  SelectChangeEvent,
+} from '@mui/material';
+import isEqual from 'lodash/isEqual';
 import { useAppSelector } from '../redux/hooks';
 import DivEntries from '../components/DivisionEntries';
-import { getPools, hasProp } from '../../domain/validate';
+import { selectDivisions } from '../redux/entries';
 
 // Divisions Page
 const Divisions = () => {
   // Default division
   const location = useLocation();
-  const { division } = location.state;
+  const { division } = location.state as { division: string };
 
   // Grabs selector from redux
-  const { divisions } = useAppSelector((state) => {
-    const { tournament } = state;
-    const out = {
-      divisions: {},
-    };
-    // eslint-disable-next-line prettier/prettier
-    Object.keys(tournament).forEach((day) => {
-      if (hasProp(tournament[day], 'divisions')) {
-        Object.keys(tournament[day].divisions).forEach((name) => {
-          out.divisions[name] = tournament[day].divisions[name];
-        });
-      }
-    });
-    return out;
-  });
+  const divisions = useAppSelector(selectDivisions, isEqual);
 
   // Declare state for this division component
-  const [currentDiv, setDivision] = React.useState(
-    hasProp(divisions, division) ? division : ''
+  const [currentDiv, setDivision] = useState<string>(
+    divisions.includes(division) ? division : ''
   );
 
   // Callback
-  const handleOnChange = (event) => {
-    setDivision(event.target.value);
-  };
+  const handleOnChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      setDivision(event.target.value);
+    },
+    [setDivision]
+  );
 
   return (
     <Box>
@@ -44,13 +41,11 @@ const Divisions = () => {
       <Box display="inline-block" width="40%">
         <Button
           variant="outlined"
-          label="Pools"
           component={Link}
           to="/pools"
           size="small"
-          disabled={getPools(divisions[currentDiv]).length === 0}
+          disabled
           state={{
-            allPools: getPools(divisions[currentDiv]),
             division: currentDiv,
             displayPool: 1,
           }}
@@ -62,7 +57,6 @@ const Divisions = () => {
         </Button>
         <Button
           variant="outlined"
-          label="Reg"
           component={Link}
           to="/registration"
           size="small"
@@ -80,7 +74,7 @@ const Divisions = () => {
           label="Division"
           onChange={handleOnChange}
         >
-          {Object.keys(divisions).map((divName) => (
+          {divisions.map((divName) => (
             <MenuItem key={divName} value={divName}>
               {divName}
             </MenuItem>

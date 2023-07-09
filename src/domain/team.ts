@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 import Player from './player';
 
 // Extract the signup date string and convert it to posixtime (unix time)
-const extractTime = (regString: string): number => {
+export const extractTime = (regString: string): number => {
   // Grab the date portion
   const regex = /\(([^)]+)\)/g;
   const regDate = new Date(regString.split(regex)[1]);

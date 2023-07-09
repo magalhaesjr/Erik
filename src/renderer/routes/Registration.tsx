@@ -1,11 +1,19 @@
-import * as React from 'react';
+import { ReactInstance, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, InputLabel, Button, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  InputLabel,
+  Button,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
 import { useReactToPrint } from 'react-to-print';
 import PrintIcon from '@mui/icons-material/Print';
+import isEqual from 'lodash/isEqual';
 import { useAppSelector } from '../redux/hooks';
-import { getPools, hasProp } from '../../domain/validate';
 import RegSheet from '../components/RegSheet';
+import { selectDivisions } from '../redux/entries';
 
 const pageStyle = `
   @page {
@@ -20,36 +28,24 @@ const pageStyle = `
     }
   }
 `;
+
 // Registration Page
 const Registration = () => {
   // Default division
   const location = useLocation();
-  const { division } = location.state;
+  const { division } = location.state as { division: string };
 
-  /** TODO: REPLACE ME */
-  const divisions = useAppSelector((rootState) => {
-    const state = rootState.tournament;
-    const div = {};
-    Object.keys(state).forEach((day) => {
-      if (hasProp(state[day], 'divisions')) {
-        Object.keys(state[day].divisions).forEach((name) => {
-          div[name] = state[day].divisions[name];
-        });
-      }
-    });
-    return div;
-  });
-  /** END REPLACE */
+  const divisions = useAppSelector(selectDivisions, isEqual);
 
   // Declare state for this division component
-  const [currentDiv, setDivision] = React.useState(
-    hasProp(divisions, division) ? division : ''
+  const [currentDiv, setDivision] = useState<string>(
+    divisions.includes(division) ? division : ''
   );
   // Reference for printing
-  const printRef = React.useRef();
+  const printRef = useRef<ReactInstance | null>(null);
 
   // Callback
-  const handleOnChange = (event) => {
+  const handleOnChange = (event: SelectChangeEvent<string>) => {
     setDivision(event.target.value);
   };
 
@@ -64,13 +60,11 @@ const Registration = () => {
       <Box display="inline-block" width="40%">
         <Button
           variant="outlined"
-          label="Pools"
           component={Link}
           to="/pools"
           size="small"
-          disabled={getPools(divisions[currentDiv]).length === 0}
+          disabled
           state={{
-            allPools: getPools(divisions[currentDiv]),
             division: currentDiv,
             displayPool: 1,
           }}
@@ -82,7 +76,6 @@ const Registration = () => {
         </Button>
         <Button
           variant="outlined"
-          label="Div"
           component={Link}
           to="/divisions"
           size="small"
@@ -100,7 +93,7 @@ const Registration = () => {
           label="Division"
           onChange={handleOnChange}
         >
-          {Object.keys(divisions).map((divName) => (
+          {divisions.map((divName) => (
             <MenuItem key={divName} value={divName}>
               {divName}
             </MenuItem>

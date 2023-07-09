@@ -7,6 +7,7 @@ import {
 import Tournament from '../../../../domain/tournament';
 import { loadTournament, TournamentExport } from '../../tournament';
 import { updateFinancials, TournamentFinancials } from '../../financials';
+import { TournamentEntryIO, updateEntries } from '../../entries';
 
 export function* handleImportTournament() {
   const tournament: Tournament = yield call(fetchTournament);
@@ -23,11 +24,11 @@ export function* handleImportTournament() {
 }
 
 export function* handleImportSheet() {
-  const tournament: Tournament = yield call(fetchEntrySheet);
+  const tournament: TournamentEntryIO | null = yield call(fetchEntrySheet);
 
   // If success, update rules
   if (tournament !== null) {
-    yield put(loadTournament(tournament));
+    yield put(updateEntries('replaceAll', tournament));
   }
 }
 

@@ -15,7 +15,7 @@ import log from 'electron-log';
 import { JSDOM } from 'jsdom';
 import cloneDeep from 'lodash/cloneDeep';
 import Tournament from 'domain/tournament';
-import extractEntries from '../domain/avpamerica';
+import extractEntries from '../domain/entry-import';
 import MenuBuilder from './menu';
 import { readFile, writeFile } from './fileIO';
 import { resolveHtmlPath } from './util';
