@@ -1,4 +1,5 @@
 import Tournament from '../domain/tournament';
+import { TournamentEntryIO } from './redux/entries';
 import { TournamentFinancials } from './redux/financials';
 import { Notification } from './redux/notifications';
 
@@ -6,7 +7,7 @@ declare global {
   interface Window {
     electron: {
       exportFinancials(financials: TournamentFinancials): void;
-      importSheet(): Promise<Tournament | null>;
+      importSheet(): Promise<TournamentEntryIO | null>;
       importFinancials(): Promise<TournamentFinancials | null>;
       importTournament(): Promise<Tournament | null>;
       exportTournament(tourney: Tournament): void;

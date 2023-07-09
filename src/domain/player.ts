@@ -69,17 +69,21 @@ export function parseName(inputName: string): PlayerName {
   return out;
 }
 
+export const createName = (firstName: string, lastName: string): PlayerName => {
+  return {
+    first: firstName,
+    last: lastName,
+    full: firstName.concat(' ', lastName),
+  };
+};
+
 export const createPlayer = (
   firstName: string,
   lastName: string,
   ranking: number,
   props?: OptionalPlayerProps
 ): PlayerEntry => ({
-  name: {
-    first: firstName,
-    last: lastName,
-    full: firstName.concat(' ', lastName),
-  },
+  name: createName(firstName, lastName),
   ranking,
   ...props,
 });

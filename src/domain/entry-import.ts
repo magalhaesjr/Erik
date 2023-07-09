@@ -203,7 +203,8 @@ export default function extractEntries(dom: Document) {
   dom.body.querySelectorAll('*').forEach((node) => {
     // If this is a division class, then set the current division
     if (node.className === 'LargeRedTitle') {
-      divisionName = node.textContent;
+      const fullDiv = node.textContent?.split(' ') as string[];
+      divisionName = fullDiv[0].concat(' ', fullDiv.at(-1) as string);
     } else if (node.nodeName === 'TABLE' && divisionName) {
       tourney[divisionName] = extractDivision(
         node as HTMLTableElement,

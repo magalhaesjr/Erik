@@ -258,7 +258,10 @@ describe('selector', () => {
     });
 
     await waitFor(() =>
-      expect(selectDivisions(store.getState())).toEqual([div1, div2])
+      expect(selectDivisions(store.getState())).toEqual([
+        getDivisionKey(div1),
+        getDivisionKey(div2),
+      ])
     );
   });
 

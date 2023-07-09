@@ -2,9 +2,10 @@ import { contextBridge, ipcRenderer } from 'electron';
 import Tournament from '../domain/tournament';
 import type { TournamentFinancials } from '../renderer/redux/financials';
 import type { Notification } from '../renderer/redux/notifications';
+import { TournamentEntryIO } from '../renderer/redux/entries';
 
 contextBridge.exposeInMainWorld('electron', {
-  importSheet: (): Promise<Tournament | null> => {
+  importSheet: (): Promise<TournamentEntryIO | null> => {
     return ipcRenderer.invoke('tournament:importSheet');
   },
   importTournament: () => {

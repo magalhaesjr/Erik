@@ -73,15 +73,27 @@ function* handleModifyEntry(entry: TeamEntry, props: EntryProps<unknown>) {
 
   // Get previous id
   const { id } = props as EntryProps<string>;
+  const prevEntry: TeamEntry | null = yield select(selectEntry, id);
 
   // If id is the same you can just replace
   if (id === getTeamKey(entry)) {
-    yield put(modifyEntry(entry));
+    // If the division has changed, you need to change the division as well
+    if (prevEntry && entry.division !== prevEntry.division) {
+      // This is a 2-step process
+      // 1) update the existing entry
+      const modEntry = { ...entry, division: prevEntry.division };
+      yield put(modifyEntry(modEntry));
+
+      // 2) Update the modified entries division
+      yield call(handleChangeDivision, modEntry, { division: entry.division });
+    } else {
+      // Just modify the entry
+      yield put(modifyEntry(entry));
+    }
     return;
   }
 
   // Get previous entry
-  const prevEntry: TeamEntry | null = yield select(selectEntry, id);
   if (prevEntry) {
     // Remove previous entry
     yield call(handleRemoveEntry, prevEntry);

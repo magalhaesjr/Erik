@@ -89,7 +89,7 @@ export const updateEntries = (
 });
 
 /** Static functions */
-const isDivision = (entries: TournamentEntries, division: string) =>
+export const isDivision = (entries: TournamentEntries, division: string) =>
   Object.keys(entries).includes(division);
 
 const isEntry = (entries: DivisionEntries, entry: string) =>
@@ -196,7 +196,16 @@ export const selectDivisionEntries = (
   state: RootState,
   division: string
 ): TeamEntry[] => {
-  const divKey = getDivisionKey(division);
+  if (division.length === 0) {
+    return [];
+  }
+
+  let divKey = division;
+  // Check if this is the full name or the key
+  if (!Object.keys(state.entries).includes(division)) {
+    divKey = getDivisionKey(division);
+  }
+
   if (isDivision(state.entries, divKey)) {
     const entries = Object.values(state.entries[divKey]).filter(
       (e) => !e.isWaitlisted
@@ -225,7 +234,16 @@ export const selectDivisionWaitlist = (
   state: RootState,
   division: string
 ): TeamEntry[] => {
-  const divKey = getDivisionKey(division);
+  if (division.length === 0) {
+    return [];
+  }
+
+  let divKey = division;
+  // Check if this is the full name or the key
+  if (!Object.keys(state.entries).includes(division)) {
+    divKey = getDivisionKey(division);
+  }
+
   if (isDivision(state.entries, divKey)) {
     const entries = Object.values(state.entries[divKey]).filter(
       (e) => e.isWaitlisted

@@ -9,12 +9,14 @@ import financialReducer from './financials';
 import notificationReducer from './notifications';
 import tournamentReducer from './tournament';
 import entryReducer from './entries';
+import poolReducer from './pools';
 import rootSaga from './root-saga';
 
 const rootReducer = combineReducers({
   entries: entryReducer,
   financials: financialReducer,
   notification: notificationReducer,
+  pools: poolReducer,
   tournament: tournamentReducer,
 });
 

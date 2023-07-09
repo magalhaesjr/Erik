@@ -35,3 +35,25 @@ export const getTeamKey = (entry: TeamEntry): string => {
   const id = playerString.join('/');
   return id;
 };
+
+const getFullDiv = (abv: string) => {
+  switch (abv) {
+    case 'm':
+      return "Men's ";
+    case 'w':
+      return "Women's ";
+    case 'c':
+      return 'Coed ';
+    default:
+      return abv;
+  }
+};
+
+export const getDivisionName = (name: string): string => {
+  // Replace the first letter with the appropriate name
+  if (name.length > 0) {
+    return name.replace(name[0], getFullDiv(name[0]));
+  }
+
+  return name;
+};

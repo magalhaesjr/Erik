@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 // Creates a React table for all entries into division
-import { useCallback, useRef, useState } from 'react';
+import { Fragment, useCallback, useRef, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,28 +8,24 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Button, Checkbox, Typography, styled } from '@mui/material';
+import { Button, Checkbox, Typography, styled } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   TeamEntry,
   selectDivisionEntries,
   updateEntries,
-  entryActions,
-  EntryActions,
+  selectDivisionWaitlist,
 } from '../redux/entries';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import type { RootState } from '../redux/store';
-import {
-  generatePools,
-  resetPools as poolReset,
-  changeWaitStatus as reduxWaitChange,
-} from '../redux/tournament';
 import DataCell from './table/DataCell';
 import TableAction from './table/TableAction';
 import EntryDialog from './EntryDialog';
+import { getTeamKey } from '../../domain/utility';
 
 /** Types */
 export type DivEntriesProps = {
@@ -71,14 +67,21 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
 
   /** Redux State */
   const selectEntries = useCallback(
-    (state: RootState) => selectDivisionEntries(state, division),
-    [division]
+    (state: RootState) => {
+      if (waitList) {
+        return selectDivisionWaitlist(state, division);
+      }
+
+      return selectDivisionEntries(state, division);
+    },
+    [division, waitList]
   );
-  const entries = useAppSelector(selectEntries);
+
+  const entries: TeamEntry[] = useAppSelector(selectEntries);
 
   /** State */
-  const [poolsValid, setPoolsValid] = useState<boolean>(false);
-  const [divStatus, setDivStatus] = useState<DivisionStatus>({
+  const [poolsValid] = useState<boolean>(false);
+  const [divStatus] = useState<DivisionStatus>({
     valid: false,
     msg: '',
   });
@@ -100,18 +103,11 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
   }, [setDialogOpen]);
 
   // Actions
-  const resetPools = () => {
-    if (poolsValid) {
-      // Need to reset all pools because something has changed
-      dispatch(poolReset({ waitList, division }));
-    }
-  };
-
   const changeWaitStatus = useCallback(
     (entry: TeamEntry) => () => {
       dispatch(
-        updateEntries(entryActions.changeWaitlist as EntryActions, entry, {
-          isWaitListed: !waitList,
+        updateEntries('changeWaitlist', entry, {
+          isWaitlisted: !waitList,
         })
       );
     },
@@ -120,8 +116,25 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
 
   const handleDelete = useCallback(
     (entry: TeamEntry) => () => {
-      dispatch(updateEntries(entryActions.remove as EntryActions, entry));
+      dispatch(updateEntries('remove', entry));
     },
+    [dispatch]
+  );
+
+  const handlePlayerChange = useCallback(
+    (entry: TeamEntry, index: number, props: { [key: string]: boolean }) =>
+      () => {
+        if (index <= entry.players.length) {
+          const newEntry = cloneDeep(entry);
+          newEntry.players[index] = {
+            ...cloneDeep(newEntry.players[index]),
+            ...props,
+          };
+          dispatch(
+            updateEntries('modify', newEntry, { id: getTeamKey(newEntry) })
+          );
+        }
+      },
     [dispatch]
   );
 
@@ -162,6 +175,14 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
                 sx={{
                   margin: 0,
                 }}
+              />
+              <TableCell
+                align="left"
+                padding="none"
+                sx={{
+                  margin: 0,
+                }}
+                key="editHeader"
               />
               <TableCell
                 align="left"
@@ -357,7 +378,7 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
                   key={`ranking_${index + 1}_${team.ranking}`}
                 />
                 {team.players.map((player, playerInd) => (
-                  <Box
+                  <Fragment
                     key={`team_${index + 1}_num_${playerInd}_playerChecks_${
                       player.name.full
                     }`}
@@ -389,8 +410,11 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
                       }}
                     >
                       <Checkbox
-                        checked={player.paid && !player.staff}
+                        checked={(player.paid || false) && !player.staff}
                         disabled={player.staff}
+                        onChange={handlePlayerChange(team, playerInd, {
+                          paid: !player.paid,
+                        })}
                         name="paid"
                         key={`team_${index + 1}_paidCheck_${playerInd}`}
                       />
@@ -405,8 +429,11 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
                       key={`team_${index + 1}_staff_${playerInd}`}
                     >
                       <Checkbox
-                        checked={player.staff}
+                        checked={player.staff || false}
                         name="staff"
+                        onChange={handlePlayerChange(team, playerInd, {
+                          staff: !player.staff,
+                        })}
                         key={`team_${index + 1}_staffCheck_${playerInd}`}
                       />
                     </TableCell>
@@ -420,12 +447,15 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
                       key={`team_${index + 1}_avpa_${playerInd}`}
                     >
                       <Checkbox
-                        checked={player.membershipValid}
+                        checked={player.membershipValid || false}
                         name="membership"
+                        onChange={handlePlayerChange(team, playerInd, {
+                          membershipValid: !player.membershipValid,
+                        })}
                         key={`team_${index + 1}_avpaCheck_${playerInd}`}
                       />
                     </TableCell>
-                  </Box>
+                  </Fragment>
                 ))}
               </TableRow>
             ))}
@@ -436,6 +466,7 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
         open={dialogOpen}
         onClose={closeDialog}
         entry={entryRef.current}
+        division={division}
         waitList={waitList}
       />
     </>
