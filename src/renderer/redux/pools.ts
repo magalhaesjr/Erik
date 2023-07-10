@@ -56,10 +56,6 @@ export const selectDivisionPools = (
     return [];
   }
 
-  if (Object.keys(state.pools).includes(division)) {
-    return Object.values(state.pools[division]);
-  }
-
   const divKey = getDivisionKey(division);
   if (Object.keys(state.pools).includes(divKey)) {
     return Object.values(state.pools[divKey]);
@@ -75,13 +71,6 @@ export const selectPool = (
 ): Pool | null => {
   if (division.length === 0) {
     return null;
-  }
-
-  if (Object.keys(state.pools).includes(division)) {
-    const pool = Object.values(state.pools[division]).find(
-      (p) => p.id === poolNumber
-    );
-    return pool || null;
   }
 
   const divKey = getDivisionKey(division);

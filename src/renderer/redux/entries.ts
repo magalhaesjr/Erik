@@ -200,11 +200,7 @@ export const selectDivisionEntries = (
     return [];
   }
 
-  let divKey = division;
-  // Check if this is the full name or the key
-  if (!Object.keys(state.entries).includes(division)) {
-    divKey = getDivisionKey(division);
-  }
+  const divKey = getDivisionKey(division);
 
   if (isDivision(state.entries, divKey)) {
     const entries = Object.values(state.entries[divKey]).filter(
@@ -238,11 +234,7 @@ export const selectDivisionWaitlist = (
     return [];
   }
 
-  let divKey = division;
-  // Check if this is the full name or the key
-  if (!Object.keys(state.entries).includes(division)) {
-    divKey = getDivisionKey(division);
-  }
+  const divKey = getDivisionKey(division);
 
   if (isDivision(state.entries, divKey)) {
     const entries = Object.values(state.entries[divKey]).filter(
