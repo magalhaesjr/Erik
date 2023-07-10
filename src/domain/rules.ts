@@ -9,7 +9,7 @@ type PoolFormat = {
 };
 
 // Allowed team definitions
-type DivisionPoolFormat = {
+export type DivisionPoolFormat = {
   [key: number]: PoolFormat;
 };
 
