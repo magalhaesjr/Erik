@@ -63,7 +63,7 @@ const initialState: TournamentFinancials = {
       { main: "Men's Open", sub: "Men's AA" },
       { main: "Women's Open", sub: "Women's AA" },
     ],
-    sunday: [{ main: "Coed 2's Open", sub: "Coed 2's AA" }],
+    sunday: [{ main: 'Coed Open', sub: 'Coed AA' }],
   },
   payoutParams: {
     prizePool: 45,

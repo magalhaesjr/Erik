@@ -4,21 +4,14 @@ import isEqual from 'lodash/isEqual';
 import { useAppSelector } from '../redux/hooks';
 import calcPayouts, { PrizePayout } from '../../domain/payouts';
 import MainDiv from '../components/MainDiv';
-import { RootState } from '../redux/store';
 import { getDivisionKey } from '../../domain/utility';
-import Division from '../../domain/division';
 import { selectDayPayout } from '../redux/financials';
-import {
-  selectSaturdayDivisions,
-  selectSundayDivisions,
-} from '../redux/tournament';
+import { DivisionEntries, selectEntries } from '../redux/entries';
+import { RootState } from '../redux/store';
 
-// Helper functions
-const getNumTeams = (div?: Division) => {
-  if (div) {
-    return div.props.teams.length;
-  }
-  return 0;
+/** Static Callbacks */
+const getNumTeams = (entries: DivisionEntries) => {
+  return Object.values(entries).filter((e) => !e.isWaitlisted).length;
 };
 
 const selectSaturdayPay = (state: RootState) => {
@@ -43,13 +36,13 @@ const payoutCard = (place: string, prize: number) => {
 // Registration Page
 const Payouts = () => {
   /** State */
+  // Tournament entries
+  const entries = useAppSelector(selectEntries, isEqual);
+
   // Saturday
   const saturdayPayout = useAppSelector(selectSaturdayPay, isEqual);
-  const saturdayDiv = useAppSelector(selectSaturdayDivisions, isEqual);
-
   // Sunday
   const sundayPayout = useAppSelector(selectSundayPay, isEqual);
-  const sundayDiv = useAppSelector(selectSundayDivisions, isEqual);
 
   /** Effects */
   const payouts = useMemo(() => {
@@ -57,9 +50,9 @@ const Payouts = () => {
     saturdayPayout.divisions.forEach((div) => {
       const { main, sub } = div;
       let totalTeams = 0;
-      totalTeams += getNumTeams(saturdayDiv[getDivisionKey(main)]);
+      totalTeams += getNumTeams(entries[getDivisionKey(main)]);
       if (sub) {
-        totalTeams += getNumTeams(saturdayDiv[getDivisionKey(sub)]);
+        totalTeams += getNumTeams(entries[getDivisionKey(sub)]);
       }
       // Calculate payouts for this division
       const divPayout = calcPayouts(
@@ -76,9 +69,9 @@ const Payouts = () => {
     sundayPayout.divisions.forEach((div) => {
       const { main, sub } = div;
       let totalTeams = 0;
-      totalTeams += getNumTeams(sundayDiv[getDivisionKey(main)]);
+      totalTeams += getNumTeams(entries[getDivisionKey(main)]);
       if (sub) {
-        totalTeams += getNumTeams(sundayDiv[getDivisionKey(sub)]);
+        totalTeams += getNumTeams(entries[getDivisionKey(sub)]);
       }
       // Calculate payouts for this division
       const divPayout = calcPayouts(
@@ -93,7 +86,7 @@ const Payouts = () => {
     });
 
     return tPayouts;
-  }, [saturdayPayout, saturdayDiv, sundayPayout, sundayDiv]);
+  }, [saturdayPayout, sundayPayout, entries]);
 
   return (
     <Box>
