@@ -4,7 +4,6 @@ import { Paper, Typography, styled, Grid } from '@mui/material';
 import isEqual from 'lodash/isEqual';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import type { RootState } from '../redux/store';
-import { selectTournament, updatePool } from '../redux/tournament';
 import PoolHeader from './poolSheet/PoolHeader';
 import PoolSchedule from './poolSheet/PoolSchedule';
 import PoolMatch from './poolSheet/PoolMatch';
@@ -46,15 +45,7 @@ const PoolSheet = forwardRef<ReactInstance | null, PoolSheetProps>(
     const dispatch = useAppDispatch();
 
     // Handler
-    const handleChange = (val) => {
-      dispatch(
-        updatePool({
-          division: pool.props.division,
-          id: poolId,
-          playoffTeams: val,
-        })
-      );
-    };
+    const handleChange = () => {};
 
     if (pool !== null && Object.keys(pool).length > 0) {
       return (

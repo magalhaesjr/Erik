@@ -9,10 +9,12 @@ import {
   watchExportTournament,
 } from './sagas/tournament';
 import watchEntryChanges from './sagas/entries';
+import watchPoolChanges from './sagas/pools';
 
 export default function* rootSaga() {
   yield all([
     watchEntryChanges(),
+    watchPoolChanges(),
     watchImportFinancials(),
     watchExportFinancials(),
     watchImportSheet(),

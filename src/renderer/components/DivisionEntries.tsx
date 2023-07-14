@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 // Creates a React table for all entries into division
-import { Fragment, useCallback, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,6 +14,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import {
   TeamEntry,
   selectDivisionEntries,
@@ -26,6 +27,10 @@ import DataCell from './table/DataCell';
 import TableAction from './table/TableAction';
 import EntryDialog from './EntryDialog';
 import { getTeamKey } from '../../domain/utility';
+import { selectDivisionPools, updatePools } from '../redux/pools';
+import { selectDivisionCourts } from '../redux/courts';
+import { Court } from '../../domain/court';
+import { RequiredCourts, selectRequiredCourts } from '../redux/rules';
 
 /** Types */
 export type DivEntriesProps = {
@@ -35,7 +40,7 @@ export type DivEntriesProps = {
 
 type DivisionStatus = {
   valid: boolean;
-  msg: '';
+  msg: string;
 };
 
 /** Static callbacks */
@@ -76,12 +81,29 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
     },
     [division, waitList]
   );
+  const selectPoolsValid = useCallback(
+    (state: RootState) => {
+      const pools = selectDivisionPools(state, division);
+      return pools.length > 0;
+    },
+    [division]
+  );
+  const selectCourts = useCallback(
+    (state: RootState) => selectDivisionCourts(state, division),
+    [division]
+  );
+  const selectRequired = useCallback(
+    (state: RootState) => selectRequiredCourts(state, division),
+    [division]
+  );
 
   const entries: TeamEntry[] = useAppSelector(selectEntries);
+  const courts: Court[] = useAppSelector(selectCourts);
+  const required: RequiredCourts = useAppSelector(selectRequired, isEqual);
+  const poolsValid: boolean = useAppSelector(selectPoolsValid);
 
   /** State */
-  const [poolsValid] = useState<boolean>(false);
-  const [divStatus] = useState<DivisionStatus>({
+  const [divStatus, setDivStatus] = useState<DivisionStatus>({
     valid: false,
     msg: '',
   });
@@ -138,14 +160,22 @@ const DivEntries = ({ division, waitList }: DivEntriesProps) => {
     [dispatch]
   );
 
-  /*
-  const genPools = () => {
-    if (entries.length > 0) {
-      dispatch(generatePools({ division }));
+  const genPools = useCallback(() => {
+    dispatch(updatePools('generatePools', { division }));
+  }, [dispatch, division]);
+
+  /** Effects */
+  useEffect(() => {
+    if (required.minNets === 0) {
+      setDivStatus({ valid: false, msg: '' });
+    } else if (courts.length < required.minNets) {
+      setDivStatus({ valid: false, msg: 'Not enough courts' });
+    } else if (courts.length > required.maxNets) {
+      setDivStatus({ valid: false, msg: 'Too many courts' });
+    } else {
+      setDivStatus({ valid: true, msg: '' });
     }
-  };
-  */
-  const genPools = () => {};
+  }, [setDivStatus, courts, required]);
 
   return (
     <>
