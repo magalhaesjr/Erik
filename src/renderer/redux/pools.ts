@@ -39,6 +39,7 @@ export type DivisionPoolPayload = {
 /** Sagas */
 export const poolActions = {
   generatePools: 'GENERATE_POOLS',
+  updateFormat: 'UPDATE_POOL_FORMAT',
 };
 
 export type PoolPayload = {
@@ -67,9 +68,15 @@ export const entrySlice = createSlice({
   initialState,
   reducers: {
     resetPools: (state, action: PayloadAction<string>) => {
-      const division = getDivisionKey(action.payload);
-      if (Object.keys(state).includes(division)) {
-        delete state[division];
+      const division = action.payload;
+
+      if (division.length === 0) {
+        return;
+      }
+
+      const divKey = getDivisionKey(division);
+      if (Object.keys(state).includes(divKey)) {
+        delete state[divKey];
       }
     },
     resetAllPools: () => {
@@ -81,11 +88,17 @@ export const entrySlice = createSlice({
     },
     updatePoolFormat: (state, action: PayloadAction<Pool>) => {
       const { id, division, format } = action.payload;
+
+      // Pool index is 0 based
+      const poolInd = id - 1;
       const divKey = getDivisionKey(division);
       // Find the pool
-      if (Object.keys(state).includes(divKey) && state[divKey].length > id) {
+      if (
+        Object.keys(state).includes(divKey) &&
+        state[divKey].length > poolInd
+      ) {
         // Replace the pool format with the updated one
-        state[divKey][id].format = format;
+        state[divKey][poolInd].format = format;
       }
     },
   },

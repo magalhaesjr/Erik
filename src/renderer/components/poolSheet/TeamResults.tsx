@@ -1,17 +1,23 @@
 // Returns the pool sheet header table
-import * as React from 'react';
-import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { styled } from '@mui/material';
+import { TeamEntry } from '../../redux/entries';
 
+/** Types */
+export type TeamResultsProps = {
+  teams: TeamEntry[];
+  cellWidth: string;
+  index: number;
+};
+
+/** Styling */
 const validMatch = '#ffffff';
 const invalidMatch = '#555555';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PoolCell = styled(TableCell)(({ theme }) => ({
+const PoolCell = styled(TableCell)(() => ({
   fontSize: '8pt',
   fontWeight: 'bold',
   margin: '0px',
@@ -29,9 +35,7 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   flexShrink: '0',
 }));
 
-const TeamResults = (props) => {
-  const { teams, cellWidth, index } = props;
-
+const TeamResults = ({ teams, cellWidth, index }: TeamResultsProps) => {
   return (
     <Table
       sx={{
@@ -52,10 +56,7 @@ const TeamResults = (props) => {
               width: '21.875%',
             }}
           >
-            {teams[index].props.players[0].props.firstName.concat(
-              ' ',
-              teams[index].props.players[0].props.lastName
-            )}
+            {teams[index].players[0].name.full}
           </PoolCell>
           {teams.map((_, i) => (
             <PoolCell
@@ -93,22 +94,12 @@ const TeamResults = (props) => {
               width: '21.875%',
             }}
           >
-            {teams[index].props.players[1].props.firstName.concat(
-              ' ',
-              teams[index].props.players[1].props.lastName
-            )}
+            {teams[index].players[1].name.full}
           </PoolCell>
         </TableRow>
       </TableBody>
     </Table>
   );
-};
-
-TeamResults.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  teams: PropTypes.array.isRequired,
-  cellWidth: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
 };
 
 export default TeamResults;

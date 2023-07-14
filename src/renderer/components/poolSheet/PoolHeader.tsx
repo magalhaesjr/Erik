@@ -1,9 +1,10 @@
 // Returns the pool sheet header table
+import { useCallback } from 'react';
 import { Paper } from '@mui/material';
 import PoolInfo from './PoolInfo';
 import PoolFormat from './PoolFormat';
 import PoolResults from './PoolResults';
-import Pool from '../../../domain/pool';
+import { Pool } from '../../redux/pools';
 
 type PoolHeaderProps = {
   pool: Pool;
@@ -11,11 +12,14 @@ type PoolHeaderProps = {
 };
 
 const PoolHeader = ({ pool, onChange }: PoolHeaderProps) => {
-  const handleChange = (val: number) => {
-    if (onChange) {
-      onChange(val);
-    }
-  };
+  const handleChange = useCallback(
+    (val: number) => {
+      if (onChange) {
+        onChange(val);
+      }
+    },
+    [onChange]
+  );
 
   return (
     <Paper
@@ -26,9 +30,9 @@ const PoolHeader = ({ pool, onChange }: PoolHeaderProps) => {
     >
       <PoolInfo inputCourt={pool.courts} division={pool.division} />
       <PoolFormat
-        numGames={pool.numGames}
-        points={pool.points}
-        playoffTeams={pool.playoffTeams}
+        numGames={pool.format.numGames}
+        points={pool.format.points}
+        playoffTeams={pool.format.playoffTeams}
         onChange={handleChange}
       />
       <PoolResults teams={pool.teams} />

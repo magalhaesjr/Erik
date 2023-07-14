@@ -3,11 +3,13 @@
  */
 import { call, put, select } from 'redux-saga/effects';
 import {
+  Pool,
   PoolPayload,
   PoolProps,
   poolActions,
   resetPools,
   setDivisionPools,
+  updatePoolFormat,
 } from '../../pools';
 // import { getDivisionKey } from '../../../../domain/utility';
 import { notifyError } from './notifications';
@@ -30,10 +32,12 @@ function* handleGeneratePools({ division }: PoolProps<string>) {
   // Generate pools
   const pools = createPools(courts, entries, rules);
 
-  console.log(pools);
-
   // Assign pools
   yield put(setDivisionPools({ division, pools }));
+}
+
+function* handleUpdateFormat({ pool }: PoolProps<Pool>) {
+  yield put(updatePoolFormat(pool));
 }
 
 function* handlePoolAction(updateMsg: PoolPayload) {
@@ -44,6 +48,10 @@ function* handlePoolAction(updateMsg: PoolPayload) {
     switch (action) {
       case poolActions.generatePools: {
         yield call(handleGeneratePools, props as PoolProps<string>);
+        break;
+      }
+      case poolActions.updateFormat: {
+        yield call(handleUpdateFormat, props as PoolProps<Pool>);
         break;
       }
       default:

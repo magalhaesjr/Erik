@@ -19,9 +19,8 @@ import { RequiredCourts } from '../redux/rules';
 import {
   ChangeDivisionPayload,
   ChangeHeightPayload,
-  changeDivision,
-  changeHeight,
   selectCourt,
+  updateCourt,
 } from '../redux/courts';
 import { selectDivisions } from '../redux/entries';
 
@@ -156,7 +155,7 @@ const CourtCard = ({
       }
 
       // Dispatch the change to the store
-      dispatch(changeHeight(heightChange));
+      dispatch(updateCourt('changeHeight', heightChange));
     },
     [dispatch, courtNumber]
   );
@@ -173,7 +172,7 @@ const CourtCard = ({
       }
 
       // Dispatch the change to the store
-      dispatch(changeDivision(divChange));
+      dispatch(updateCourt('changeDivision', divChange));
 
       // Change the net height too if undefined
       if (
@@ -184,7 +183,7 @@ const CourtCard = ({
           court: courtNumber,
           netHeight: divChange.division[0] === 'm' ? 'men' : 'women',
         };
-        dispatch(changeHeight(heightChange));
+        dispatch(updateCourt('changeHeight', heightChange));
       }
     },
     [dispatch, courtNumber, court]

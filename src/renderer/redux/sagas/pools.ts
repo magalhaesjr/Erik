@@ -5,8 +5,8 @@ import { takeEvery } from 'redux-saga/effects';
 import { PoolActionChannel } from '../pools';
 import handlePoolAction from './handlers/pools';
 
-function* watchEntryChanges() {
+function* watchPoolChanges() {
   yield takeEvery(PoolActionChannel, handlePoolAction);
 }
 
-export default watchEntryChanges;
+export default watchPoolChanges;

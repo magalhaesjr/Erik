@@ -1,6 +1,4 @@
 // Returns the pool sheet header table
-import * as React from 'react';
-import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
@@ -8,9 +6,15 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { styled } from '@mui/material';
 import TeamResults from './TeamResults';
+import { TeamEntry } from '../../redux/entries';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PoolCell = styled(TableCell)(({ theme }) => ({
+/** Types */
+export type PoolResultsProps = {
+  teams: TeamEntry[];
+};
+
+/** Styles */
+const PoolCell = styled(TableCell)(() => ({
   fontSize: '14pt',
   fontWeight: 'bold',
   margin: '0px',
@@ -28,14 +32,13 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   flexShrink: '0',
 }));
 
-const teamWidth = (nTeams) => {
+/** Static callbacks */
+const teamWidth = (nTeams: number) => {
   const width = (2.4 / nTeams / 6.4) * 100;
   return `${width.toString()}%`;
 };
 
-const PoolResults = (props) => {
-  const { teams } = props;
-
+const PoolResults = ({ teams }: PoolResultsProps) => {
   return (
     <TableContainer
       sx={{
@@ -103,11 +106,6 @@ const PoolResults = (props) => {
       ))}
     </TableContainer>
   );
-};
-
-PoolResults.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  teams: PropTypes.array.isRequired,
 };
 
 export default PoolResults;

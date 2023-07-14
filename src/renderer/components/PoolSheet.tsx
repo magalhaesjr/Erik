@@ -1,13 +1,14 @@
 // Creates a React table for all entries into division
-import { ReactInstance, forwardRef, useCallback } from 'react';
+import { forwardRef, useCallback } from 'react';
 import { Paper, Typography, styled, Grid } from '@mui/material';
+import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import type { RootState } from '../redux/store';
 import PoolHeader from './poolSheet/PoolHeader';
 import PoolSchedule from './poolSheet/PoolSchedule';
 import PoolMatch from './poolSheet/PoolMatch';
-import { selectPool } from '../redux/pools';
+import { selectPool, updatePools } from '../redux/pools';
 
 /** Types */
 export type PoolSheetProps = {
@@ -27,7 +28,7 @@ const PoolPaper = styled(Paper)(() => ({
 }));
 
 // Division entries table
-const PoolSheet = forwardRef<ReactInstance | null, PoolSheetProps>(
+const PoolSheet = forwardRef<HTMLDivElement | null, PoolSheetProps>(
   (props, ref) => {
     const { division, poolId } = props;
 
@@ -45,7 +46,16 @@ const PoolSheet = forwardRef<ReactInstance | null, PoolSheetProps>(
     const dispatch = useAppDispatch();
 
     // Handler
-    const handleChange = () => {};
+    const handleChange = useCallback(
+      (playoffTeams: number) => {
+        if (pool) {
+          const newPool = cloneDeep(pool);
+          newPool.format.playoffTeams = playoffTeams;
+          dispatch(updatePools('updateFormat', { pool: newPool }));
+        }
+      },
+      [pool, dispatch]
+    );
 
     if (pool !== null && Object.keys(pool).length > 0) {
       return (

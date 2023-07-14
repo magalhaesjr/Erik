@@ -1,13 +1,19 @@
 // Returns the pool sheet header table
-import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { styled } from '@mui/material';
 
+/** Types */
+export type PoolScoreProps = {
+  numGames: number;
+  work: string;
+};
+
+/** Styling */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PoolCell = styled(TableCell)(({ theme }) => ({
+const PoolCell = styled(TableCell)(() => ({
   fontSize: '8pt',
   margin: '0px',
   padding: '0px',
@@ -22,9 +28,7 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   flexShrink: '0',
 }));
 
-const PoolScore = (props) => {
-  const { numGames, work } = props;
-
+const PoolScore = ({ numGames, work }: PoolScoreProps) => {
   return (
     <>
       {[...Array(numGames)].map((_, game) => (
@@ -96,12 +100,6 @@ const PoolScore = (props) => {
       ))}
     </>
   );
-};
-
-PoolScore.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  work: PropTypes.any.isRequired,
-  numGames: PropTypes.number.isRequired,
 };
 
 export default PoolScore;

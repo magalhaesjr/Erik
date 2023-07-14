@@ -1,4 +1,10 @@
-import { ReactInstance, useCallback, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  ReactInstance,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -166,7 +172,11 @@ const Pools = () => {
         </MainDiv>
       </Box>
       <Box display="inline-block" width="30%" />
-      <PoolSheet division={currentDiv} poolId={Number(pool)} ref={printRef} />
+      <PoolSheet
+        division={currentDiv}
+        poolId={Number(pool)}
+        ref={printRef as MutableRefObject<HTMLDivElement>}
+      />
     </Box>
   );
 };

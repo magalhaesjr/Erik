@@ -15,6 +15,30 @@ export type ChangeHeightPayload = {
   netHeight: NetHeight;
 };
 
+/** Sagas */
+export const courtActions = {
+  changeDivision: 'CHANGE_COURT_DIVISION',
+  changeHeight: 'CHANGE_COURT_HEIGHT',
+};
+
+export type CourtPayload = {
+  type: string;
+  action: string;
+  props?: unknown;
+};
+
+export type CourtActions = keyof typeof courtActions;
+export const CourtActionChannel = 'COURT_ACTIONS';
+
+export const updateCourt = (
+  action: CourtActions,
+  props?: unknown
+): CourtPayload => ({
+  type: CourtActionChannel,
+  action: courtActions[action],
+  props,
+});
+
 /** Slice Defintion */
 const maxCourts = 26;
 const initialState: Court[] = [...Array(maxCourts)].map((_, c) =>

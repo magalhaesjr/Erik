@@ -1,14 +1,18 @@
 // Returns the pool sheet header table
-import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { styled, TableHead } from '@mui/material';
+import { Pool } from '../../redux/pools';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PoolCell = styled(TableCell)(({ theme }) => ({
+/** Types */
+export type PoolScheduleProps = {
+  pool: Pool;
+};
+
+const PoolCell = styled(TableCell)(() => ({
   fontSize: '11pt',
   margin: '0px',
   padding: '0px',
@@ -25,11 +29,9 @@ const PoolCell = styled(TableCell)(({ theme }) => ({
   flexShrink: '0',
 }));
 
-const PoolSchedule = (props) => {
-  const { pool } = props;
-
+const PoolSchedule = ({ pool }: PoolScheduleProps) => {
   return (
-    <TableContainer width="1.2in">
+    <TableContainer sx={{ width: '1.2in' }}>
       <Table
         sx={{
           tableLayout: 'auto',
@@ -70,11 +72,6 @@ const PoolSchedule = (props) => {
       </Table>
     </TableContainer>
   );
-};
-
-PoolSchedule.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  pool: PropTypes.object.isRequired,
 };
 
 export default PoolSchedule;

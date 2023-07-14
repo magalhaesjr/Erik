@@ -1,15 +1,34 @@
 // Returns the pool sheet header table
-import * as React from 'react';
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Typography, Select, MenuItem } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from '@mui/material';
 import MainDiv from '../MainDiv';
 
-const PoolFormat = (props) => {
-  const { numGames, points, playoffTeams, onChange } = props;
-
-  const handleChange = (event) => {
-    onChange(event.target.value);
-  };
+export type PoolFormatProps = {
+  numGames: number;
+  points: number;
+  playoffTeams: number;
+  onChange: (value: number) => void;
+};
+const PoolFormat = ({
+  numGames,
+  points,
+  playoffTeams,
+  onChange,
+}: PoolFormatProps) => {
+  /** Callbacks */
+  const handlePlayoffChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      onChange(Number(event.target.value));
+    },
+    [onChange]
+  );
 
   return (
     <MainDiv>
@@ -49,9 +68,8 @@ const PoolFormat = (props) => {
         </Typography>
         <Select
           id="playoff-select"
-          width="50%"
-          value={playoffTeams}
-          onChange={handleChange}
+          value={`${playoffTeams}`}
+          onChange={handlePlayoffChange}
           variant="standard"
         >
           <MenuItem value={2}>
