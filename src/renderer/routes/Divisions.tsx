@@ -12,6 +12,8 @@ import isEqual from 'lodash/isEqual';
 import { useAppSelector } from '../redux/hooks';
 import DivEntries from '../components/DivisionEntries';
 import { selectDivisions } from '../redux/entries';
+import { RootState } from '../redux/store';
+import { selectDivisionPools } from '../redux/pools';
 
 // Divisions Page
 const Divisions = () => {
@@ -26,6 +28,16 @@ const Divisions = () => {
   const [currentDiv, setDivision] = useState<string>(
     divisions.includes(division) ? division : ''
   );
+
+  const selectPoolsValid = useCallback(
+    (state: RootState) => {
+      const pools = selectDivisionPools(state, currentDiv);
+      return pools.length > 0;
+    },
+    [currentDiv]
+  );
+
+  const poolsValid = useAppSelector(selectPoolsValid);
 
   // Callback
   const handleOnChange = useCallback(
@@ -44,7 +56,7 @@ const Divisions = () => {
           component={Link}
           to="/pools"
           size="small"
-          disabled
+          disabled={!poolsValid}
           state={{
             division: currentDiv,
             displayPool: 1,

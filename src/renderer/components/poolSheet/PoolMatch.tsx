@@ -5,7 +5,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { styled, TableHead } from '@mui/material';
 import PoolScore from './PoolScore';
-import Pool from '../../../domain/pool';
+import { Pool } from '../../redux/pools';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PoolCell = styled(TableCell)(() => ({
@@ -51,8 +51,8 @@ const PoolMatch = ({ pool }: PoolMatchProps) => {
       </Table>
       {pool.schedule.map((match, round) => (
         <PoolScore
-          numGames={pool.numGames}
-          work={match.work}
+          numGames={pool.format.numGames}
+          work={`${match.work}`}
           // eslint-disable-next-line react/no-array-index-key
           key={`roundScore_${round}`}
         />

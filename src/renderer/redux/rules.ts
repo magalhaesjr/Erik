@@ -56,9 +56,11 @@ export const selectDivisionRules = (
   state: RootState,
   division: string
 ): Partial<DivisionFormat> => {
-  const divKey = getDivisionKey(division);
-  if (Object.keys(state.rules).includes(divKey)) {
-    return state.rules[divKey].poolFormat;
+  if (division.length > 0) {
+    const divKey = getDivisionKey(division);
+    if (Object.keys(state.rules).includes(divKey)) {
+      return state.rules[divKey];
+    }
   }
   return {};
 };
@@ -67,5 +69,5 @@ export const selectRequiredCourts = (state: RootState, division: string) => {
   const rules = selectDivisionRules(state, division);
   const entries = selectDivisionEntries(state, division);
 
-  return calcRequiredNets(entries.length, rules);
+  return calcRequiredNets(entries.length, rules.poolFormat || {});
 };

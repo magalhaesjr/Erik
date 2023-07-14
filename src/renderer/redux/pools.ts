@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
 /**
  * Defines redux slice for pools
  */
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import type { RootState } from './store';
 import { getDivisionKey } from '../../domain/utility';
 import { Match } from '../../domain/schedules';
@@ -28,8 +27,38 @@ type TournamentPools = {
   [key: string]: Pool[];
 };
 
+export type PoolProps<T> = {
+  [key: string]: T;
+};
+
+export type DivisionPoolPayload = {
+  division: string;
+  pools: Pool[];
+};
+
 /** Sagas */
-// FILL in later
+export const poolActions = {
+  generatePools: 'GENERATE_POOLS',
+  updateFormat: 'UPDATE_POOL_FORMAT',
+};
+
+export type PoolPayload = {
+  type: string;
+  action: string;
+  props?: PoolProps<unknown>;
+};
+
+export type PoolActions = keyof typeof poolActions;
+export const PoolActionChannel = 'POOL_ACTIONS';
+
+export const updatePools = (
+  action: PoolActions,
+  props?: PoolProps<unknown>
+): PoolPayload => ({
+  type: PoolActionChannel,
+  action: poolActions[action],
+  props,
+});
 
 /** Slice Defintion */
 const initialState: TournamentPools = {};
@@ -38,13 +67,45 @@ export const entrySlice = createSlice({
   name: 'pools',
   initialState,
   reducers: {
-    replacePools: () => {
-      console.log('replace me');
+    resetPools: (state, action: PayloadAction<string>) => {
+      const division = action.payload;
+
+      if (division.length === 0) {
+        return;
+      }
+
+      const divKey = getDivisionKey(division);
+      if (Object.keys(state).includes(divKey)) {
+        delete state[divKey];
+      }
+    },
+    resetAllPools: () => {
+      return {};
+    },
+    setDivisionPools: (state, action: PayloadAction<DivisionPoolPayload>) => {
+      const { division, pools } = action.payload;
+      state[getDivisionKey(division)] = pools;
+    },
+    updatePoolFormat: (state, action: PayloadAction<Pool>) => {
+      const { id, division, format } = action.payload;
+
+      // Pool index is 0 based
+      const poolInd = id - 1;
+      const divKey = getDivisionKey(division);
+      // Find the pool
+      if (
+        Object.keys(state).includes(divKey) &&
+        state[divKey].length > poolInd
+      ) {
+        // Replace the pool format with the updated one
+        state[divKey][poolInd].format = format;
+      }
     },
   },
 });
 
-export const { replacePools } = entrySlice.actions;
+export const { resetPools, resetAllPools, setDivisionPools, updatePoolFormat } =
+  entrySlice.actions;
 export default entrySlice.reducer;
 
 /** Selectors */

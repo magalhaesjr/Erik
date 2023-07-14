@@ -1,5 +1,4 @@
 // Implements a basic table cell that allows editing
-import { useCallback } from 'react';
 import { Button, Typography, Box } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -23,15 +22,6 @@ const TableAction = ({
   divReady,
   divStatus,
 }: TableActionProps) => {
-  // Handlers
-  const handleAdd = useCallback(() => {
-    onAdd();
-  }, [onAdd]);
-
-  const genPools = useCallback(() => {
-    onGenPools();
-  }, [onGenPools]);
-
   return (
     <MainDiv sx={{ display: 'flex' }}>
       <MainDiv
@@ -39,13 +29,13 @@ const TableAction = ({
           textAlign: 'left',
         }}
       >
-        <Button onClick={handleAdd}>
+        <Button onClick={onAdd}>
           <AddBoxIcon />
           ADD
         </Button>
         {!waitList && (
           <Button
-            onClick={genPools}
+            onClick={onGenPools}
             disabled={poolsValid || !divReady}
             sx={{
               color: 'green',

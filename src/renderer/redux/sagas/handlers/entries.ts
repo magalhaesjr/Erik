@@ -17,9 +17,15 @@ import {
 } from '../../entries';
 import { getTeamKey } from '../../../../domain/utility';
 import { notifyError } from './notifications';
+import { resetAllPools, resetPools } from '../../pools';
 
 function* handleAddEntry(entry: TeamEntry) {
   // Adds a new entry to the tournament
+
+  if (!entry.isWaitlisted) {
+    // Invalidate any pools for division
+    yield put(resetPools(entry.division));
+  }
 
   // Push entry to entry slice
   yield put(addEntry(entry));
@@ -28,6 +34,8 @@ function* handleAddEntry(entry: TeamEntry) {
 function* handleReplaceAll(tourney: TournamentEntryIO) {
   // Replaces all entries in a tournament
 
+  // Invalidate all pools
+  yield put(resetAllPools());
   // Push entry to entry slice
   yield put(replaceAll(tourney));
 }
@@ -35,6 +43,10 @@ function* handleReplaceAll(tourney: TournamentEntryIO) {
 function* handleRemoveEntry(entry: TeamEntry) {
   // removes a new entry to the tournament
 
+  if (!entry.isWaitlisted) {
+    // Invalidate any pools for division
+    yield put(resetPools(entry.division));
+  }
   // Push entry to entry slice
   yield put(removeEntry(entry));
 }
@@ -47,6 +59,12 @@ function* handleChangeDivision(entry: TeamEntry, props: EntryProps<unknown>) {
     ...cloneDeep(entry),
     division,
   };
+
+  if (!entry.isWaitlisted) {
+    // Invalidate any pools for both divisions
+    yield put(resetPools(entry.division));
+    yield put(resetPools(division));
+  }
 
   // Remove previous entry, which is no longer in the division
   yield call(handleRemoveEntry, entry);
@@ -63,6 +81,9 @@ function* handleChangeWaitlist(entry: TeamEntry, props: EntryProps<unknown>) {
     ...cloneDeep(entry),
     isWaitlisted,
   };
+
+  // Invalidate any pools for this division
+  yield put(resetPools(newEntry.division));
 
   // Push entry to entry slice (entry properties are still the same)
   yield put(modifyEntry(newEntry));
