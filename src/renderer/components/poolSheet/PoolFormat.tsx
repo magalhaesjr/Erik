@@ -1,6 +1,5 @@
 // Returns the pool sheet header table
 import { useCallback } from 'react';
-import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
@@ -95,18 +94,6 @@ const PoolFormat = ({
       </Box>
     </MainDiv>
   );
-};
-
-PoolFormat.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  numGames: PropTypes.number.isRequired,
-  points: PropTypes.number.isRequired,
-  playoffTeams: PropTypes.number.isRequired,
-  onChange: PropTypes.func,
-};
-
-PoolFormat.defaultProps = {
-  onChange: () => {},
 };
 
 export default PoolFormat;

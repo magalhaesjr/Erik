@@ -2,6 +2,7 @@
  * Defines redux slice for courts
  */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { getDivisionKey } from 'domain/utility';
 import type { RootState } from './store';
 import { Court, createCourt, NetHeight } from '../../domain/court';
 
@@ -78,4 +79,9 @@ export const selectCourt = (state: RootState, court: number) => {
 };
 
 export const selectDivisionCourts = (state: RootState, division: string) =>
-  state.courts.filter((c) => c.division === division);
+  state.courts.filter(
+    (c) =>
+      c.division === division ||
+      (c.division && getDivisionKey(c.division) === division) ||
+      (division && c.division === getDivisionKey(division))
+  );

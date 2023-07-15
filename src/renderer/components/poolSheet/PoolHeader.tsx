@@ -9,9 +9,10 @@ import { Pool } from '../../redux/pools';
 type PoolHeaderProps = {
   pool: Pool;
   onChange?: (playoffTeams: number) => void;
+  onCourtChange?: (court: number) => void;
 };
 
-const PoolHeader = ({ pool, onChange }: PoolHeaderProps) => {
+const PoolHeader = ({ pool, onChange, onCourtChange }: PoolHeaderProps) => {
   const handleChange = useCallback(
     (val: number) => {
       if (onChange) {
@@ -19,6 +20,14 @@ const PoolHeader = ({ pool, onChange }: PoolHeaderProps) => {
       }
     },
     [onChange]
+  );
+  const handleCourtChange = useCallback(
+    (val: number) => {
+      if (onCourtChange) {
+        onCourtChange(val);
+      }
+    },
+    [onCourtChange]
   );
 
   return (
@@ -28,7 +37,11 @@ const PoolHeader = ({ pool, onChange }: PoolHeaderProps) => {
         boxShadow: 'none',
       }}
     >
-      <PoolInfo inputCourt={pool.courts} division={pool.division} />
+      <PoolInfo
+        inputCourt={pool.courts}
+        division={pool.division}
+        onCourtChange={handleCourtChange}
+      />
       <PoolFormat
         numGames={pool.format.numGames}
         points={pool.format.points}

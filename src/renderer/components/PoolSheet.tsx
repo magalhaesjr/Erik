@@ -57,6 +57,17 @@ const PoolSheet = forwardRef<HTMLDivElement | null, PoolSheetProps>(
       [pool, dispatch]
     );
 
+    const handleCourtChange = useCallback(
+      (court: number) => {
+        if (pool) {
+          const newPool = cloneDeep(pool);
+          newPool.courts = [court];
+          dispatch(updatePools('updateCourt', { pool: newPool }));
+        }
+      },
+      [pool, dispatch]
+    );
+
     if (pool !== null && Object.keys(pool).length > 0) {
       return (
         <PoolPaper
@@ -68,7 +79,11 @@ const PoolSheet = forwardRef<HTMLDivElement | null, PoolSheetProps>(
         >
           <Grid container spacing={1}>
             <Grid item xs={10}>
-              <PoolHeader pool={pool} onChange={handleChange} />
+              <PoolHeader
+                pool={pool}
+                onChange={handleChange}
+                onCourtChange={handleCourtChange}
+              />
             </Grid>
             <Grid item xs={2}>
               <PoolSchedule pool={pool} />
