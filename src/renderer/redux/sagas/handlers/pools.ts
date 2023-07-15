@@ -10,6 +10,7 @@ import {
   resetPools,
   setDivisionPools,
   updatePoolFormat,
+  updatePoolCourt,
 } from '../../pools';
 // import { getDivisionKey } from '../../../../domain/utility';
 import { notifyError } from './notifications';
@@ -40,6 +41,10 @@ function* handleUpdateFormat({ pool }: PoolProps<Pool>) {
   yield put(updatePoolFormat(pool));
 }
 
+function* handleUpdateCourt({ pool }: PoolProps<Pool>) {
+  yield put(updatePoolCourt(pool));
+}
+
 function* handlePoolAction(updateMsg: PoolPayload) {
   // Take appropriate action based on action type
   const { action, props } = updateMsg;
@@ -48,6 +53,10 @@ function* handlePoolAction(updateMsg: PoolPayload) {
     switch (action) {
       case poolActions.generatePools: {
         yield call(handleGeneratePools, props as PoolProps<string>);
+        break;
+      }
+      case poolActions.updateCourt: {
+        yield call(handleUpdateCourt, props as PoolProps<Pool>);
         break;
       }
       case poolActions.updateFormat: {

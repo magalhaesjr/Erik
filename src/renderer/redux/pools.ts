@@ -40,6 +40,7 @@ export type DivisionPoolPayload = {
 export const poolActions = {
   generatePools: 'GENERATE_POOLS',
   updateFormat: 'UPDATE_POOL_FORMAT',
+  updateCourt: 'UPDATE_POOL_COURT',
 };
 
 export type PoolPayload = {
@@ -89,6 +90,37 @@ export const entrySlice = createSlice({
       const { division, pools } = action.payload;
       state[getDivisionKey(division)] = pools;
     },
+    updatePoolCourt: (state, action: PayloadAction<Pool>) => {
+      const { id, division, courts } = action.payload;
+
+      // Pool index is 0 based
+      const poolInd = id - 1;
+      const court = courts[0];
+
+      const divKey = getDivisionKey(division);
+      // Find the pool
+      if (
+        Object.keys(state).includes(divKey) &&
+        state[divKey].length > poolInd
+      ) {
+        // Get division pools
+        const divPools = state[divKey];
+
+        // Find old court
+        const oldCourt = divPools[poolInd].courts[0];
+
+        if (oldCourt === court) {
+          return;
+        }
+
+        // Find the pool that has this court
+        const swapIndex = divPools.findIndex((p) => p.courts.includes(court));
+        if (swapIndex >= 0) {
+          state[divKey][swapIndex].courts = [oldCourt];
+          state[divKey][poolInd].courts = [court];
+        }
+      }
+    },
     updatePoolFormat: (state, action: PayloadAction<Pool>) => {
       const { id, division, format } = action.payload;
 
@@ -113,6 +145,7 @@ export const {
   resetAllPools,
   setDivisionPools,
   updatePoolFormat,
+  updatePoolCourt,
 } = entrySlice.actions;
 export default entrySlice.reducer;
 
