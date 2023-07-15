@@ -14,7 +14,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { JSDOM } from 'jsdom';
 import cloneDeep from 'lodash/cloneDeep';
-import Tournament from 'domain/tournament';
+import { Tournament } from 'domain/tournament';
+import { DivisionRules } from 'domain/rules';
 import extractEntries from '../domain/entry-import';
 import MenuBuilder from './menu';
 import { readFile, writeFile } from './fileIO';
@@ -205,7 +206,7 @@ ipcMain.handle('tournament:importTournament', () => {
 ipcMain.handle('tournament:exportTournament', (_, tourney: Tournament) => {
   const result = writeFile({
     outString: JSON.stringify(tourney, null, 2),
-    filters: [{ name: 'Financials', extensions: ['json'] }],
+    filters: [{ name: 'Tournament', extensions: ['json'] }],
   });
 
   // Notify user of operation result
@@ -249,6 +250,41 @@ ipcMain.handle(
     publishNotification(result);
   }
 );
+
+/** Rules */
+ipcMain.handle('tournament:importRules', () => {
+  const rules = readFile({
+    filters: [{ name: 'Rules', extensions: ['json'] }],
+  });
+
+  // Notify user of success/failure
+  if (rules) {
+    publishNotification({
+      status: 'success',
+      message: 'Imported rules',
+    });
+
+    return JSON.parse(rules);
+  }
+
+  // Failed to read
+  publishNotification({
+    status: 'error',
+    message: 'Failed importing rules',
+  });
+
+  return null;
+});
+
+ipcMain.handle('tournament:exportRules', (_, rules: DivisionRules) => {
+  const result = writeFile({
+    outString: JSON.stringify(rules, null, 2),
+    filters: [{ name: 'Rules', extensions: ['json'] }],
+  });
+
+  // Notify user of operation result
+  publishNotification(result);
+});
 
 /**
  * Add event listeners...

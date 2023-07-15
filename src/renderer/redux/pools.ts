@@ -23,7 +23,7 @@ export type Pool = {
   format: PoolFormat;
 };
 
-type TournamentPools = {
+export type TournamentPools = {
   [key: string]: Pool[];
 };
 
@@ -67,6 +67,9 @@ export const entrySlice = createSlice({
   name: 'pools',
   initialState,
   reducers: {
+    importPools: (_, action: PayloadAction<TournamentPools>) => {
+      return action.payload;
+    },
     resetPools: (state, action: PayloadAction<string>) => {
       const division = action.payload;
 
@@ -104,11 +107,17 @@ export const entrySlice = createSlice({
   },
 });
 
-export const { resetPools, resetAllPools, setDivisionPools, updatePoolFormat } =
-  entrySlice.actions;
+export const {
+  importPools,
+  resetPools,
+  resetAllPools,
+  setDivisionPools,
+  updatePoolFormat,
+} = entrySlice.actions;
 export default entrySlice.reducer;
 
 /** Selectors */
+export const selectPools = (state: RootState) => state.pools;
 export const selectDivisionPools = (
   state: RootState,
   division: string
