@@ -4,6 +4,7 @@ import type { RootState } from './store';
 import { hasProp } from '../../domain/validate';
 import Player from '../../domain/player';
 import Team from '../../domain/team';
+// eslint-disable-next-line import/no-named-as-default
 import Tournament from '../../domain/tournament';
 import Division from '../../domain/division';
 import { Court } from '../../domain/court';
@@ -61,9 +62,8 @@ export const importTournament = () => ({
   type: TournamentActions.importTournament,
 });
 export const importSheet = () => ({ type: TournamentActions.importSheet });
-export const exportTournament = (tournament: Tournament) => ({
+export const exportTournament = () => ({
   type: TournamentActions.exportTournament,
-  tournament,
 });
 
 // Helper functions

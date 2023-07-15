@@ -1,5 +1,5 @@
 import { TournamentEntryIO } from '../../entries';
-import Tournament from '../../../../domain/tournament';
+import { Tournament } from '../../../../domain/tournament';
 
 export const fetchTournament = async (): Promise<Tournament | null> => {
   return window.electron.importTournament();

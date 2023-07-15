@@ -3,6 +3,7 @@ import {
   watchImportFinancials,
   watchExportFinancials,
 } from './sagas/financials';
+import { watchImportRules, watchExportRules } from './sagas/rules';
 import {
   watchImportSheet,
   watchImportTournament,
@@ -19,6 +20,8 @@ export default function* rootSaga() {
     watchPoolChanges(),
     watchImportFinancials(),
     watchExportFinancials(),
+    watchImportRules(),
+    watchExportRules(),
     watchImportSheet(),
     watchImportTournament(),
     watchExportTournament(),

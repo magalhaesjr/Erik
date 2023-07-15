@@ -7,28 +7,25 @@ import { useCallback, useEffect, useRef } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import {
-  exportTournament,
-  importTournament,
-  selectTournament,
-} from '../redux/tournament';
+import { exportTournament, importTournament } from '../redux/tournament';
 import {
   importFinancials,
   exportFinancials,
   selectFinancials,
   TournamentFinancials,
 } from '../redux/financials';
-import Tournament from '../../domain/tournament';
 import { notify, Notification } from '../redux/notifications';
+import { requestImportRules, exportRules, selectRules } from '../redux/rules';
+import { DivisionRules } from '../../domain/rules';
 
 const useMainComms = () => {
   const dispatch = useAppDispatch();
-  const tournament = useAppSelector(selectTournament, isEqual);
+  const rules = useAppSelector(selectRules, isEqual);
   const financials = useAppSelector(selectFinancials, isEqual);
 
   // References for state, the window functions can only be called once
   const financialRef = useRef<TournamentFinancials>(financials);
-  const tournamentRef = useRef<Tournament>(tournament);
+  const ruleRef = useRef<DivisionRules>(rules);
 
   // Ensure the reference is always up to date
   useEffect(() => {
@@ -36,8 +33,8 @@ const useMainComms = () => {
   }, [financials]);
 
   useEffect(() => {
-    tournamentRef.current = tournament;
-  }, [tournament]);
+    ruleRef.current = rules;
+  }, [rules]);
 
   /** Notifications */
   const publishNotification = useCallback(
@@ -55,10 +52,7 @@ const useMainComms = () => {
   }, [dispatch]);
 
   const handleExportTournament = useCallback(() => {
-    const outTournament = cloneDeep(tournamentRef.current);
-    outTournament.financials = financialRef.current;
-
-    dispatch(exportTournament(outTournament));
+    dispatch(exportTournament());
   }, [dispatch]);
 
   /** Financials I/O */
@@ -70,12 +64,23 @@ const useMainComms = () => {
     dispatch(exportFinancials(cloneDeep(financialRef.current)));
   }, [dispatch]);
 
+  /** Rules I/O */
+  const handleImportRules = useCallback(() => {
+    dispatch(requestImportRules());
+  }, [dispatch]);
+
+  const handleExportRules = useCallback(() => {
+    dispatch(exportRules(cloneDeep(ruleRef.current)));
+  }, [dispatch]);
+
   // NOTE: These can only be called once
   useEffect(() => {
     window.electron.requestTournamentImport(handleImportTournament);
     window.electron.requestTournamentExport(handleExportTournament);
     window.electron.requestFinancialImport(handleImportFinancials);
     window.electron.requestFinancialExport(handleExportFinancials);
+    window.electron.requestRuleImport(handleImportRules);
+    window.electron.requestRuleExport(handleExportRules);
     window.electron.publishNotification(publishNotification);
   }, [
     publishNotification,
@@ -83,6 +88,8 @@ const useMainComms = () => {
     handleExportTournament,
     handleImportFinancials,
     handleExportFinancials,
+    handleImportRules,
+    handleExportRules,
   ]);
 };
 

@@ -11,6 +11,9 @@ import { RootState } from '../redux/store';
 
 /** Static Callbacks */
 const getNumTeams = (entries: DivisionEntries) => {
+  if (!entries) {
+    return 0;
+  }
   return Object.values(entries).filter((e) => !e.isWaitlisted).length;
 };
 

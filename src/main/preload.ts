@@ -1,8 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import Tournament from '../domain/tournament';
+import { Tournament } from '../domain/tournament';
 import type { TournamentFinancials } from '../renderer/redux/financials';
 import type { Notification } from '../renderer/redux/notifications';
 import { TournamentEntryIO } from '../renderer/redux/entries';
+import { DivisionRules } from '../domain/rules';
 
 contextBridge.exposeInMainWorld('electron', {
   importSheet: (): Promise<TournamentEntryIO | null> => {
@@ -50,5 +51,25 @@ contextBridge.exposeInMainWorld('electron', {
   },
   exportFinancials: (financials: TournamentFinancials): void => {
     ipcRenderer.invoke('tournament:exportFinancials', financials);
+  },
+
+  /** Rules */
+  // Menu requesting functions
+  requestRuleImport(func: (...args: unknown[]) => void) {
+    ipcRenderer.on('tournament:requestRuleImport', (_event, ...args) =>
+      func(...args)
+    );
+  },
+  requestRuleExport(func: (...args: unknown[]) => void) {
+    ipcRenderer.on('tournament:requestRuleExport', (_event, ...args) =>
+      func(...args)
+    );
+  },
+  // Import/Export
+  importRules: (): Promise<DivisionRules | null> => {
+    return ipcRenderer.invoke('tournament:importRules');
+  },
+  exportRules: (rules: DivisionRules): void => {
+    ipcRenderer.invoke('tournament:exportRules', rules);
   },
 });

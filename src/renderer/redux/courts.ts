@@ -58,10 +58,14 @@ export const courtSlice = createSlice({
       const { court, netHeight } = action.payload;
       state[court - 1].netHeight = netHeight;
     },
+    importCourts: (_, action: PayloadAction<Court[]>) => {
+      return action.payload;
+    },
   },
 });
 
-export const { changeDivision, changeHeight } = courtSlice.actions;
+export const { changeDivision, changeHeight, importCourts } =
+  courtSlice.actions;
 export default courtSlice.reducer;
 
 /** Selectors */

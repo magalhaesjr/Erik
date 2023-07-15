@@ -5,10 +5,21 @@ import Division from './division';
 import { createCourt } from './court';
 import type { Court } from './court';
 import { TournamentFinancials, defaultPayout } from './payouts';
-import { tournamentRules } from './rules';
+import { DivisionRules, tournamentRules } from './rules';
+import { TournamentEntries } from '../renderer/redux/entries';
+import { TournamentPools } from '../renderer/redux/pools';
+
+/** Types */
+export type Tournament = {
+  courts: Court[];
+  entries: TournamentEntries;
+  pools: TournamentPools;
+  rules: DivisionRules;
+  financials: TournamentFinancials;
+};
 
 // Team class for tournament entries
-export default class Tournament {
+export default class LegacyTournament {
   saturday: Day;
 
   sunday: Day;
@@ -17,7 +28,7 @@ export default class Tournament {
 
   courts: Court[];
 
-  constructor(input?: Tournament) {
+  constructor(input?: LegacyTournament) {
     // Saturday tournament
     this.saturday = new Day();
     // Sunday Tournament
@@ -44,7 +55,7 @@ export default class Tournament {
   }
 
   // Import tournament
-  import(input: Tournament) {
+  import(input: LegacyTournament) {
     // Import financials
     this.financials = input.financials;
     // Import days

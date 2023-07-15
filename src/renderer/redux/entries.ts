@@ -41,7 +41,7 @@ export type DivisionEntries = {
   [key: string]: TeamEntry;
 };
 
-type TournamentEntries = {
+export type TournamentEntries = {
   [key: string]: DivisionEntries;
 };
 
@@ -137,6 +137,9 @@ export const entrySlice = createSlice({
 
       state[divKey][teamKey] = cloneDeep(entry);
     },
+    importEntries: (_, action: PayloadAction<TournamentEntries>) => {
+      return action.payload;
+    },
     modifyEntry: (state, action: PayloadAction<TeamEntry>) => {
       const { entry, divKey, teamKey } = extractEntryProps(action.payload);
 
@@ -185,7 +188,7 @@ export const entrySlice = createSlice({
   },
 });
 
-export const { addEntry, modifyEntry, removeEntry, replaceAll } =
+export const { addEntry, importEntries, modifyEntry, removeEntry, replaceAll } =
   entrySlice.actions;
 export default entrySlice.reducer;
 

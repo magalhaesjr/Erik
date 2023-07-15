@@ -175,22 +175,48 @@ export default class MenuBuilder {
         label: '&Tournament',
         submenu: [
           {
-            label: 'Import Financial Rules',
-            accelerator: 'Ctrl+F',
-            click: () => {
-              this.mainWindow.webContents.send(
-                'tournament:requestFinancialImport'
-              );
-            },
+            label: '&Financials',
+            submenu: [
+              {
+                label: 'Import',
+                click: () => {
+                  this.mainWindow.webContents.send(
+                    'tournament:requestFinancialImport'
+                  );
+                },
+              },
+              {
+                label: 'Export',
+                accelerator: 'Alt+Ctrl+F',
+                click: () => {
+                  this.mainWindow.webContents.send(
+                    'tournament:requestFinancialExport'
+                  );
+                },
+              },
+            ],
           },
           {
-            label: 'Export Financial Rules',
-            accelerator: 'Alt+Ctrl+F',
-            click: () => {
-              this.mainWindow.webContents.send(
-                'tournament:requestFinancialExport'
-              );
-            },
+            label: '&Rules',
+            submenu: [
+              {
+                label: 'Import',
+                click: () => {
+                  this.mainWindow.webContents.send(
+                    'tournament:requestRuleImport'
+                  );
+                },
+              },
+              {
+                label: 'Export',
+                accelerator: 'Alt+Ctrl+R',
+                click: () => {
+                  this.mainWindow.webContents.send(
+                    'tournament:requestRuleExport'
+                  );
+                },
+              },
+            ],
           },
         ],
       },

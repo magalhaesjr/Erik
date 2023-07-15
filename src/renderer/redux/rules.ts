@@ -1,7 +1,7 @@
 /**
  * Defines redux slice for format rules
  */
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import max from 'lodash/max';
 import min from 'lodash/min';
 import { getDivisionKey } from '../../domain/utility';
@@ -19,16 +19,34 @@ export type RequiredCourts = {
   maxNets: number;
 };
 
+export type RuleExport = {
+  type: string;
+  rules: DivisionRules;
+};
+
+/** Sagas */
+export const IMPORT_RULES = 'IMPORT_RULES';
+export const requestImportRules = () => ({ type: IMPORT_RULES });
+export const EXPORT_RULES = 'EXPORT_RULES';
+export const exportRules = (rules: DivisionRules) => ({
+  type: EXPORT_RULES,
+  rules,
+});
+
 /** Slice Defintion */
 const initialState: DivisionRules = divisionRules;
 
 export const ruleSlice = createSlice({
   name: 'rules',
   initialState,
-  reducers: {},
+  reducers: {
+    importRules: (_, action: PayloadAction<DivisionRules>) => {
+      return action.payload;
+    },
+  },
 });
 
-// export const { changeDivision } = courtSlice.actions;
+export const { importRules } = ruleSlice.actions;
 export default ruleSlice.reducer;
 
 /** Static functions */
@@ -52,6 +70,7 @@ export const calcRequiredNets = (
 };
 
 /** Selectors */
+export const selectRules = (state: RootState) => state.rules;
 export const selectDivisionRules = (
   state: RootState,
   division: string
